@@ -22,7 +22,7 @@ package org.fishwife.jrugged;
  *  be compared; higher values represent higher levels of functionality.
  *  In addition, each {@link Status} has a {@link String} <code>signal</code>
  *  which is either GREEN, YELLOW, or RED.
- *
+ *  <p>
  *  The general notion is that the whole system (or a subsystem) should
  *  only report GREEN status (UP) if everything is working as designed.
  *  When subsystems start to go down, or the current system stops working,
@@ -32,7 +32,7 @@ package org.fishwife.jrugged;
  *  we can attempt to serve without a cache. However, if a required database
  *  goes down, we probably need to report a RED status, unable to serve
  *  requests.
- *
+ *  <p>
  *  A "rugged" system should be able to accurately (and responsively)
  *  report on its status even if it is unable to perform its main functions.
  *  This will assist operators in diagnosing the problem; a hung process
