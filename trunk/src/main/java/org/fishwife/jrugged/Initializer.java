@@ -16,6 +16,29 @@
  */
 package org.fishwife.jrugged;
 
+/** An {@link Initializer} allows a client to retry failed service 
+ *  initializations in the background. For example, the initial 
+ *  connection to a remote service may fail; the Initializer will take
+ *  responsibility for continuing to retry that connection in a
+ *  background thread (so that other services can try to initialize
+ *  in the meantime). When initialization succeeds, the background
+ *  thread terminates and the client service can enter normal operation.
+ *  <p>
+ *  Sample usage:
+ *  <pre>
+    public class Service implements Initializable, Monitorable {
+        private Status status = Status.INIT;
+        public Service() {
+            new Initializer(this).initialize();
+        }
+        public void tryInit() throws Exception {
+            // attempt an initialization here ...
+        }
+        public void afterInit() { status = Status.UP; }
+        public Status getStatus() { return status; }
+    }
+ *  </pre>
+ */
 public class Initializer implements Runnable {
 
     /** By default, keep trying to initialize forever. */
@@ -24,7 +47,7 @@ public class Initializer implements Runnable {
     /** Number of initialization attempts we have made. */
     private int numAttempts = 0;
 
-    /** Retry an initialization every 60 seconds. */
+    /** Retry an initialization every 60 seconds by default. */
     private long retryMillis = 60 * 1000L;
 
     /** This is the guy we're trying to initialize. */

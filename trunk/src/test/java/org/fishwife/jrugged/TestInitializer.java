@@ -88,6 +88,17 @@ public class TestInitializer extends TestCase {
 	assertTrue(impl.isCancelled());
 	assertEquals(1, impl.getNumAttempts());
 	verify(mockClient);
-	
+    }
+
+    public class Client implements Initializable {
+	public Client() {
+	    new Initializer(this).initialize();
+	}
+	public void afterInit() { }
+	public void tryInit() { }
+    }
+
+    public void testClient() {
+	Client c = new Client();
     }
 }
