@@ -27,7 +27,7 @@ public class Initializer implements Runnable {
     /** Retry an initialization every 60 seconds. */
     private long retryMillis = 60 * 1000L;
 
-    /** This is the guy we're trying to initialized. */
+    /** This is the guy we're trying to initialize. */
     private Initializable client;
 
     /** Current status. */
@@ -47,7 +47,10 @@ public class Initializer implements Runnable {
 	thread.start();
     }
 
-    /** Shuts down the background retry process. */
+    /** Shuts down the background retry process. If you are using the
+     *  Spring framework, for example, if the client implements
+     *  DisposableBean you can have the destroy() method of the client
+     *  call this method to cleanly shutdown. */
     public void destroy() {
 	cancelled = true;
 	if (thread != null) thread.interrupt();
