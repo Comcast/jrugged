@@ -20,30 +20,26 @@ import java.util.concurrent.Callable;
 
 /** A {@link CircuitBreaker} can be used with a service to throttle traffic
  *  to a failed subsystem (particularly one we might not be able to monitor,
- *  such as a peer system which must be accessed over the network). The
- *  client service asks the <code>CircuitBreaker</code> before initiating
- *  a request whether the request should be allowed. While the service is 
- *  operating normally, the <code>CircuitBreaker</code> stays open and all
- *  requests are allowed. 
+ *  such as a peer system which must be accessed over the network). Service
+ *  calls are wrapped by the <code>CircuitBreaker</code>.
  *  <p>
- *  However, the client may determine after a certain 
- *  number or type of errors have occurred that the remote system is down 
- *  or overloaded; the client service may then <code>trip()</code> the 
- *  <code>CircuitBreaker</code>. After tripping, the CircuitBreaker is
- *  CLOSED, and all new requests are denied for a certain "cooloff" or
- *  reset period, giving the failed system time to recover. 
+ *  When everything is operating normally, the <code>CircuitBreaker</code>
+ *  is OPEN and the calls are allowed through.
  *  <p>
- *  Once the reset period has elapsed, the CircuitBreaker moves to a 
- *  HALF_OPEN state, where it allows one request through to test for 
- *  recovery. If the request fails, the client should <code>trip()</code> 
- *  the CircuitBreaker again back to CLOSED. If it succeeds, however,
- *  the client can <code>open()</code> the CircuitBreaker again to 
- *  restore normal operation.
+ *  When a call fails, however, the <code>CircuitBreaker</code> "trips" and
+ *  moves to a CLOSED state. Client calls are not allowed through while
+ *  the <code>CircuitBreaker</code> is CLOSED.
+ *  <p>
+ *  After a certain "cooldown" period, the <code>CircuitBreaker</code> will
+ *  transition to a HALF_OPEN state, where one call is allowed to go through
+ *  as a test. If that call succeeds, the <code>CircuitBreaker</code> moves
+ *  back to the OPEN state; if it fails, it moves back to the CLOSED state
+ *  for another cooldown period.
  *  <p>
  *  Sample usage:
  *  <pre>
     public class Service implements Monitorable {
-        private CircuitBreaker&lt;String> cb = new CircuitBreaker&lt;String>();
+        private CircuitBreaker cb = new CircuitBreaker();
         public String doSomething(final Object arg) throws Exception {
 	    return cb.invoke(new Callable&lt;String>() {
                                  public String call() {
@@ -55,7 +51,7 @@ import java.util.concurrent.Callable;
     }
  * </pre>
  */
-public class CircuitBreaker<V> implements Monitorable {
+public class CircuitBreaker implements Monitorable, ServiceWrapper {
     
     /** Represents whether a {@link CircuitBreaker} is OPEN, HALF_OPEN,
      *  or CLOSED. */
@@ -71,14 +67,53 @@ public class CircuitBreaker<V> implements Monitorable {
      *  logic.
      *  @param c the {@link Callable} to attempt
      *  @return whatever c would return on success
-     *  @throws CircuitBreakerException if the breaker was CLOSED or
+     *  @throws {@link CircuitBreakerException} if the breaker was CLOSED or
      *    HALF_OPEN and this attempt wasn't the reset attempt
-     *  @throws Exception if c throws an Exception
+     *  @throws {@link Exception} if c throws an Exception
      */
-    public V invoke(Callable<V> c) throws Exception {
+    public <V> V invoke(Callable<V> c) throws Exception {
 	if (!allowRequest()) throw new CircuitBreakerException();
 	try {
 	    V result = c.call();
+	    open();
+	    return result;
+	} catch (Exception e) {
+	    trip();
+	    throw e;
+	}
+    }
+
+    /** Wrap the given service call with the CircuitBreaker protection
+     *  logic.
+     *  @param r the {@link Runnable} to attempt
+     *  @throws {@link CircuitBreakerException} if the breaker was CLOSED or
+     *    HALF_OPEN and this attempt wasn't the reset attempt
+     *  @throws {@link Exception} if <code>r</code> throws an Exception
+     */
+    public void invoke(Runnable r) throws Exception {
+	if (!allowRequest()) throw new CircuitBreakerException();
+	try {
+	    r.run();
+	    open();
+	} catch (Exception e) {
+	    trip();
+	    throw e;
+	}
+    }
+
+    /** Wrap the given service call with the CircuitBreaker protection
+     *  logic.
+     *  @param r the {@link Runnable} to attempt
+     *  @param result what to return after <code>r</code> succeeds
+     *  @return result
+     *  @throws {@link CircuitBreakerException} if the breaker was CLOSED or
+     *    HALF_OPEN and this attempt wasn't the reset attempt
+     *  @throws {@link Exception} if <code>r</code> throws an Exception
+     */
+    public <V> V invoke(Runnable r, V result) throws Exception {
+	if (!allowRequest()) throw new CircuitBreakerException();
+	try {
+	    r.run();
 	    open();
 	    return result;
 	} catch (Exception e) {
