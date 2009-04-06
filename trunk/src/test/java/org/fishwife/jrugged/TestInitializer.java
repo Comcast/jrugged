@@ -90,15 +90,4 @@ public class TestInitializer extends TestCase {
 	verify(mockClient);
     }
 
-    public class Client implements Initializable {
-	public Client() {
-	    new Initializer(this).initialize();
-	}
-	public void afterInit() { }
-	public void tryInit() { }
-    }
-
-    public void testClient() {
-	Client c = new Client();
-    }
 }
