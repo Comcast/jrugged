@@ -70,7 +70,14 @@ public class RequestCounter implements ServiceWrapper {
 	}
     }
 
-    public long getNumRequests() { return numRequests; }
-    public long getNumSuccesses() { return numSuccesses; }
-    public long getNumFailures() { return numFailures; }
+    /** Samples the current counts.
+     *  @return an array of three <code>longs</code>: the total
+     *    number of requests, the number of successful requests,
+     *    and the number of failed requests.
+     */
+    public synchronized long[] sample() {
+	long[] out = { numRequests, numSuccesses, numFailures };
+	return out;
+    }
+
 }
