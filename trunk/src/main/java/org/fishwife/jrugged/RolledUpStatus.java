@@ -57,7 +57,7 @@ public class RolledUpStatus implements Monitorable {
 	}
 	for(Monitorable m : criticals) {
 	    Status subStatus = m.getStatus();
-	    if (subStatus.compareTo(result) == -1) {
+	    if (subStatus.getValue() < result.getValue()) {
 		result = subStatus;
 	    }
 	}
