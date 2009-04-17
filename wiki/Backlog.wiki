@@ -1,0 +1,15 @@
+#summary List of currently-tracked roadmap items.
+#labels Phase-Requirements
+
+= Introduction =
+
+Here is a list of known items to work on, kept in priority order. If you have a new idea for a feature enhancement, please feel free to add it here in approximate priority. Let's see if wikification provides prioritization consensus!
+
+Higher numbers are higher priority, so the list below should be in descending numerical (and priority order), with the most important at the top.
+
+= Backlog =
+
+  # Expose Monitorable/Status et al. and PerformanceMonitor as JMX controls.
+  # Provide Spring-style wrappers to ease use and configuration, perhaps as a separate subproject (jrugged-spring).
+  # Provide AOP wrappers for the ServiceWrapper interfaces to make it easier to do drop-in decoration of existing code.
+  # Provide support for exposing Monitorable/Status as text/html or application/atom+xml web pages.
