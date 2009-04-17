@@ -7,11 +7,6 @@
   <version>1.0.0-SNAPSHOT</version>
   <name>jrugged</name>
   <url>http://code.google.com/p/jrugged/</url>
-  <scm>
-    <connection>scm:svn:http://jrugged.googlecode.com/svn/trunk/</connection>
-    <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/trunk/</developerConnection>
-    <url>http://code.google.com/p/jrugged/source/browse/#svn/trunk</url>
-  </scm>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
