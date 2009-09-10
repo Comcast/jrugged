@@ -31,7 +31,7 @@ import java.util.concurrent.Callable;
 public class PerformanceMonitor implements ServiceWrapper {
 
     private static final String WRAP_MSG = 
-	"org.fishwife.jrugged.PerformanceMonitor.WRAPPED";
+		"org.fishwife.jrugged.PerformanceMonitor.WRAPPED";
 
     private final long startupMillis = System.currentTimeMillis();
 
@@ -44,34 +44,34 @@ public class PerformanceMonitor implements ServiceWrapper {
     private final LatencyTracker latencyTracker = new LatencyTracker();
 
     private final Callable<Double> sampleSuccessLatency =
-	new Callable<Double>() {
-	public Double call() {
-	    return (double)latencyTracker.getLastSuccessMillis();
-	}
+		new Callable<Double>() {
+		public Double call() {
+			return (double)latencyTracker.getLastSuccessMillis();
+		}
     };
     private final Callable<Double> sampleFailureLatency =
-	new Callable<Double>() {
-	public Double call() {
-	    return (double)latencyTracker.getLastFailureMillis();
-	}
+		new Callable<Double>() {
+		public Double call() {
+			return (double)latencyTracker.getLastFailureMillis();
+		}
     };
     private final Callable<Double> sampleRequestRate =
-	new Callable<Double>() {
-	public Double call() {
-	    return sampleRate()[0];
-	}
+		new Callable<Double>() {
+		public Double call() {
+			return sampleRate()[0];
+		}
     };
     private final Callable<Double> sampleSuccessRate =
-	new Callable<Double>() {
-	public Double call() {
-	    return sampleRate()[1];
-	}
+		new Callable<Double>() {
+		public Double call() {
+			return sampleRate()[1];
+		}
     };
     private final Callable<Double> sampleFailureRate =
-	new Callable<Double>() {
-	public Double call() {
-	    return sampleRate()[2];
-	}
+		new Callable<Double>() {
+		public Double call() {
+			return sampleRate()[2];
+		}
     };
 
     private int updateFrequencySecs;
@@ -94,216 +94,249 @@ public class PerformanceMonitor implements ServiceWrapper {
     private MovingAverage successRateLastDay;
     private MovingAverage failureRateLastDay;
 
-    public PerformanceMonitor(int updateFrequencySecs) {
-	this.updateFrequencySecs = updateFrequencySecs;
-	MovingAverageFactory maf = 
-	    new MovingAverageFactory(updateFrequencySecs);
+	public PerformanceMonitor(MovingAverageFactory maf) {
+		averageSuccessLatencyLastMinute = 
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleSuccessLatency);
+		averageSuccessLatencyLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleSuccessLatency);
+		averageSuccessLatencyLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleSuccessLatency);
+		averageFailureLatencyLastMinute = 
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleFailureLatency);
+		averageFailureLatencyLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleFailureLatency);
+		averageFailureLatencyLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleFailureLatency);
+		requestRateLastMinute =
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleRequestRate);
+		successRateLastMinute =
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleSuccessRate);
+		failureRateLastMinute =
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleFailureRate);
+		requestRateLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleRequestRate);
+		successRateLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleSuccessRate);
+		failureRateLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleFailureRate);
+		requestRateLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleRequestRate);
+		successRateLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleSuccessRate);
+		failureRateLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleFailureRate);
+	}
 
-	averageSuccessLatencyLastMinute = 
-	    maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleSuccessLatency);
-	averageSuccessLatencyLastHour =
-	    maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleSuccessLatency);
-	averageSuccessLatencyLastDay =
-	    maf.makeMovingAverage(ONE_DAY_MILLIS, sampleSuccessLatency);
-	averageFailureLatencyLastMinute = 
-	    maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleFailureLatency);
-	averageFailureLatencyLastHour =
-	    maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleFailureLatency);
-	averageFailureLatencyLastDay =
-	    maf.makeMovingAverage(ONE_DAY_MILLIS, sampleFailureLatency);
-	requestRateLastMinute =
-	    maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleRequestRate);
-	successRateLastMinute =
-	    maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleSuccessRate);
-	failureRateLastMinute =
-	    maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleFailureRate);
-	requestRateLastHour =
-	    maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleRequestRate);
-	successRateLastHour =
-	    maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleSuccessRate);
-	failureRateLastHour =
-	    maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleFailureRate);
-	requestRateLastDay =
-	    maf.makeMovingAverage(ONE_DAY_MILLIS, sampleRequestRate);
-	successRateLastDay =
-	    maf.makeMovingAverage(ONE_DAY_MILLIS, sampleSuccessRate);
-	failureRateLastDay =
-	    maf.makeMovingAverage(ONE_DAY_MILLIS, sampleFailureRate);
+    public PerformanceMonitor(int updateFrequencySecs) {
+		this.updateFrequencySecs = updateFrequencySecs;
+		MovingAverageFactory maf = 
+			new MovingAverageFactory(updateFrequencySecs);
+
+		averageSuccessLatencyLastMinute = 
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleSuccessLatency);
+		averageSuccessLatencyLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleSuccessLatency);
+		averageSuccessLatencyLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleSuccessLatency);
+		averageFailureLatencyLastMinute = 
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleFailureLatency);
+		averageFailureLatencyLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleFailureLatency);
+		averageFailureLatencyLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleFailureLatency);
+		requestRateLastMinute =
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleRequestRate);
+		successRateLastMinute =
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleSuccessRate);
+		failureRateLastMinute =
+			maf.makeMovingAverage(ONE_MINUTE_MILLIS, sampleFailureRate);
+		requestRateLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleRequestRate);
+		successRateLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleSuccessRate);
+		failureRateLastHour =
+			maf.makeMovingAverage(ONE_HOUR_MILLIS, sampleFailureRate);
+		requestRateLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleRequestRate);
+		successRateLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleSuccessRate);
+		failureRateLastDay =
+			maf.makeMovingAverage(ONE_DAY_MILLIS, sampleFailureRate);
 	    
     }
 
     private double[] sampleRate() {
-	long now = System.currentTimeMillis();
-	if (now - lastFlowSampleMillis >
-	    updateFrequencySecs * 500L) {
-	    lastFlowSample = flowMeter.sample();
-	    lastFlowSampleMillis = now;
-	}
-	return lastFlowSample;
+		long now = System.currentTimeMillis();
+		if (now - lastFlowSampleMillis >
+			updateFrequencySecs * 500L) {
+			lastFlowSample = flowMeter.sample();
+			lastFlowSampleMillis = now;
+		}
+		return lastFlowSample;
     }
 
     public <T> T invoke(final Callable<T> c) throws Exception {
-	return requestCounter.invoke(new Callable<T>() {
-		public T call() throws Exception {
-		    return latencyTracker.invoke(c);
-		}
-	    });
+		return requestCounter.invoke(new Callable<T>() {
+				public T call() throws Exception {
+					return latencyTracker.invoke(c);
+				}
+			});
     }
 
     public void invoke(final Runnable r) throws Exception {
-	try {
-	    requestCounter.invoke(new Runnable() {
-		    public void run() {
-			try {
-			    latencyTracker.invoke(r);
-			} catch (Exception e) {
-			    throw new RuntimeException(WRAP_MSG, e);
+		try {
+			requestCounter.invoke(new Runnable() {
+					public void run() {
+						try {
+							latencyTracker.invoke(r);
+						} catch (Exception e) {
+							throw new RuntimeException(WRAP_MSG, e);
+						}
+					}
+				});
+		} catch (RuntimeException re) {
+			if (WRAP_MSG.equals(re.getMessage())) {
+				throw (Exception)re.getCause();
+			} else {
+				throw re;
 			}
-		    }
-		});
-	} catch (RuntimeException re) {
-	    if (WRAP_MSG.equals(re.getMessage())) {
-		throw (Exception)re.getCause();
-	    } else {
-		throw re;
-	    }
-	}
+		}
     }
 
     public <T> T invoke(final Runnable r, T result) throws Exception {
-	this.invoke(r);
-	return result;
+		this.invoke(r);
+		return result;
     }
 
     /** Returns the average latency in milliseconds of a successful request,
      *  as measured over the last minute. */
     public double getAverageSuccessLatencyLastMinute() {
-	return averageSuccessLatencyLastMinute.getAverage();
+		return averageSuccessLatencyLastMinute.getAverage();
     }
 
     /** Returns the average latency in milliseconds of a successful request,
      *  as measured over the last hour. */
     public double getAverageSuccessLatencyLastHour() {
-	return averageSuccessLatencyLastHour.getAverage();
+		return averageSuccessLatencyLastHour.getAverage();
     }
 
     /** Returns the average latency in milliseconds of a successful request,
      *  as measured over the last day. */
     public double getAverageSuccessLatencyLastDay() {
-	return averageSuccessLatencyLastDay.getAverage();
+		return averageSuccessLatencyLastDay.getAverage();
     }
 
     /** Returns the average latency in milliseconds of a failed request,
      *  as measured over the last minute. */
     public double getAverageFailureLatencyLastMinute() {
-	return averageFailureLatencyLastMinute.getAverage();
+		return averageFailureLatencyLastMinute.getAverage();
     }
 
     /** Returns the average latency in milliseconds of a failed request,
      *  as measured over the last hour. */
     public double getAverageFailureLatencyLastHour() {
-	return averageFailureLatencyLastHour.getAverage();
+		return averageFailureLatencyLastHour.getAverage();
     }
 
     /** Returns the average latency in milliseconds of a failed request,
      *  as measured over the last day. */
     public double getAverageFailureLatencyLastDay() {
-	return averageFailureLatencyLastDay.getAverage();
+		return averageFailureLatencyLastDay.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  all requests, as measured over the last minute. */
     public double getRequestRateLastMinute() {
-	return requestRateLastMinute.getAverage();
+		return requestRateLastMinute.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  successful requests, as measured over the last minute. */
     public double getSuccessRateLastMinute() {
-	return successRateLastMinute.getAverage();
+		return successRateLastMinute.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  failed requests, as measured over the last minute. */
     public double getFailureRateLastMinute() {
-	return failureRateLastMinute.getAverage();
+		return failureRateLastMinute.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  all requests, as measured over the last hour. */
     public double getRequestRateLastHour() {
-	return requestRateLastHour.getAverage();
+		return requestRateLastHour.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  successful requests, as measured over the last hour. */
     public double getSuccessRateLastHour() {
-	return successRateLastHour.getAverage();
+		return successRateLastHour.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  failed requests, as measured over the last hour. */
     public double getFailureRateLastHour() {
-	return failureRateLastHour.getAverage();
+		return failureRateLastHour.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  all requests, as measured over the last day. */
     public double getRequestRateLastDay() {
-	return requestRateLastDay.getAverage();
+		return requestRateLastDay.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  successful requests, as measured over the last day. */
     public double getSuccessRateLastDay() {
-	return successRateLastDay.getAverage();
+		return successRateLastDay.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  failed requests, as measured over the last day. */
     public double getFailureRateLastDay() {
-	return failureRateLastDay.getAverage();
+		return failureRateLastDay.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
      *  all requests, as measured since this object was initialized. */
     public double getRequestRateLifetime() {
-	long deltaT = System.currentTimeMillis() - startupMillis;
-	return ((double)requestCounter.sample()[0])/(double)deltaT;
+		long deltaT = System.currentTimeMillis() - startupMillis;
+		return ((double)requestCounter.sample()[0])/(double)deltaT;
     }
 
     /** Returns the average request rate in requests per second of
      *  successful requests, as measured since this object was
      *  initialized. */
     public double getSuccessRateLifetime() {
-	long deltaT = System.currentTimeMillis() - startupMillis;
-	return ((double)requestCounter.sample()[1])/(double)deltaT;
+		long deltaT = System.currentTimeMillis() - startupMillis;
+		return ((double)requestCounter.sample()[1])/(double)deltaT;
     }
 
     /** Returns the average request rate in requests per second of
      *  failed requests, as measured since this object was
      *  initialized. */
     public double getFailureRateLifetime() {
-	long deltaT = System.currentTimeMillis() - startupMillis;
-	return ((double)requestCounter.sample()[2])/(double)deltaT;
+		long deltaT = System.currentTimeMillis() - startupMillis;
+		return ((double)requestCounter.sample()[2])/(double)deltaT;
     }
 
     /** Returns the total number of requests seen by this {@link
      * PerformanceMonitor}. */
     public long getRequestCount() {
-	return requestCounter.sample()[0];
+		return requestCounter.sample()[0];
     }
 
     /** Returns the number of successful requests seen by this {@link
      * PerformanceMonitor}. */
     public long getSuccessCount() {
-	return requestCounter.sample()[1];
+		return requestCounter.sample()[1];
     }
 
     /** Returns the number of failed requests seen by this {@link
      * PerformanceMonitor}. */
     public long getFailureCount() {
-	return requestCounter.sample()[2];
+		return requestCounter.sample()[2];
     }
 
 }
