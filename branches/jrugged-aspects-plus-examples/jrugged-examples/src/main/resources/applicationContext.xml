@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p"
+           xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+    
+    <!-- Automatically generates AOP proxies at runtime using CGLIB. -->
+    <aop:aspectj-autoproxy proxy-target-class="true" />
+        
+    <!-- For mail settings and future properties files -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="responseTweaker"
+        class="org.fishwife.jrugged.examples.ResponseTweaker"/>
+
+    <!--==============================
+        Aspects
+    ================================-->
+
+    <bean id="performanceMonitorAspect" class="org.fishwife.jrugged.aspects.PerformanceMonitorAspect"
+        p:updateIntervalInSeconds="5"/>
+    
+    <!--    
+    <bean id="exceptionCircuitAspect" class="org.fishwife.jrugged.aspects.ExceptionCircuitAspect"
+        init-method="afterPropertiesSet"
+        p:properties-ref="hossProperties"/>
+    -->
+
+
+</beans>
