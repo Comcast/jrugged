@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<!--
+@(#)package.html
+
+Copyright (C) 2009 Jonathan T. Moore
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+</head>
+<body bgcolor="white">
+
+<p>
+Provides for straightforward add-ons to existing code to make it more
+robust and easier to manage. Although there are several lower-level
+building block classes here available for custom solutions, most clients
+will find they can use just the following classes:
+</p>
+<ul>
+<li>{@link org.fishwife.jrugged.CircuitBreaker} provides a way to wrap a service in a way that
+provides a bulkhead against system failure; when a remote service fails,
+further calls to the service are prevented for a period of time to allow
+the remote service to recover.</li>
+<li>{@link org.fishwife.jrugged.Initializer} provides a way to decouple service construction from
+initialization/startup and allows the latter to occur in the background, even
+retrying if initial attempts to initialize fail.</li>
+<li>{@link org.fishwife.jrugged.PerformanceMonitor} provides a way to wrap a service and collect
+a series of useful statistics about its latency and throughput, even
+calculating moving averages across different time windows.</li>
+<li>{@link org.fishwife.jrugged.Monitorable}, {@link org.fishwife.jrugged.Status}, and {@link org.fishwife.jrugged.RolledUpStatus} are
+related classes that provide a simple RED/YELLOW/GREEN encoding for service
+health, possibly useful for constructing operational dashboards.</li>
+</ul>
+
+<p>
+Generally speaking, most of these classes implement a {@link org.fishwife.jrugged.ServiceWrapper}
+interface to allow them to be applied around existing services using the
+<a href="http://en.wikipedia.org/wiki/Decorator_pattern">Decorator
+design pattern</a>. Those classes providing operational information, such
+as {@link org.fishwife.jrugged.PerformanceMonitor} and {@link org.fishwife.jrugged.Monitorable} can be wrapped in
+classes that expose their data to JMX controls or on web-accessible health
+status pages as desired.
+</p>
+
+<h2>Related Documentation</h2>
+
+For overviews, tutorials, examples, guides, and tool documentation, please see:
+<ul>
+  <li><a href="http://code.google.com/p/jrugged/">JRugged Project Home Page</a>
+</ul>
+
+<!-- Put @see and @since tags down here. -->
+
+</body>
+</html>
