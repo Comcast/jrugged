@@ -1,0 +1,10 @@
+#summary Steps to get an example app up and running quickly.
+
+To run the example app:
+
+  * svn checkout http://jrugged.googlecode.com/svn/branches/jrugged-aspects-plus-examples
+  * cd jrugged-aspects-plus-examples
+  * mvn install
+  * cd jrugged-examples
+  * mvn jetty:run
+  * Point your browser to localhost:8080/jrugged-examples and start clicking links.
