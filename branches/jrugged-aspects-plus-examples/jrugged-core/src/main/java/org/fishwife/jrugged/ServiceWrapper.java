@@ -20,7 +20,7 @@ import java.util.concurrent.Callable;
 
 /** Several of the "rugged" code patterns in this library can be used to
  *  wrap an existing service in a "decorator" design pattern. This is the
- *  common interfaces provided by these wrapping classes that affect normal
+ *  common interface provided by these wrapping classes that affect normal
  *  service calls.
  *  <p>
  *  If you are more into aspect-oriented programming (AOP), then you can
