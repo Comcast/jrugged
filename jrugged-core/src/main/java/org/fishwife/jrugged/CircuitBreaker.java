@@ -62,7 +62,11 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     protected long lastFailure;
     protected long resetMillis = 15 * 1000L;
     protected boolean isAttemptLive = false;
-
+    protected FailureInterpreter failureInterpreter = null;
+    private boolean isHardTrip;
+    
+    public CircuitBreaker() {}
+    
     /** Wrap the given service call with the CircuitBreaker protection
      *  logic.
      *  @param c the {@link Callable} to attempt
@@ -74,10 +78,23 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     public <V> V invoke(Callable<V> c) throws Exception {
 	if (!allowRequest()) throw new CircuitBreakerException();
 	try {
-	    V result = c.call();
+	    V result; 
+	    if(this.failureInterpreter != null)
+           result = failureInterpreter.invoke(c);
+	    else
+	        result = c.call();
 	    open();
 	    return result;
-	} catch (Exception e) {
+	} catch (CircuitShouldStayOpenException e) {
+        // I don't want to close the circuit, just pass on the exception
+        final Throwable cause = e.getCause();
+        if (cause instanceof Exception)
+            throw (Exception) cause;
+        else if (cause instanceof Error)
+            throw (Error) cause;
+        else
+            throw new RuntimeException(cause);
+    } catch (Exception e) {
 	    trip();
 	    throw e;
 	}
@@ -125,10 +142,30 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     /** Causes the {@link CircuitBreaker} to trip and CLOSE; no new
      *  requests will be allowed until the <code>CircuitBreaker</code>
      *  resets. */
-    private void trip() {
+    public void trip() {
 	state = BreakerState.CLOSED;
 	lastFailure = System.currentTimeMillis();
 	isAttemptLive = false;
+    }
+
+    
+    /**
+     * Trips the CircuitBreaker until {@link #reset()} is invoked.
+     */
+    public void tripHard() {
+        this.trip();
+        isHardTrip = true;
+    }
+    
+    /** 
+     * Manually set the breaker to be reset and ready for use.  This
+     * is only useful after a manual trip otherwise the breaker will
+     * trip automatically again if the service is still unavailable.
+     * Just like a real breaker.  WOOT!!!
+     */
+    public void reset() {
+        state = BreakerState.OPEN;
+        isHardTrip = false;
     }
 
     /** Reports a successful service call to the {@link CircuitBreaker},
@@ -149,7 +186,9 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     /** Allows the client service to ask if it should attempt a service
      *  call. */
     private boolean allowRequest() {
-	if (BreakerState.OPEN.equals(state)) return true;
+	if (this.isHardTrip) return false;
+	else if (BreakerState.OPEN.equals(state)) return true;
+	
 	if (BreakerState.CLOSED.equals(state) && 
 	    System.currentTimeMillis() - lastFailure >= resetMillis) {
 	    state = BreakerState.HALF_OPEN;
@@ -167,8 +206,30 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 		? Status.UP 
 		: Status.DOWN);
     }
+    
+    public long getResetMillis() {
+        return resetMillis;
+    }
 
     /** Sets the reset period to the given number of milliseconds; the
      *  default is 15,000 (make one retry attempt every 15 seconds). */
-    public void setResetMillis(long l) { resetMillis = l; }
+    public CircuitBreaker setResetMillis(long l) { resetMillis = l; return this; }
+
+    public CircuitBreaker setFailureInterpreter(FailureInterpreter failureInterpreter) {
+        this.failureInterpreter = failureInterpreter;
+        return this;
+    }
+
+    /** 
+     * Get the failure interpreter for this instance.  The failure interpreter 
+     * provides the configuration for determining which exceptions trip
+     * the circuit breaker, in what time interval, etc.
+     * 
+     * @return The FailureInterpreter for this instance or null if no failure
+     * interpreter was set..
+     */
+    public FailureInterpreter getFailureInterpreter(){
+        return this.failureInterpreter;
+    }
+    
 }
