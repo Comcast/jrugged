@@ -140,4 +140,47 @@ public class TestCircuitBreaker extends TestCase {
 	assertTrue(impl.lastFailure >= start);
 	assertTrue(impl.lastFailure <= end);
     }
+
+    public void testManualTripAndReset() throws Exception {
+        impl.state = CircuitBreaker.BreakerState.CLOSED;
+        final Object obj = new Object();
+        expect(mockCallable.call()).andReturn(obj);
+        replay(mockCallable);
+
+        impl.trip();
+        try {
+            impl.invoke(mockCallable);
+            fail("Manual trip method failed.");
+        } catch(CircuitBreakerException e){}
+
+        impl.reset();
+
+        Object result = impl.invoke(mockCallable);
+
+        verify(mockCallable);
+        assertSame(obj, result);
+        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+    }
+
+    public void testTripHard() throws Exception {
+        expect(mockCallable.call()).andReturn("hi");
+        
+        replay(mockCallable);
+        
+        impl.tripHard();
+        try {
+        impl.invoke(mockCallable);
+            fail("exception expected after CircuitBreaker.tripHard()");
+        } catch (CircuitBreakerException e) {}
+        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+        
+        impl.reset();
+        impl.invoke(mockCallable);
+        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        
+        verify(mockCallable);
+        
+        
+    }
+
 }

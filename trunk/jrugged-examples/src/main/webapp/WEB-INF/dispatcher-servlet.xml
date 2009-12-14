@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       ">
+
+    <!-- Inits annotated controllers. -->
+    <context:component-scan base-package="org.fishwife.jrugged.examples.webapp"/>
+
+    <!-- Add additional controller beans here -->
+    <bean id="rootController"
+        class="org.fishwife.jrugged.examples.webapp.RootController"/>
+
+    <bean id="performanceMonitorExample"
+        class="org.fishwife.jrugged.examples.webapp.PerformanceMonitorExample"/>
+
+	<bean id="viewResolver"
+	    class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+	    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+	    <property name="prefix" value="/WEB-INF/jsp/"/>
+	    <property name="suffix" value=".jsp"/>
+	</bean>
+
+</beans>
