@@ -182,5 +182,39 @@ public class TestCircuitBreaker extends TestCase {
         
         
     }
+    
+    public void testGetStatusWhenOpen() {
+        impl.state = CircuitBreaker.BreakerState.OPEN;  
+        assertEquals(Status.UP, impl.getStatus());
+    }
+    
+    public void testGetStatusWhenHalfOpen() {
+        impl.state = CircuitBreaker.BreakerState.HALF_OPEN;
+        assertEquals(Status.DEGRADED, impl.getStatus());
+    }
 
+    public void testGetStatusWhenClosedBeforeReset() {
+        impl.state = CircuitBreaker.BreakerState.CLOSED;
+        impl.resetMillis = 1000;
+        impl.lastFailure = System.currentTimeMillis() - 50;
+        
+        assertEquals(Status.DOWN, impl.getStatus());
+    }
+    
+    public void testGetStatusWhenClosedAfterReset() {
+        impl.state = CircuitBreaker.BreakerState.CLOSED;
+        impl.resetMillis = 1000;
+        impl.lastFailure = System.currentTimeMillis() - 2000;
+        
+        assertEquals(Status.DEGRADED, impl.getStatus());
+    }
+    
+    public void testGetStatusAfterHardTrip() {
+        impl.tripHard();
+        impl.resetMillis = 1000;
+        impl.lastFailure = System.currentTimeMillis() - 2000;
+        
+        assertEquals(Status.DOWN, impl.getStatus());
+    }
+    
 }
