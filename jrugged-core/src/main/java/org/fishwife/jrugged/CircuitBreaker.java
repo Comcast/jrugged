@@ -199,12 +199,15 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     /** Returns the current {@link Status} of the {@link CircuitBreaker}.
      *  In this case, it really refers to the status of the client service.
      *  If the <code>CircuitBreaker</code> is OPEN, we report that the
-     *  client is UP; if it is HALF_OPEN or CLOSED, we report the client
-     *  is DOWN. */
+     *  client is UP; if it is HALF_OPEN, we report that the client is 
+     *  DEGRADED; if it is CLOSED, we report the client is DOWN, unless the. 
+     */
     public Status getStatus() {
-	return (BreakerState.OPEN.equals(state) 
-		? Status.UP 
-		: Status.DOWN);
+        switch(state) {
+        case OPEN: return Status.UP;
+        case HALF_OPEN: return Status.DEGRADED;
+        default: return (!isHardTrip && System.currentTimeMillis() - lastFailure >= resetMillis ? Status.DEGRADED: Status.DOWN);
+        }
     }
     
     public long getResetMillis() {
