@@ -28,8 +28,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.aopalliance.intercept.MethodInvocation;
 import org.fishwife.jrugged.ExceptionFailureInterpreter;
-import org.fishwife.jrugged.circuit.CircuitBreaker;
-import org.fishwife.jrugged.circuit.CircuitBreakerException;
+import org.fishwife.jrugged.CircuitBreaker;
+import org.fishwife.jrugged.CircuitBreakerException;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.fishwife.jrugged.spring.BaseJruggedInterceptor;
 import org.fishwife.jrugged.spring.circuit.CircuitBreakerExceptionMapper;

@@ -1,6 +1,6 @@
 package org.fishwife.jrugged.spring.monitor;
 
-import org.fishwife.jrugged.circuit.CircuitBreaker;
+import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.ExceptionFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.fishwife.jrugged.spring.circuit.ExceptionCircuitInterceptor;

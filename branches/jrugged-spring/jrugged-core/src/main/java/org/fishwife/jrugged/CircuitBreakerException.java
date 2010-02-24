@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged.circuit;
+package org.fishwife.jrugged;
 
 /** This exception gets thrown by a {@link CircuitBreaker} if a wrapped
  *  call is disallowed by the breaker (e.g. because it is CLOSED). */

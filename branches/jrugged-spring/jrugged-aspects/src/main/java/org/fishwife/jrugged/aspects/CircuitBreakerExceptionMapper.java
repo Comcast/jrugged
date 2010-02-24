@@ -15,7 +15,7 @@
 package org.fishwife.jrugged.aspects;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.fishwife.jrugged.circuit.CircuitBreakerException;
+import org.fishwife.jrugged.CircuitBreakerException;
 
 public interface CircuitBreakerExceptionMapper<T extends Exception> {
 

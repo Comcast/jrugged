@@ -22,8 +22,6 @@ import static org.easymock.EasyMock.verify;
 import java.util.concurrent.Callable;
 
 import junit.framework.TestCase;
-import org.fishwife.jrugged.circuit.CircuitBreaker;
-import org.fishwife.jrugged.circuit.CircuitShouldStayOpenException;
 
 public final class TestFailureInterpreter extends TestCase {
 

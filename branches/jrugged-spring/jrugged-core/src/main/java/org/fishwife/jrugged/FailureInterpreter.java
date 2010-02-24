@@ -14,9 +14,6 @@
  */
 package org.fishwife.jrugged;
 
-import org.fishwife.jrugged.circuit.CircuitShouldBeClosedException;
-import org.fishwife.jrugged.circuit.CircuitShouldStayOpenException;
-
 import java.util.concurrent.Callable;
 
 /**
@@ -30,9 +27,9 @@ public interface FailureInterpreter {
      * @param c the callable method
      * @return value returned from c
      *
-     * @throws org.fishwife.jrugged.circuit.CircuitShouldStayOpenException if an exception occurred, but calling
-     * circuit should stay open.
-     * @throws org.fishwife.jrugged.circuit.CircuitShouldBeClosedException if this circuit should be closed
+     * @throws CircuitShouldStayOpenException if an exception
+     * occurred, but calling circuit should stay open.
+     * @throws CircuitShouldBeClosedException if this circuit should be closed
      * @throws Exception if an unacceptable exception occurred.
      */
     <V> V invoke(Callable<V> c) throws CircuitShouldStayOpenException,

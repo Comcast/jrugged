@@ -14,7 +14,7 @@
  */
 package org.fishwife.jrugged.spring.circuit;
 
-import org.fishwife.jrugged.circuit.CircuitBreakerException;
+import org.fishwife.jrugged.CircuitBreakerException;
 import org.aopalliance.intercept.MethodInvocation;
 
 public interface CircuitBreakerExceptionMapper<T extends Exception> {

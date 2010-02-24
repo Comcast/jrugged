@@ -14,15 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged.circuit;
+package org.fishwife.jrugged;
 
 import java.util.concurrent.Callable;
 
 import junit.framework.Assert;
 import junit.framework.TestCase;
-import org.fishwife.jrugged.Status;
-import org.fishwife.jrugged.circuit.CircuitBreaker;
-import org.fishwife.jrugged.circuit.CircuitBreakerException;
 
 import static org.easymock.EasyMock.*;
 

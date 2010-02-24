@@ -12,7 +12,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package org.fishwife.jrugged.circuit;
+package org.fishwife.jrugged;
 
 /**
  * Thrown to indicate that an exception occurred, but the circuit should stay

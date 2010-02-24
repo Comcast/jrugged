@@ -14,8 +14,6 @@
  */
 package org.fishwife.jrugged;
 
-import org.fishwife.jrugged.circuit.CircuitShouldStayOpenException;
-
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;

@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged.circuit;
+package org.fishwife.jrugged;
 
 import org.fishwife.jrugged.FailureInterpreter;
 import org.fishwife.jrugged.Monitorable;
