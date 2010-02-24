@@ -35,7 +35,12 @@ public @interface ExceptionCircuit {
     /**
      * Exception type which trips the CircuitBreaker.
      */
-    Class<? extends Exception> kind() default Exception.class;
+    Class<? extends Exception>[] kind() default {Exception.class};
+
+    /**
+     * Exception type which trips the CircuitBreaker.
+     */
+    Class<? extends Exception>[] ignore() default {};
 
     /**
      * Number of exceptions which must occur in <code>period</code> to trip

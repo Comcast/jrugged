@@ -12,13 +12,21 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package org.fishwife.jrugged.aspects;
+package org.fishwife.jrugged.circuit;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.fishwife.jrugged.circuit.CircuitBreakerException;
+/**
+ * Thrown to indicate that an exception occurred and the circuit should close.
+ * 
+ * @see CircuitBreaker
+ */
+public class CircuitShouldBeClosedException extends RuntimeException {
 
-public interface CircuitBreakerExceptionMapper<T extends Exception> {
+    public CircuitShouldBeClosedException(Throwable cause) {
+        super(cause);
+    }
 
-    public T map(ProceedingJoinPoint pjp, ExceptionCircuit circuitConfig, CircuitBreakerException e);
-    
+    public CircuitShouldBeClosedException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

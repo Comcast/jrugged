@@ -1,4 +1,4 @@
-/* Monitorable.java
+/* CircuitBreakerException.java
  * 
  * Copyright 2009 Comcast Interactive Media, LLC.
  * 
@@ -14,15 +14,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged;
+package org.fishwife.jrugged.circuit;
 
-/** A system is {@link Monitorable} if it can report on its current
- *  {@link Status} when asked.
- */
-public interface Monitorable {
-    /** Returns the current {@link Status} of this subsystem.
-     * 
-     * @return Status
-     */
-    Status getStatus();
+/** This exception gets thrown by a {@link CircuitBreaker} if a wrapped
+ *  call is disallowed by the breaker (e.g. because it is CLOSED). */
+public class CircuitBreakerException extends RuntimeException {
 }

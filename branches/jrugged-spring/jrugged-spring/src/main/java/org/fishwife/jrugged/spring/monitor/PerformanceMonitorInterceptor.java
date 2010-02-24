@@ -12,34 +12,31 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package org.fishwife.jrugged.aspects;
+package org.fishwife.jrugged.spring.monitor;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
+import org.aopalliance.intercept.MethodInvocation;
 import org.fishwife.jrugged.PerformanceMonitor;
+import org.fishwife.jrugged.spring.BaseJruggedInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Aspect that wraps methods annotated with {@link Monitorable} with a
- * {@link PerformanceMonitor}.  The value given to the Monitorable annotation
+ * Interceptor that wraps methods configured in spring with a
+ * {@link PerformanceMonitor}.  The value given to the config map of monitors
  * serves as a key for a PerformanceMonitor instance.  Thus it is possible to
  * have a PerformanceMonitor per method.  Alternatively, a PerformanceMonitor
  * can be shared across methods and classes by using the same value for the
  * monitor key.
  */
-@Aspect
-public class PerformanceMonitorAspect {
+public class PerformanceMonitorInterceptor extends BaseJruggedInterceptor {
 
-    private static final Logger logger = LoggerFactory.getLogger(PerformanceMonitorAspect.class);
+    private static final Logger logger = LoggerFactory.getLogger(PerformanceMonitorInterceptor.class);
 
     private int updateIntervalInSeconds = 5;
-    private Map<String, PerformanceMonitor> monitors = new HashMap<String, PerformanceMonitor>();
 
     public int getUpdateIntervalInSeconds() {
         return updateIntervalInSeconds;
@@ -49,14 +46,20 @@ public class PerformanceMonitorAspect {
         this.updateIntervalInSeconds = updateIntervalInSeconds;
     }
 
+    private Map<String, PerformanceMonitor> monitors = new HashMap<String, PerformanceMonitor>();
+
     public Map<String, PerformanceMonitor> getMonitors() {
         return monitors;
+    }
+
+    public void setMonitors(Map<String, PerformanceMonitor> monitors) {
+        this.monitors = monitors;
     }
 
     /**
      * Gets a performance monitor instance for the given monitor name (ie, key).
      *
-     * @param key The value of a {@link Monitorable} annotation that will be
+     * @param key The string name of a method that will be
      * used to lookup a corresponding {@link PerformanceMonitor} instance.
      * @return The PerformanceMonitor for the given key or null if there is
      * no monitor for the given key.
@@ -66,23 +69,21 @@ public class PerformanceMonitorAspect {
     }
 
     /**
-     * Wraps a method annotated with the {@link Monitorable} annotation
+     * Wraps a method indicated in spring config
      * with a {@link PerformanceMonitor}.
-     * 
-     * @param pjp Represents the method that is being executed.
-     * @param monitorable The Monitorable annotation associated with the method
-     * being execute.
+     *
+     * @param invocation Represents the method that is being executed.
      * @return Value returned by the method that is being wrapped.
      * @throws Throwable Whatever the wrapped method throws will be thrown
      * by this method.
      */
-    @Around("@annotation(monitorable)")
-    public Object monitor(final ProceedingJoinPoint pjp, Monitorable monitorable) throws Throwable {
-        String monitorName = monitorable.value();
-        logger.debug("Have monitorable method with monitor name {}, wrapping call on method {} of target object {}",
-                new Object[] { monitorName, pjp.getSignature().getName(), pjp.getTarget() });
-        PerformanceMonitor performanceMonitor = monitors.get(monitorName);
+    public Object invoke(final MethodInvocation invocation) throws Throwable {
+        String monitorName = (getInvocationTraceName(invocation).split("\\."))[1];
         
+        //logger.debug("Have monitorable method with monitor name {}, wrapping call on method {} of target object {}",
+        //        new Object[] { monitorName, invocation.getSignature().getName(), invocation.getTarget() });
+        PerformanceMonitor performanceMonitor = monitors.get(monitorName);
+
         if (performanceMonitor == null) {
             performanceMonitor = new PerformanceMonitor(updateIntervalInSeconds);
             monitors.put(monitorName, performanceMonitor);
@@ -94,7 +95,7 @@ public class PerformanceMonitorAspect {
                 public Object call() throws Exception {
                     Object retval;
                     try {
-                        retval = pjp.proceed();
+                        retval = invocation.proceed();
                     } catch (Throwable e) {
                         if (e instanceof Exception) {
                             throw (Exception) e;
@@ -106,5 +107,9 @@ public class PerformanceMonitorAspect {
                 }
             }
         );
+    }
+
+    public void afterPropertiesSet() throws Exception {
+        // No - Op.
     }
 }

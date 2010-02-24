@@ -12,13 +12,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package org.fishwife.jrugged.aspects;
+package org.fishwife.jrugged.circuit;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.fishwife.jrugged.circuit.CircuitBreakerException;
+/**
+ * Thrown to indicate that an exception occurred, but the circuit should stay
+ * open.
+ * 
+ * @see CircuitBreaker
+ */
+public class CircuitShouldStayOpenException extends RuntimeException {
 
-public interface CircuitBreakerExceptionMapper<T extends Exception> {
+    public CircuitShouldStayOpenException(Throwable cause) {
+        super(cause);
+    }
 
-    public T map(ProceedingJoinPoint pjp, ExceptionCircuit circuitConfig, CircuitBreakerException e);
-    
+    public CircuitShouldStayOpenException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

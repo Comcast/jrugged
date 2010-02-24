@@ -12,13 +12,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package org.fishwife.jrugged.aspects;
+package org.fishwife.jrugged.spring.circuit;
 
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.fishwife.jrugged.circuit.CircuitBreakerException;
+import org.aopalliance.intercept.MethodInvocation;
 
 public interface CircuitBreakerExceptionMapper<T extends Exception> {
 
-    public T map(ProceedingJoinPoint pjp, ExceptionCircuit circuitConfig, CircuitBreakerException e);
-    
+    public T map(MethodInvocation invocation, CircuitBreakerException e);
+
 }

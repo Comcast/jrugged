@@ -23,6 +23,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
+import org.fishwife.jrugged.circuit.CircuitBreaker;
+import org.fishwife.jrugged.circuit.CircuitBreakerException;
 
 public final class TestExceptionFailureInterpreter extends TestCase {
 
