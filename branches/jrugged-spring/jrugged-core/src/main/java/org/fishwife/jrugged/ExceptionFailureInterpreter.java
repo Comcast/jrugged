@@ -14,6 +14,8 @@
  */
 package org.fishwife.jrugged;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -29,32 +31,126 @@ import java.util.concurrent.TimeUnit;
  */
 public final class ExceptionFailureInterpreter implements FailureInterpreter {
 
-    private Set<Class<? extends Exception>> kind = new HashSet<Class<? extends Exception>>();
-    private Set<Class<? extends Exception>> ignore = new HashSet<Class<? extends Exception>>();
-    private int frequency;
-    private long time;
+    private Set<Class<? extends Throwable>> trip = new HashSet<Class<? extends Throwable>>();
+    private Set<Class<? extends Throwable>> ignore = new HashSet<Class<? extends Throwable>>();
+    private int frequency = 0;
+    private long time = 0;
     private TimeUnit unit;
     // tracks times when exceptions occurred
     private List<Long> errorTimes = Collections
             .synchronizedList(new LinkedList<Long>());
 
-    public ExceptionFailureInterpreter(Class<? extends Exception> kind) {
-        this.kind = new HashSet<Class<? extends Exception>>();
-        this.kind.add(kind);
-    }
-    
-    public ExceptionFailureInterpreter(Class<? extends Exception> kind, int frequency,
-            long time, TimeUnit unit) {
-        this.kind = new HashSet<Class<? extends Exception>>();
-        this.kind.add(kind);
-        this.frequency = frequency;
-        this.time = time;
-        this.unit = unit;
-    }
+	private static Class[] defaultIgnore = { };
+	private static Class[] defaultTrip = { Throwable.class };
+
+    public ExceptionFailureInterpreter() {
+		setIgnore(defaultIgnore);
+		setTrip(defaultTrip);
+	}
+
+	public ExceptionFailureInterpreter(int frequency, long time,
+									   TimeUnit unit) {
+		setIgnore(defaultIgnore);
+		setTrip(defaultTrip);
+		setFrequency(frequency);
+		setTime(time);
+		setUnit(unit);
+	}
+
+	public ExceptionFailureInterpreter(Class<? extends Throwable>[] ignore) {
+		setIgnore(ignore);
+		setTrip(defaultTrip);
+	}
+
+	public ExceptionFailureInterpreter(Class<? extends Throwable>[] ignore,
+									   int frequency, long time,
+									   TimeUnit unit) {
+		setIgnore(ignore);
+		setTrip(defaultTrip);
+		setFrequency(frequency);
+		setTime(time);
+		setUnit(unit);
+	}
+
+	public ExceptionFailureInterpreter(Class<? extends Throwable>[] ignore,
+									   Class<? extends Throwable>[] trip) {
+		setIgnore(ignore);
+		setTrip(trip);
+	}
+
+	public ExceptionFailureInterpreter(Class<? extends Throwable>[] ignore,
+									   Class<? extends Throwable>[] trip,
+									   int frequency, long time,
+									   TimeUnit unit) {
+		setIgnore(ignore);
+		setTrip(trip);
+		setFrequency(frequency);
+		setTime(time);
+		setUnit(unit);
+	}
+
+	private void checkForProblematicExceptionSets() {
+		for(Class cignore : ignore) {
+			for(Class ctrip : trip) {
+				if (cignore.isAssignableFrom(ctrip)) {
+					throw new IllegalArgumentException(String.format("Tripping exception: %s, is a subclass of an ignored exception: %s", ctrip.getName(), cignore.getName()));
+				}
+			}
+		}
+	}
 
     private boolean hasTimeConditions() {
         return this.frequency > 0 && this.time > 0;
     }
+	
+	public boolean shouldTrip(Throwable cause) {
+		for(Class clazz : ignore) {
+			if (clazz.isInstance(cause)) {
+				return false;
+			}
+		}
+
+		// if Exception is of specified type, and time conditions exist,
+		// keep circuit open unless exception threshold has passed
+        
+		// if Exception if of specified type, and no time conditions exist
+		// open circuit
+		boolean isInstance = false;
+		// if Exception is not of specified type(s), keep circuit open
+		for (Class clazz : trip) {
+			if (clazz.isInstance(cause)) {
+				isInstance = true;
+				break;
+			}
+		}
+		
+		if (isInstance && hasTimeConditions()) {
+			errorTimes.add(System.currentTimeMillis());
+
+			// calculates time for which we remove any errors before
+			final long removeTimesBeforeMillis = System.currentTimeMillis()
+				- this.unit.toMillis(this.time);
+			
+			// removes errors before cutoff 
+			// (could we speed this up by using binary search to find the entry point,
+			// then removing any items before that point?)
+			for (final Iterator<Long> i = this.errorTimes.iterator(); i.hasNext();) {
+				final Long time = i.next();
+				if (time < removeTimesBeforeMillis) {
+					i.remove();
+				} else {
+					// the list is sorted by time, if I didn't remove this item
+					// I won't be remove any after it either
+					break;
+				}
+			}
+			
+			// Trip if the exception count has passed the limit
+			return (errorTimes.size() > frequency);
+		} 
+		return isInstance;
+	}
+
     
     public <V> V invoke(Callable<V> c) throws Exception {
         try {
@@ -75,8 +171,8 @@ public final class ExceptionFailureInterpreter implements FailureInterpreter {
             // close circuit
             boolean isInstance = false;
             // if Exception is not of specified type(s), keep circuit open
-            for (Class kind : this.kind) {
-                if (kind.isInstance(e)) {
+            for (Class trip : this.trip) {
+                if (trip.isInstance(e)) {
                     isInstance = true;
                     break;
                 }
@@ -118,23 +214,23 @@ public final class ExceptionFailureInterpreter implements FailureInterpreter {
     }
     
     /**
-     * get the value of kind
-     * @return the value of kind
+     * get the value of trip
+     * @return the value of trip
      */
-    public Set<Class<? extends Exception>> getKind(){
-        return this.kind;
+    public Set<Class<? extends Throwable>> getTrip(){
+        return this.trip;
     }
 
     /**
-     * get the value of kind
+     * get the value of trip
      *
      * @param search the exception class I am looking for
-     * @return boolean the value of kind
+     * @return boolean the value of trip
      */
-    public boolean isKind(Class<? extends Exception> search){
-        if (this.kind.contains(search)) {
-            for (Class<? extends Exception> kind : this.kind) {
-                if (kind.equals(search)) {
+    public boolean isTrip(Class<? extends Throwable> search){
+        if (this.trip.contains(search)) {
+            for (Class<? extends Throwable> trip : this.trip) {
+                if (trip.equals(search)) {
                     return true;
                 }
             }
@@ -145,38 +241,31 @@ public final class ExceptionFailureInterpreter implements FailureInterpreter {
 
     /**
      * set a new value to errorCount
-     * @param kind the new value to be used
+     * @param trip the new value to be used
      */
-    public synchronized <K extends Exception> void setKind(Class<K> kind) {
-        this.kind.add(kind);
+    public synchronized void setTrip(Class<? extends Throwable>[] trip) {
+		this.trip = new HashSet<Class<? extends Throwable>>(Arrays.asList(trip));
+		checkForProblematicExceptionSets();
     }
 
     /**
-     * set a new value to errorCount
-     * @param kind the new value to be used
+     * get the value of trip
+     * @return the value of trip
      */
-    public synchronized void setKind(Set<Class<? extends Exception>> kind) {
-        this.kind = kind;
-    }
-
-    /**
-     * get the value of kind
-     * @return the value of kind
-     */
-    public Set<Class<? extends Exception>> getIgnore(){
+    public Set<Class<? extends Throwable>> getIgnore(){
         return this.ignore;
     }
 
     /**
-     * get the value of kind
+     * get the value of trip
      *
      * @param search the exception class I am looking for
-     * @return boolean the value of kind
+     * @return boolean the value of trip
      */
-    public boolean isIgnore(Class<? extends Exception> search){
-        if (this.kind.contains(search)) {
-            for (Class<? extends Exception> kind : this.kind) {
-                if (kind.equals(search)) {
+    public boolean isIgnore(Class<? extends Throwable> search){
+        if (this.trip.contains(search)) {
+            for (Class<? extends Throwable> trip : this.trip) {
+                if (trip.equals(search)) {
                     return true;
                 }
             }
@@ -189,16 +278,9 @@ public final class ExceptionFailureInterpreter implements FailureInterpreter {
      * set a new value to ignore
      * @param ignore the new value to be used
      */
-    public synchronized <K extends Exception> void setIgnore(Class<K> ignore) {
-        this.ignore.add(ignore);
-    }
-
-    /**
-     * set a new value to ignore
-     * @param ignore the new value to be used
-     */
-    public synchronized void setIgnore(Set<Class<? extends Exception>> ignore) {
-        this.ignore = ignore;
+    public synchronized void setIgnore(Class<? extends Throwable>[] ignore) {
+		this.ignore = new HashSet<Class<? extends Throwable>>(Arrays.asList(ignore));
+		checkForProblematicExceptionSets();
     }
 
     /**

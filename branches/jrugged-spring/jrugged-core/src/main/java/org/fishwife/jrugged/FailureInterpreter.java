@@ -21,18 +21,6 @@ import java.util.concurrent.Callable;
  */
 public interface FailureInterpreter {
 
-    /**
-     * Invokes provided <code>Callable</code>.
-     * 
-     * @param c the callable method
-     * @return value returned from c
-     *
-     * @throws CircuitShouldStayOpenException if an exception
-     * occurred, but calling circuit should stay open.
-     * @throws CircuitShouldBeClosedException if this circuit should be closed
-     * @throws Exception if an unacceptable exception occurred.
-     */
-    <V> V invoke(Callable<V> c) throws CircuitShouldStayOpenException,
-            CircuitShouldBeClosedException, Exception;
+	boolean shouldTrip(Throwable oops);
 
 }

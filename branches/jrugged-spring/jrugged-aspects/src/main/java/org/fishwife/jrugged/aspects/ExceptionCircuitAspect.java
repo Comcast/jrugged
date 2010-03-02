@@ -72,13 +72,13 @@ public class ExceptionCircuitAspect {
      * Allows user-provided class to map a {@link CircuitBreakerException} to
      * an application-specific exception class.
      */
-    private CircuitBreakerExceptionMapper<? extends Exception> circuitBreakerExceptionMapper;
+    private CircuitBreakerExceptionMapper<? extends Throwable> circuitBreakerExceptionMapper;
 
-    public CircuitBreakerExceptionMapper<? extends Exception> getCircuitBreakerExceptionMapper() {
+    public CircuitBreakerExceptionMapper<? extends Throwable> getCircuitBreakerExceptionMapper() {
         return circuitBreakerExceptionMapper;
     }
 
-    public void setCircuitBreakerExceptionMapper(CircuitBreakerExceptionMapper<? extends Exception> circuitBreakerExceptionMapper) {
+    public void setCircuitBreakerExceptionMapper(CircuitBreakerExceptionMapper<? extends Throwable> circuitBreakerExceptionMapper) {
         this.circuitBreakerExceptionMapper = circuitBreakerExceptionMapper;
     }
  
@@ -107,21 +107,19 @@ public class ExceptionCircuitAspect {
                 circuits.put(name, circuit);
             }
             
-            // sets kind for circuit if it hasn't been initialized
+            // sets trip for circuit if it hasn't been initialized
             if (!this.initializedCircuits.containsKey(name)) {
                 final FailureInterpreter interpreter = circuit.getFailureInterpreter();
 
                 if(interpreter instanceof ExceptionFailureInterpreter) {
-                    final Class<? extends Exception>[] kind = circuitTag.kind();
-                    final Class<? extends Exception>[] ignore = circuitTag.ignore();
+                    final Class<? extends Throwable>[] trip = circuitTag.trip();
+                    final Class<? extends Throwable>[] ignore = circuitTag.ignore();
 
-                    //logger.debug("setting kind for circuit '{}' to {}", name,
-                            //kind.getName());
-                    Set<Class<? extends Exception>> kindSet = new HashSet<Class<? extends Exception>>(Arrays.asList(kind));
-                    ((ExceptionFailureInterpreter) interpreter).setKind(kindSet);
+                    //logger.debug("setting trip for circuit '{}' to {}", name,
+                            //trip.getName());
+                    ((ExceptionFailureInterpreter) interpreter).setTrip(trip);
                     
-                    Set<Class<? extends Exception>> ignoreSet = new HashSet<Class<? extends Exception>>(Arrays.asList(ignore));
-                    ((ExceptionFailureInterpreter) interpreter).setIgnore(ignoreSet);
+                    ((ExceptionFailureInterpreter) interpreter).setIgnore(ignore);
                 }
                 this.initializedCircuits.put(name, Boolean.TRUE);
             }            
@@ -229,10 +227,10 @@ public class ExceptionCircuitAspect {
             if (config.frequency > 0 && config.period > 0 && config.reset > 0) {
                 final CircuitBreaker circuit = new CircuitBreaker();
                 
-                // defaults to Exception for kind;
+                // defaults to Exception for trip;
                 // I make it more specific when we process the annotation
                 circuit.setFailureInterpreter(new ExceptionFailureInterpreter(
-                        Exception.class, config.frequency, config.period,
+                        config.frequency, config.period,
                         TimeUnit.MILLISECONDS));
                 
                 // only sets values if > 0, 

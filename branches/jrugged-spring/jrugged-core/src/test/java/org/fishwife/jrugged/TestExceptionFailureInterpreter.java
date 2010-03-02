@@ -19,6 +19,8 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import java.io.IOException;
+import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
@@ -26,77 +28,176 @@ import junit.framework.TestCase;
 
 public final class TestExceptionFailureInterpreter extends TestCase {
 
-    public TestExceptionFailureInterpreter(String name) {
-        super(name);
-    }
+	private ExceptionFailureInterpreter impl;
 
-    public void testAcceptableException() throws Exception {
-        final Callable callable = createStrictMock(Callable.class);
-        final FailureInterpreter interpreter = new ExceptionFailureInterpreter(
-                UnsupportedOperationException.class, 2, 5L, TimeUnit.SECONDS);
-        final CircuitBreaker cb = new CircuitBreaker()
-                .setFailureInterpreter(interpreter);
+	public void setUp() {
+		impl = new ExceptionFailureInterpreter();
+	}
 
-        expect(callable.call()).andThrow(
-                new UnsupportedOperationException("hi"));
+	// constructor tests
+	public void testDefaultConstructor() {
+		
+		assertEquals(0, impl.getFrequency());
+		assertEquals(0, impl.getTime());
 
-        replay(callable);
+		assertEquals(1, impl.getTrip().size());
+		assertTrue(impl.getTrip().contains(Throwable.class));
 
-        try {
-            cb.invoke(callable);
-            fail("exception expected");
-        } catch (UnsupportedOperationException e) {}
+		assertEquals(0, impl.getIgnore().size());
+	}
 
-        verify(callable);
+	public void testConstructorWithIgnore() {
+		final Class exnClass = RuntimeException.class;
+		final Class[] myIgnore =  { exnClass };
 
-        this.assertStatus(cb, Status.UP);
-    }
+		impl = new ExceptionFailureInterpreter(myIgnore);
+		
+		assertEquals(0, impl.getFrequency());
+		assertEquals(0, impl.getTime());
 
-    public void testUnacceptableException() throws Exception {
-        final Callable successCall = createStrictMock(Callable.class);
-        final Callable failCall = createStrictMock(Callable.class);
+		assertEquals(1, impl.getIgnore().size());
+		for(Class clazz : impl.getIgnore()) {
+			assertSame(clazz, exnClass);
+		}
 
-        final long time = 250L;
+		assertEquals(1, impl.getTrip().size());
+		assertTrue(impl.getTrip().contains(Throwable.class));
 
-        final FailureInterpreter interpreter = new ExceptionFailureInterpreter(
-                UnsupportedOperationException.class, 1, time,
-                TimeUnit.MILLISECONDS);
-        final CircuitBreaker cb = new CircuitBreaker().setFailureInterpreter(
-                interpreter).setResetMillis(time);
+	}
 
-        expect(failCall.call()).andThrow(
-                    new UnsupportedOperationException("hi"));
+	public void testConstructorWithIgnoreAndWindow() {
+		final Class exnClass = RuntimeException.class;
+		final Class[] myIgnore =  { exnClass };
+		final int frequency = 7777;
+		final long time = 1234L;
+		final TimeUnit unit = TimeUnit.MILLISECONDS;
 
-        expect(successCall.call()).andReturn("hello");
+		impl = new ExceptionFailureInterpreter(myIgnore, frequency, time, unit);
+		
+		assertEquals(frequency, impl.getFrequency());
+		assertEquals(time, impl.getTime());
+		assertSame(unit, impl.getUnit());
 
-        replay(successCall);
-        replay(failCall);
+		assertEquals(1, impl.getIgnore().size());
+		for(Class clazz : impl.getIgnore()) {
+			assertSame(clazz, exnClass);
+		}
 
-        try {
-            cb.invoke(failCall);
-            fail("exception expected");
-        } catch (UnsupportedOperationException e) {}
+		assertEquals(1, impl.getTrip().size());
+		assertTrue(impl.getTrip().contains(Throwable.class));
+	}
 
-        this.assertStatus(cb, Status.DOWN);
-        
-        try {
-            cb.invoke(successCall);
-            fail("exception expected");
-        } catch (CircuitBreakerException e) {}
+	public void testConstructorWithIgnoreAndTrip() {
+		final Class ignoreClass = RuntimeException.class;
+		final Class[] myIgnore =  { ignoreClass };
+		final Class tripClass = IOException.class;
+		final Class[] myTrip = { tripClass };
 
-        // waits for circuit to re-open
-        Thread.sleep(time * 2);
+		impl = new ExceptionFailureInterpreter(myIgnore, myTrip);
+		
+		assertEquals(0, impl.getFrequency());
+		assertEquals(0, impl.getTime());
 
-        cb.invoke(successCall);
-            
-        this.assertStatus(cb, Status.UP);        
+		assertEquals(1, impl.getIgnore().size());
+		for(Class clazz : impl.getIgnore()) {
+			assertSame(clazz, ignoreClass);
+		}
+		assertEquals(1, impl.getTrip().size());
+		for(Class clazz : impl.getTrip()) {
+			assertSame(clazz, tripClass);
+		}
+	}
 
-        verify(successCall);
-        verify(failCall);
-    }
+	public void testConstructorWithIgnoreAndTripAndTolerance() {
+		final Class ignoreClass = RuntimeException.class;
+		final Class[] myIgnore =  { ignoreClass };
+		final Class tripClass = IOException.class;
+		final Class[] myTrip = { tripClass };
+		final int frequency = 7777;
+		final long time = 1234L;
+		final TimeUnit unit = TimeUnit.MILLISECONDS;
 
-    private void assertStatus(CircuitBreaker cb, Status status) {
-        assertEquals("Status should be " + status, status, cb.getStatus());
-    }
+		impl = new ExceptionFailureInterpreter(myIgnore, myTrip, frequency,
+											   time, unit);
+		
+		assertEquals(frequency, impl.getFrequency());
+		assertEquals(time, impl.getTime());
+		assertSame(unit, impl.getUnit());
+
+		assertEquals(1, impl.getIgnore().size());
+		for(Class clazz : impl.getIgnore()) {
+			assertSame(clazz, ignoreClass);
+		}
+		assertEquals(1, impl.getTrip().size());
+		for(Class clazz : impl.getTrip()) {
+			assertSame(clazz, tripClass);
+		}
+	}
+
+	public void testIgnoredExceptionDoesNotTrip() {
+		final Class ignoreClass = IOException.class;
+        final Class[] myIgnore = { ignoreClass };
+
+        impl.setIgnore(myIgnore);
+        assertFalse(impl.shouldTrip(new IOException()));
+	}
+
+	public void testAnyExceptionTripsByDefault() {
+        assertTrue(impl.shouldTrip(new IOException()));
+	}
+
+	public void testConfiguredTrippingExceptionsActuallyTrip() {
+		final Class ignoreClass = RuntimeException.class;
+        final Class[] myIgnore = { ignoreClass };
+		final Class tripClass = IOException.class;
+		final Class[] myTrip = { tripClass };
+
+        impl.setIgnore(myIgnore);
+		impl.setTrip(myTrip);
+        assertTrue(impl.shouldTrip(new IOException()));
+	}
+
+	public void testComplainsIfTrippingExceptionsAreSubtypesOfIgnoredExceptions() {
+		final Class[] myIgnore = { RuntimeException.class };
+		final Class[] myTrip = { IllegalArgumentException.class };
+
+		try { 
+			impl = new ExceptionFailureInterpreter(myIgnore, myTrip);
+			fail("should have complained");
+		} catch (Exception expected) {
+		}
+	}
+
+	public void testAllowsIgnoredExceptionsToBeSubtypesOfTrippingExceptions() {
+		final Class[] myIgnore = { IllegalArgumentException.class };
+		final Class[] myTrip = { RuntimeException.class };
+
+		try { 
+			impl = new ExceptionFailureInterpreter(myIgnore, myTrip);
+		} catch (Exception bogosity) {
+			fail("should have let me do this");
+		}
+	}
+
+	public void testDoesntTripIfFailuresAreWithinTolerance() {
+		impl.setFrequency(2);
+		impl.setTime(1);
+		impl.setUnit(TimeUnit.SECONDS);
+		Exception exn1 = new Exception();
+		Exception exn2 = new Exception();
+		boolean result = impl.shouldTrip(exn1);
+		assertFalse("this should be false 1",result);
+		result = impl.shouldTrip(exn2);
+		assertFalse("this should be false 2",result);
+	}
+
+	public void testTripsIfFailuresExceedTolerance() {
+		impl.setFrequency(2);
+		impl.setTime(1);
+		impl.setUnit(TimeUnit.SECONDS);
+		assertFalse("this should be false 1",impl.shouldTrip(new Exception()));
+		assertFalse("this should be false 2",impl.shouldTrip(new Exception()));
+		assertTrue("this should be true 3",impl.shouldTrip(new Exception()));
+	}
     
 }

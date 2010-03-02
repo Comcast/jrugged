@@ -85,28 +85,15 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      */
     public <V> V invoke(Callable<V> c) throws Exception {
         if (!allowRequest()) throw new CircuitBreakerException();
-        try {
-            V result;
-            if(this.failureInterpreter != null)
-                result = failureInterpreter.invoke(c);
-            else
-                result = c.call();
+
+		try {
+            V result = c.call();
             close();
-            return result;
-        } catch (CircuitShouldStayOpenException e) {
-            // I don't want to close the circuit, just pass on the exception
-            final Throwable cause = e.getCause();
-            
-            if (cause instanceof Exception)
-                throw (Exception) cause;
-            else if (cause instanceof Error)
-                throw (Error) cause;
-            else
-                throw new RuntimeException(cause);
-        } catch (Exception e) {
-            trip();
-            throw e;
-        }
+			return result;
+		} catch (Throwable cause) {
+			handleFailure(cause);
+		}
+		throw new IllegalStateException("not possible");
     }
 
     /** Wrap the given service call with the CircuitBreaker protection
@@ -117,14 +104,13 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      */
     public void invoke(Runnable r) throws Exception {
         if (!allowRequest()) throw new CircuitBreakerException();
-
         try {
     	    r.run();
 	        close();
-        } catch (Exception e) {
-            trip();
-            throw e;
+        } catch (Throwable cause) {
+			handleFailure(cause);
         }
+		throw new IllegalStateException("not possible");
     }
 
     /** Wrap the given service call with the CircuitBreaker protection
@@ -141,11 +127,25 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
             r.run();
             close();
             return result;
-        } catch (Exception e) {
-            trip();
-            throw e;
+        } catch (Throwable cause) {
+			handleFailure(cause);
         }
+		throw new IllegalStateException("not possible");
     }
+
+	private void handleFailure(Throwable cause) throws Exception {
+		if (failureInterpreter == null ||
+			failureInterpreter.shouldTrip(cause)) {
+			trip();
+		}
+		if (cause instanceof Exception) {
+			throw (Exception)cause;
+		} else if (cause instanceof Error) {
+			throw (Error)cause;
+		} else {
+			throw (RuntimeException)cause;
+		}
+	}
 
     /** Causes the {@link CircuitBreaker} to trip and OPEN; no new
      *  requests will be allowed until the <code>CircuitBreaker</code>

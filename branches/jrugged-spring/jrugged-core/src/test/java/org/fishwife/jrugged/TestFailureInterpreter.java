@@ -26,12 +26,13 @@ import junit.framework.TestCase;
 public final class TestFailureInterpreter extends TestCase {
 
     public void testAcceptableException() throws Exception {
+		final RuntimeException theExn = new RuntimeException();
         final Callable callable = createMock(Callable.class);
         final FailureInterpreter interpreter = createMock(FailureInterpreter.class);
         final CircuitBreaker cb = new CircuitBreaker().setFailureInterpreter(interpreter);
 
-        expect(interpreter.invoke(callable)).andThrow(
-                new CircuitShouldStayOpenException(new RuntimeException("hi")));
+		expect(callable.call()).andThrow(theExn);
+        expect(interpreter.shouldTrip(theExn)).andReturn(false);
 
         replay(callable);
         replay(interpreter);
@@ -47,11 +48,14 @@ public final class TestFailureInterpreter extends TestCase {
     }
 
     public void testUnacceptableException() throws Exception {
+		final RuntimeException theExn = new RuntimeException();
         final Callable callable = createMock(Callable.class);
         final FailureInterpreter interpreter = createMock(FailureInterpreter.class);
         final CircuitBreaker cb = new CircuitBreaker().setFailureInterpreter(interpreter);
 
-        expect(interpreter.invoke(callable)).andThrow(new RuntimeException("hi"));
+		expect(callable.call()).andThrow(theExn);
+		expect(interpreter.shouldTrip(theExn))
+			.andReturn(true);
 
         replay(callable);
         replay(interpreter);
