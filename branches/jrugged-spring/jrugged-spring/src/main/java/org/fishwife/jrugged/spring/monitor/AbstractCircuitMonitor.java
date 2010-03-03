@@ -1,7 +1,7 @@
 package org.fishwife.jrugged.spring.monitor;
 
 import org.fishwife.jrugged.CircuitBreaker;
-import org.fishwife.jrugged.ExceptionFailureInterpreter;
+import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.fishwife.jrugged.spring.circuit.ExceptionCircuitInterceptor;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
@@ -75,13 +75,13 @@ public abstract class AbstractCircuitMonitor {
         this.circuit().setResetMillis(reset);
     }
 
-    private ExceptionFailureInterpreter interpreter() {
+    private DefaultFailureInterpreter interpreter() {
         final FailureInterpreter interpreter = this.circuit()
                 .getFailureInterpreter();
-        if (!(interpreter instanceof ExceptionFailureInterpreter))
+        if (!(interpreter instanceof DefaultFailureInterpreter))
             throw new IllegalStateException(
-                    "misconfigured circuit; no ExceptionFailureInterpreter available.");
-        return (ExceptionFailureInterpreter) interpreter;
+                    "misconfigured circuit; no DefaultFailureInterpreter available.");
+        return (DefaultFailureInterpreter) interpreter;
     }
 
     private CircuitBreaker circuit() {

@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * Fails if exception frequencies surpasses a declared number per time
  * threshold.
  */
-public final class ExceptionFailureInterpreter implements FailureInterpreter {
+public final class DefaultFailureInterpreter implements FailureInterpreter {
 
     private Set<Class<? extends Throwable>> trip = new HashSet<Class<? extends Throwable>>();
     private Set<Class<? extends Throwable>> ignore = new HashSet<Class<? extends Throwable>>();
@@ -43,12 +43,12 @@ public final class ExceptionFailureInterpreter implements FailureInterpreter {
 	private static Class[] defaultIgnore = { };
 	private static Class[] defaultTrip = { Throwable.class };
 
-    public ExceptionFailureInterpreter() {
+    public DefaultFailureInterpreter() {
 		setIgnore(defaultIgnore);
 		setTrip(defaultTrip);
 	}
 
-	public ExceptionFailureInterpreter(int frequency, long time,
+	public DefaultFailureInterpreter(int frequency, long time,
 									   TimeUnit unit) {
 		setIgnore(defaultIgnore);
 		setTrip(defaultTrip);
@@ -57,12 +57,12 @@ public final class ExceptionFailureInterpreter implements FailureInterpreter {
 		setUnit(unit);
 	}
 
-	public ExceptionFailureInterpreter(Class<? extends Throwable>[] ignore) {
+	public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore) {
 		setIgnore(ignore);
 		setTrip(defaultTrip);
 	}
 
-	public ExceptionFailureInterpreter(Class<? extends Throwable>[] ignore,
+	public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore,
 									   int frequency, long time,
 									   TimeUnit unit) {
 		setIgnore(ignore);
@@ -72,13 +72,13 @@ public final class ExceptionFailureInterpreter implements FailureInterpreter {
 		setUnit(unit);
 	}
 
-	public ExceptionFailureInterpreter(Class<? extends Throwable>[] ignore,
+	public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore,
 									   Class<? extends Throwable>[] trip) {
 		setIgnore(ignore);
 		setTrip(trip);
 	}
 
-	public ExceptionFailureInterpreter(Class<? extends Throwable>[] ignore,
+	public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore,
 									   Class<? extends Throwable>[] trip,
 									   int frequency, long time,
 									   TimeUnit unit) {

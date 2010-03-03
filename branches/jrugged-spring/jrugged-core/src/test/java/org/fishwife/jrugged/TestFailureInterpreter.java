@@ -29,7 +29,7 @@ public final class TestFailureInterpreter extends TestCase {
 		final RuntimeException theExn = new RuntimeException();
         final Callable callable = createMock(Callable.class);
         final FailureInterpreter interpreter = createMock(FailureInterpreter.class);
-        final CircuitBreaker cb = new CircuitBreaker().setFailureInterpreter(interpreter);
+        final CircuitBreaker cb = new CircuitBreaker(interpreter);
 
 		expect(callable.call()).andThrow(theExn);
         expect(interpreter.shouldTrip(theExn)).andReturn(false);
@@ -51,7 +51,7 @@ public final class TestFailureInterpreter extends TestCase {
 		final RuntimeException theExn = new RuntimeException();
         final Callable callable = createMock(Callable.class);
         final FailureInterpreter interpreter = createMock(FailureInterpreter.class);
-        final CircuitBreaker cb = new CircuitBreaker().setFailureInterpreter(interpreter);
+        final CircuitBreaker cb = new CircuitBreaker(interpreter);
 
 		expect(callable.call()).andThrow(theExn);
 		expect(interpreter.shouldTrip(theExn))

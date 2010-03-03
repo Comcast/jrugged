@@ -26,12 +26,12 @@ import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
 
-public final class TestExceptionFailureInterpreter extends TestCase {
+public final class TestDefaultFailureInterpreter extends TestCase {
 
-	private ExceptionFailureInterpreter impl;
+	private DefaultFailureInterpreter impl;
 
 	public void setUp() {
-		impl = new ExceptionFailureInterpreter();
+		impl = new DefaultFailureInterpreter();
 	}
 
 	// constructor tests
@@ -50,7 +50,7 @@ public final class TestExceptionFailureInterpreter extends TestCase {
 		final Class exnClass = RuntimeException.class;
 		final Class[] myIgnore =  { exnClass };
 
-		impl = new ExceptionFailureInterpreter(myIgnore);
+		impl = new DefaultFailureInterpreter(myIgnore);
 		
 		assertEquals(0, impl.getFrequency());
 		assertEquals(0, impl.getTime());
@@ -72,7 +72,7 @@ public final class TestExceptionFailureInterpreter extends TestCase {
 		final long time = 1234L;
 		final TimeUnit unit = TimeUnit.MILLISECONDS;
 
-		impl = new ExceptionFailureInterpreter(myIgnore, frequency, time, unit);
+		impl = new DefaultFailureInterpreter(myIgnore, frequency, time, unit);
 		
 		assertEquals(frequency, impl.getFrequency());
 		assertEquals(time, impl.getTime());
@@ -93,7 +93,7 @@ public final class TestExceptionFailureInterpreter extends TestCase {
 		final Class tripClass = IOException.class;
 		final Class[] myTrip = { tripClass };
 
-		impl = new ExceptionFailureInterpreter(myIgnore, myTrip);
+		impl = new DefaultFailureInterpreter(myIgnore, myTrip);
 		
 		assertEquals(0, impl.getFrequency());
 		assertEquals(0, impl.getTime());
@@ -117,7 +117,7 @@ public final class TestExceptionFailureInterpreter extends TestCase {
 		final long time = 1234L;
 		final TimeUnit unit = TimeUnit.MILLISECONDS;
 
-		impl = new ExceptionFailureInterpreter(myIgnore, myTrip, frequency,
+		impl = new DefaultFailureInterpreter(myIgnore, myTrip, frequency,
 											   time, unit);
 		
 		assertEquals(frequency, impl.getFrequency());
@@ -162,7 +162,7 @@ public final class TestExceptionFailureInterpreter extends TestCase {
 		final Class[] myTrip = { IllegalArgumentException.class };
 
 		try { 
-			impl = new ExceptionFailureInterpreter(myIgnore, myTrip);
+			impl = new DefaultFailureInterpreter(myIgnore, myTrip);
 			fail("should have complained");
 		} catch (Exception expected) {
 		}
@@ -173,7 +173,7 @@ public final class TestExceptionFailureInterpreter extends TestCase {
 		final Class[] myTrip = { RuntimeException.class };
 
 		try { 
-			impl = new ExceptionFailureInterpreter(myIgnore, myTrip);
+			impl = new DefaultFailureInterpreter(myIgnore, myTrip);
 		} catch (Exception bogosity) {
 			fail("should have let me do this");
 		}

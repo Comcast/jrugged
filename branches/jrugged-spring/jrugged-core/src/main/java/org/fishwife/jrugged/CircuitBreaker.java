@@ -70,11 +70,16 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     protected long resetMillis = 15 * 1000L;
     protected boolean isAttemptLive = false;
 
-    protected FailureInterpreter failureInterpreter = null;
+    protected FailureInterpreter failureInterpreter = 
+		new DefaultFailureInterpreter();
 
     private boolean isHardTrip;
     
     public CircuitBreaker() {}
+
+	public CircuitBreaker(FailureInterpreter fi) {
+		failureInterpreter = fi;
+	}
     
     /** Wrap the given service call with the CircuitBreaker protection
      *  logic.
@@ -233,9 +238,8 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      */
     public CircuitBreaker setResetMillis(long l) { resetMillis = l; return this; }
 
-    public CircuitBreaker setFailureInterpreter(FailureInterpreter failureInterpreter) {
+    public void setFailureInterpreter(FailureInterpreter failureInterpreter) {
         this.failureInterpreter = failureInterpreter;
-        return this;
     }
 
     /**

@@ -27,7 +27,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import org.aopalliance.intercept.MethodInvocation;
-import org.fishwife.jrugged.ExceptionFailureInterpreter;
+import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerException;
 import org.fishwife.jrugged.FailureInterpreter;
@@ -106,14 +106,12 @@ public class ExceptionCircuitInterceptor extends BaseJruggedInterceptor {
             if (!this.initializedCircuits.containsKey(name)) {
                 final FailureInterpreter interpreter = circuit.getFailureInterpreter();
 
-                if(interpreter instanceof ExceptionFailureInterpreter) {
+                if(interpreter instanceof DefaultFailureInterpreter) {
                     //logger.debug("setting kind for circuit '{}' to {}", name,
                             //kind.getName());
-                    Set<Class<? extends Exception>> kindSet = new HashSet<Class<? extends Exception>>(this.triggers);
-                    ((ExceptionFailureInterpreter) interpreter).setKind(kindSet);
+                    ((DefaultFailureInterpreter) interpreter).setTrip(this.triggers.toArray(new Class[0]));
 
-                    Set<Class<? extends Exception>> ignoreSet = new HashSet<Class<? extends Exception>>(this.ignore);
-                    ((ExceptionFailureInterpreter) interpreter).setIgnore(ignoreSet);
+                    ((DefaultFailureInterpreter) interpreter).setIgnore(this.ignore.toArray(new Class[0]));
                 }
                 this.initializedCircuits.put(name, Boolean.TRUE);
             }
@@ -221,10 +219,8 @@ public class ExceptionCircuitInterceptor extends BaseJruggedInterceptor {
             if (config.frequency > 0 && config.period > 0 && config.reset > 0) {
                 final CircuitBreaker circuit = new CircuitBreaker();
 
-                // defaults to Exception for kind;
-                // I make it more specific when we process the annotation
-                circuit.setFailureInterpreter(new ExceptionFailureInterpreter(
-                        Exception.class, config.frequency, config.period,
+                circuit.setFailureInterpreter(new DefaultFailureInterpreter(
+                        config.frequency, config.period,
                         TimeUnit.MILLISECONDS));
 
                 // only sets values if > 0,

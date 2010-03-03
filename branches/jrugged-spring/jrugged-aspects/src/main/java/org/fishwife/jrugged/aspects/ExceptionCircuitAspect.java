@@ -28,7 +28,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerException;
-import org.fishwife.jrugged.ExceptionFailureInterpreter;
+import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,15 +111,15 @@ public class ExceptionCircuitAspect {
             if (!this.initializedCircuits.containsKey(name)) {
                 final FailureInterpreter interpreter = circuit.getFailureInterpreter();
 
-                if(interpreter instanceof ExceptionFailureInterpreter) {
+                if(interpreter instanceof DefaultFailureInterpreter) {
                     final Class<? extends Throwable>[] trip = circuitTag.trip();
                     final Class<? extends Throwable>[] ignore = circuitTag.ignore();
 
                     //logger.debug("setting trip for circuit '{}' to {}", name,
                             //trip.getName());
-                    ((ExceptionFailureInterpreter) interpreter).setTrip(trip);
+                    ((DefaultFailureInterpreter) interpreter).setTrip(trip);
                     
-                    ((ExceptionFailureInterpreter) interpreter).setIgnore(ignore);
+                    ((DefaultFailureInterpreter) interpreter).setIgnore(ignore);
                 }
                 this.initializedCircuits.put(name, Boolean.TRUE);
             }            
@@ -229,7 +229,7 @@ public class ExceptionCircuitAspect {
                 
                 // defaults to Exception for trip;
                 // I make it more specific when we process the annotation
-                circuit.setFailureInterpreter(new ExceptionFailureInterpreter(
+                circuit.setFailureInterpreter(new DefaultFailureInterpreter(
                         config.frequency, config.period,
                         TimeUnit.MILLISECONDS));
                 
