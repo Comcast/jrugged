@@ -17,126 +17,148 @@
 package org.fishwife.jrugged.examples.spring;
 
 import org.fishwife.jrugged.PerformanceMonitor;
-import org.fishwife.jrugged.spring.monitor.AbstractMonitor;
 import org.fishwife.jrugged.spring.monitor.RawStatisticsMonitor;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 @ManagedResource(objectName = "jrugged:name=exampleMethodCallOne")
-public class ExampleSpringPerformanceMonitor extends AbstractMonitor implements InitializingBean, RawStatisticsMonitor {
+public class ExampleSpringPerformanceMonitor implements RawStatisticsMonitor {
 
     protected PerformanceMonitor getMonitor() {
-        return monitorInterceptor.getMonitor("exampleMethodCallOne");
+		throw new IllegalStateException("I am broken");
+//         return monitorInterceptor.getMonitor("exampleMethodCallOne");
     }
 
     public String getName() {
-        return this.getClass().getSimpleName();
+		throw new IllegalStateException("I am broken");
+//         return this.getClass().getSimpleName();
     }
 
     @ManagedAttribute
     public long getFailureCount() {
-        return delegatingMonitor.getFailureCount(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getFailureCount(getMonitor());
     }
 
     @ManagedAttribute
     public long getRequestCount() {
-        return delegatingMonitor.getRequestCount(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getRequestCount(getMonitor());
     }
 
     @ManagedAttribute
     public long getSuccessCount() {
-        return delegatingMonitor.getSuccessCount(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getSuccessCount(getMonitor());
     }
 
     @ManagedAttribute
     public double getAverageFailureLatencyLastHour() {
-        return delegatingMonitor.getAverageFailureLatencyLastHour(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getAverageFailureLatencyLastHour(getMonitor());
     }
 
     @ManagedAttribute
     public double getAverageSuccessLatencyLastHour() {
-        return delegatingMonitor.getAverageSuccessLatencyLastHour(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getAverageSuccessLatencyLastHour(getMonitor());
     }
 
     @ManagedAttribute
     public double getRequestRateLastHour() {
-        return delegatingMonitor.getRequestRateLastHour(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getRequestRateLastHour(getMonitor());
     }
 
     @ManagedAttribute
     public double getAverageFailureLatencyLastDay() {
-        return delegatingMonitor.getAverageFailureLatencyLastDay(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getAverageFailureLatencyLastDay(getMonitor());
     }
 
     @ManagedAttribute
     public double getAverageFailureLatencyLastMinute() {
-        return delegatingMonitor.getAverageFailureLatencyLastMinute(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getAverageFailureLatencyLastMinute(getMonitor());
     }
 
     @ManagedAttribute
     public double getAverageSuccessLatencyLastDay() {
-        return delegatingMonitor.getAverageSuccessLatencyLastDay(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getAverageSuccessLatencyLastDay(getMonitor());
     }
 
     @ManagedAttribute
     public double getAverageSuccessLatencyLastMinute() {
-        return delegatingMonitor.getAverageSuccessLatencyLastMinute(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getAverageSuccessLatencyLastMinute(getMonitor());
     }
 
     @ManagedAttribute
     public double getFailureRateLastDay() {
-        return delegatingMonitor.getFailureRateLastDay(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getFailureRateLastDay(getMonitor());
     }
 
     @ManagedAttribute
     public double getFailureRateLastHour() {
-        return delegatingMonitor.getFailureRateLastHour(getMonitor());
+		throw new IllegalStateException("I am broken"); 
+//        return delegatingMonitor.getFailureRateLastHour(getMonitor());
     }
 
     @ManagedAttribute
     public double getFailureRateLastMinute() {
-        return delegatingMonitor.getFailureRateLastMinute(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getFailureRateLastMinute(getMonitor());
     }
 
     @ManagedAttribute
     public double getFailureRateLifetime() {
-        return delegatingMonitor.getFailureRateLifetime(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getFailureRateLifetime(getMonitor());
     }
 
     @ManagedAttribute
     public double getRequestRateLastDay() {
-        return delegatingMonitor.getRequestRateLastDay(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getRequestRateLastDay(getMonitor());
     }
 
     @ManagedAttribute
     public double getRequestRateLastMinute() {
-        return delegatingMonitor.getRequestRateLastMinute(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getRequestRateLastMinute(getMonitor());
     }
 
     @ManagedAttribute
     public double getRequestRateLifetime() {
-        return delegatingMonitor.getRequestRateLifetime(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getRequestRateLifetime(getMonitor());
     }
 
     @ManagedAttribute
     public double getSuccessRateLastDay() {
-        return delegatingMonitor.getSuccessRateLastDay(getMonitor());
+		throw new IllegalStateException("I am broken");
+
+//         return delegatingMonitor.getSuccessRateLastDay(getMonitor());
     }
 
     @ManagedAttribute
     public double getSuccessRateLastHour() {
-        return delegatingMonitor.getSuccessRateLastHour(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getSuccessRateLastHour(getMonitor());
     }
 
     @ManagedAttribute
     public double getSuccessRateLastMinute() {
-        return delegatingMonitor.getSuccessRateLastMinute(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getSuccessRateLastMinute(getMonitor());
     }
 
     @ManagedAttribute
     public double getSuccessRateLifetime() {
-        return delegatingMonitor.getSuccessRateLifetime(getMonitor());
+		throw new IllegalStateException("I am broken");
+//         return delegatingMonitor.getSuccessRateLifetime(getMonitor());
     }
 
 }

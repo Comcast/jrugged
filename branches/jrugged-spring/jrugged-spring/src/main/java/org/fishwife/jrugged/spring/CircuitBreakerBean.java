@@ -3,6 +3,9 @@ package org.fishwife.jrugged.spring;
 import java.util.Collection;
 import java.util.concurrent.Callable;
 
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedOperation;
+
 import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerExceptionMapper;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
@@ -10,7 +13,8 @@ import org.fishwife.jrugged.FailureInterpreter;
 import org.fishwife.jrugged.Status;
 
 /** Convenience class for configuring a {@link CircuitBreaker} with
- *  common customization properties.
+ *  common customization properties; in particular many of the options
+ *  available for configuring the {@link DefaultFailureInterpreter}.
  * <p>
  * For example:
  * <pre>
@@ -37,6 +41,7 @@ public class CircuitBreakerBean extends CircuitBreaker {
 	 *  @see {@link DefaultFailureInterpreter}
 	 *  @param limit the number of tolerated failures in a window
 	 */
+	@ManagedOperation
 	public void setLimit(int limit) {
 		((DefaultFailureInterpreter)breaker.getFailureInterpreter())
 			.setLimit(limit);
@@ -48,12 +53,14 @@ public class CircuitBreakerBean extends CircuitBreaker {
 	 *  @see {@link DefaultFailureInterpreter}
 	 *  @param windowMillis length of the window in milliseconds
 	 */
+	@ManagedOperation
 	public void setWindowMillis(long windowMillis) {
 		DefaultFailureInterpreter dfi = 
 			((DefaultFailureInterpreter)breaker.getFailureInterpreter());
 		dfi.setWindowMillis(windowMillis);
 	}
 
+	@ManagedOperation
 	public void setResetMillis(long resetMillis) {
 		breaker.setResetMillis(resetMillis);
 	}
@@ -94,21 +101,33 @@ public class CircuitBreakerBean extends CircuitBreaker {
 	@Override
     public void trip() { breaker.trip(); }
 
+	@ManagedOperation
 	@Override
 	public void tripHard() { breaker.tripHard(); }
 	
+	@ManagedAttribute
 	@Override
     public long getLastTripTime() { return breaker.getLastTripTime(); }
 	
+	@ManagedAttribute
 	@Override
     public long getTripCount() { return breaker.getTripCount(); }
 
+	@ManagedOperation
 	@Override
     public void reset() { breaker.reset(); }
 	
 	@Override
     public Status getStatus() { return breaker.getStatus(); }
 
+	/** @return a string RED/YELLOW/GREEN indicating status of the
+	 * circuit. A RED circuit has been tripped, a YELLOW circuit has
+	 * completed its cooldown period and is ready for a test request,
+	 * and a GREEN circuit is CLOSED and operational. */
+	@ManagedAttribute
+	public String getHealthCheck() { return breaker.getStatus().getSignal(); }
+
+	@ManagedAttribute
 	@Override
     public long getResetMillis() { return breaker.getResetMillis(); }
 

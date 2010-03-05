@@ -56,9 +56,10 @@ public enum Status {
 
     private final int value;
     private final String signal;
+
     Status(int value, String signal) {
-	this.value = value;
-	this.signal = signal;
+		this.value = value;
+		this.signal = signal;
     }
 
     /** Returns the current status as an integer. Higher values are for 

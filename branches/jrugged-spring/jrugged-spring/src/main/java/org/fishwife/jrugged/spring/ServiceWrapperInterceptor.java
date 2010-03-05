@@ -1,4 +1,4 @@
-/* ExceptionCircuitInterceptor.java
+/* ServiceWrapperInterceptor.java
  *
  * Copyright 2009 Comcast Interactive Media, LLC.
  *
@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged.spring.circuit;
+package org.fishwife.jrugged.spring;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,34 +25,36 @@ import java.util.concurrent.Callable;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
-import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.CircuitBreaker;
-import org.fishwife.jrugged.CircuitBreakerException;
+import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
+import org.fishwife.jrugged.PerformanceMonitor;
+import org.fishwife.jrugged.ServiceWrapper;
 
 /** A Spring interceptor that allows wrapping a method invocation with
- *  a {@link CircuitBreaker}.
+ *  a {@link ServiceWrapper} (for example, a {@link CircuitBreaker} or
+ *  {@link PerformanceMonitor}.
  */
-public class CircuitBreakerInterceptor implements MethodInterceptor {
+public class ServiceWrapperInterceptor implements MethodInterceptor {
 
-	private Map<String, CircuitBreaker> methodMap =
-		new HashMap<String, CircuitBreaker>();
+	private Map<String, ServiceWrapper> methodMap =
+		new HashMap<String, ServiceWrapper>();
 
 	/** See if the given method invocation is one that needs to be
-	 * called through a {@link CircuitBreaker}, and if so, do so.
+	 * called through a {@link ServiceWrapper}, and if so, do so.
 	 * @param invocation the {@link MethodInvocation} in question
 	 * @return whatever the underlying method call would normally
 	 * return
 	 * @throws any Throwables that the method call would generate, or
-	 *   that the {@link CircuitBreaker} would generate when tripped.
+	 *   that the {@link ServiceWrapper} would generate when tripped.
 	 */
     public Object invoke(final MethodInvocation invocation) throws Throwable {
-        CircuitBreaker circuit  = methodMap.get(invocation.getMethod().getName());
-		if (circuit == null) {
+		String methodName = invocation.getMethod().getName();
+        ServiceWrapper wrapper = methodMap.get(methodName);
+		if (wrapper == null) {
 			return invocation.proceed();
 		}
-
-		return circuit.invoke(new Callable<Object>() {
+		return wrapper.invoke(new Callable<Object>() {
                 public Object call() throws Exception {
                     try {
                         return invocation.proceed();
@@ -68,10 +70,10 @@ public class CircuitBreakerInterceptor implements MethodInterceptor {
             });
     }
 
-	/** Specifies which methods will be wrapped with which CircuitBreakers.
+	/** Specifies which methods will be wrapped with which ServiceWrappers.
 	 *  @param methodMap the mapping!
 	 */
-    public void setMethods(Map<String, CircuitBreaker> methodMap)  {
+    public void setMethods(Map<String, ServiceWrapper> methodMap)  {
         this.methodMap = methodMap;
     }
 }
