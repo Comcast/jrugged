@@ -17,22 +17,22 @@
 package org.fishwife.jrugged.examples.spring;
 
 import org.fishwife.jrugged.CircuitBreaker;
-import org.fishwife.jrugged.spring.circuit.ExceptionCircuitInterceptor;
+import org.fishwife.jrugged.spring.circuit.CircuitBreakerInterceptor;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public class ExampleCircuitBreaker implements Runnable {
 
-    ExceptionCircuitInterceptor circuitBreakerInterceptor;
+    CircuitBreakerInterceptor circuitBreakerInterceptor;
     CircuitBreaker exampleCircuitBreaker;
     ApplicationContext ctx;
 
     public void setup() throws Exception {
         ctx = new ClassPathXmlApplicationContext(new String[] {"springExampleContext.xml"});
 
-        circuitBreakerInterceptor = (ExceptionCircuitInterceptor) ctx.getBean("exampleCircuitBreakerInterceptor");
-        exampleCircuitBreaker = circuitBreakerInterceptor.getCircuitBreaker("exampleCircuitBreaker");
+        circuitBreakerInterceptor = (CircuitBreakerInterceptor) ctx.getBean("exampleCircuitBreakerInterceptor");
+//         exampleCircuitBreaker = circuitBreakerInterceptor.getCircuitBreaker("exampleCircuitBreaker");
 
     }
 

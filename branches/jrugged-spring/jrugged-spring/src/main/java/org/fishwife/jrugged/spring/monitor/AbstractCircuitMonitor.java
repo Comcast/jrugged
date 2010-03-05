@@ -17,7 +17,6 @@ package org.fishwife.jrugged.spring.monitor;
 import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
-import org.fishwife.jrugged.spring.circuit.ExceptionCircuitInterceptor;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 
@@ -30,84 +29,90 @@ import java.util.Date;
  */
 public abstract class AbstractCircuitMonitor {
 
-    private ExceptionCircuitInterceptor circuitInterceptor;
+    private CircuitBreaker circuit;
+
+	private static String UNSUPPORTED_SETTER_MSG =
+		"Setting this value is not supported because a custom FailureInterpreter has been configured for this circuit. (i.e. Current FailureInterpreter is not assignable from DefaultFailureInterpreter)";
 
     protected abstract String circuitName();
 
     @ManagedOperation
     public void open() {
-        this.circuit().reset();
+        this.circuit.reset();
     }
 
     @ManagedOperation
     public void close() {
-        this.circuit().tripHard();
+        this.circuit.tripHard();
     }
 
     @ManagedAttribute
     public String getStatus() {
-        return this.circuit().getStatus().toString();
+        return this.circuit.getStatus().toString();
     }
 
     @ManagedAttribute
     public String getLastFailureTime() {
-        return new Date(this.circuit().getLastTripTime()).toString();
+        return new Date(this.circuit.getLastTripTime()).toString();
     }
 
     @ManagedAttribute
     public String getOpenBreakerCount() {
-        return Long.toString(this.circuit().getTripCount());
+        return Long.toString(this.circuit.getTripCount());
     }
 
     @ManagedAttribute
     public int getLimit() {
-        return this.interpreter().getLimit();
+		FailureInterpreter fi = circuit.getFailureInterpreter();
+		if (fi == null || !(fi instanceof DefaultFailureInterpreter)) {
+			return -1;
+		}
+		return ((DefaultFailureInterpreter)fi).getLimit();
     }
 
     @ManagedAttribute
     public void setLimit(int limit) {
-        this.interpreter().setLimit(limit);
+		FailureInterpreter fi = circuit.getFailureInterpreter();
+		if (fi == null || !(fi instanceof DefaultFailureInterpreter)) {
+			throw new IllegalStateException(UNSUPPORTED_SETTER_MSG);
+		}
+		((DefaultFailureInterpreter)fi).setLimit(limit);
     }
 
     @ManagedAttribute
-    public long getWindow() {
-        return this.interpreter().getWindow();
+    public long getWindowMillis() {
+		FailureInterpreter fi = circuit.getFailureInterpreter();
+		if (fi == null || !(fi instanceof DefaultFailureInterpreter)) {
+			return -1;
+		}
+		return ((DefaultFailureInterpreter)fi).getWindowMillis();
     }
 
     @ManagedAttribute
-    public void setWindow(long window) {
-        this.interpreter().setWindow(window);
+    public void setWindowMillis(long windowMillis) {
+		FailureInterpreter fi = circuit.getFailureInterpreter();
+		if (fi == null || !(fi instanceof DefaultFailureInterpreter)) {
+			throw new IllegalStateException(UNSUPPORTED_SETTER_MSG);
+		}
+		((DefaultFailureInterpreter)fi).setWindowMillis(windowMillis);
     }
 
     @ManagedAttribute
-    public long getResetTimeout() {
-        return this.circuit().getResetMillis();
+    public long getResetMillis() {
+        return this.circuit.getResetMillis();
     }
 
     @ManagedAttribute
-    public void setResetTimeout(long reset) {
-        this.circuit().setResetMillis(reset);
+    public void setResetMillis(long reset) {
+        this.circuit.setResetMillis(reset);
     }
 
-    private DefaultFailureInterpreter interpreter() {
-        final FailureInterpreter interpreter = this.circuit()
-                .getFailureInterpreter();
-        if (!(interpreter instanceof DefaultFailureInterpreter))
-            throw new IllegalStateException(
-                    "misconfigured circuit; no DefaultFailureInterpreter available.");
-        return (DefaultFailureInterpreter) interpreter;
-    }
-
-    private CircuitBreaker circuit() {
-        final String name = this.circuitName();
-        if (!this.circuitInterceptor.hasCircuitBreaker(name))
-            throw new IllegalStateException(String.format(
-                    "circuit '%s' not found", name));
-        return this.circuitInterceptor.getCircuitBreaker(name);
-    }
-
-    public void setMonitorInterceptor(ExceptionCircuitInterceptor circuitInterceptor) {
-        this.circuitInterceptor = circuitInterceptor;
-    }
-
+	public void setCircuitBreaker(CircuitBreaker circuitBreaker) {
+		this.circuit = circuitBreaker;
+	}
+	
+	public CircuitBreaker getCircuitBreaker() {
+		return this.circuit;
+	}
+	
 }

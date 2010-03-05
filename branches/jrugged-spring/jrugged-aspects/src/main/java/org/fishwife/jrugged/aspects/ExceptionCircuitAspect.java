@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -126,9 +125,8 @@ public class ExceptionCircuitAspect {
     }
 
     /**
-     * @return <code>true</code> if named CircuitBreaker exists,
-     *  <code>false</code> otherwise.
-     *
+     * @return the named {@link CirctuitBreaker} if it exists, or
+	 *   <code>null</code> if it doesn't.
      * @param circuitName name of the desired CircuitBreaker
      */
     public CircuitBreaker getCircuitBreaker(String circuitName) {
@@ -194,10 +192,12 @@ public class ExceptionCircuitAspect {
                 final CircuitBreaker circuit = new CircuitBreaker();
                 
                 // defaults to Exception for trip;
-                // I make it more specific when we process the annotation
-                circuit.setFailureInterpreter(new DefaultFailureInterpreter(
-                        config.limit, config.windowMillis,
-                        TimeUnit.MILLISECONDS));
+                // I make it more specific when we process the
+                // annotation
+				FailureInterpreter fi = 
+					new DefaultFailureInterpreter(config.limit,
+												  config.windowMillis);
+                circuit.setFailureInterpreter(fi);
                 
                 // only sets values if > 0, 
                 // since default values in annotation are -1
@@ -207,7 +207,10 @@ public class ExceptionCircuitAspect {
                 this.circuits.put(circuitName, circuit);
                 this.logger.info(
                         "circuit '{}' -> frequency:{}, period:{}, reset:{}",
-                        new Object[] {circuitName, config.limit, config.windowMillis, config.resetMillis});
+                        new Object[] { circuitName, 
+									   config.limit, 
+									   config.windowMillis, 
+									   config.resetMillis });
             }
         }
     }

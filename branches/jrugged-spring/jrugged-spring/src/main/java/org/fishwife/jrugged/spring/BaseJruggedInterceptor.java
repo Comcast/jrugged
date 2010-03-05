@@ -29,14 +29,10 @@ import java.lang.reflect.Method;
  */
 public abstract class BaseJruggedInterceptor implements MethodInterceptor, InitializingBean {
 
-    public abstract Object invoke(MethodInvocation methodInvocation) throws Throwable;
+    public abstract Object invoke(MethodInvocation methodInvocation) 
+		throws Throwable;
 
     protected String getInvocationTraceName(MethodInvocation invocation) {
-        StringBuilder sb = new StringBuilder("");
-        Method method = invocation.getMethod();
-        sb.append(method.getDeclaringClass().getSimpleName());
-        sb.append('.').append(method.getName());
-        sb.append("");
-        return sb.toString();
+		return invocation.getMethod().getName();
     }
 }

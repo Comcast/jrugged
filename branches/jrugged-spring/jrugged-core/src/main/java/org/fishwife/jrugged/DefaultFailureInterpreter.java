@@ -21,18 +21,17 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Trips if the number of failures in a given time window exceed a specified tolerance.
- * By default, all {@link Throwable} occurrences will be considered failures.
+ * Trips if the number of failures in a given time window exceed a
+ * specified tolerance.  By default, all {@link Throwable} occurrences
+ * will be considered failures.
  */
 public final class DefaultFailureInterpreter implements FailureInterpreter {
 
     private Set<Class<? extends Throwable>> ignore = new HashSet<Class<? extends Throwable>>();
     private int limit = 0;
-    private long window = 0;
-    private TimeUnit unit;
+    private long windowMillis = 0;
 
     // tracks times when exceptions occurred
     private List<Long> errorTimes = Collections
@@ -48,30 +47,29 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
 	}
 
     /**
-     * Constructor that allows a tolerance for a certain number of failures within
-     * a given window of time without tripping.
-     *
-     * @param limit the number of failures that will be tolerated (i.e. the number of
-     *   failures has to be strictly <em>greater than</em> this number in order to
-     *   trip the breaker). For example, if the limit is 3, the fourth failure during
-     *   the <code>window</code> will cause the breaker to trip.
-     * @param window length of the window, specified in conjunction with <code>unit</code>
-     * @param unit units of time used to measure the window
+     * Constructor that allows a tolerance for a certain number of
+     * failures within a given window of time without tripping.
+     * @param limit the number of failures that will be tolerated
+     *   (i.e. the number of failures has to be strictly <em>greater
+     *   than</em> this number in order to trip the breaker). For
+     *   example, if the limit is 3, the fourth failure during
+     *   the window will cause the breaker to trip.
+     * @param windowMillis length of the window in milliseconds
      */
-	public DefaultFailureInterpreter(int limit, long window, TimeUnit unit) {
+	public DefaultFailureInterpreter(int limit, long windowMillis) {
 		setIgnore(defaultIgnore);
 		setLimit(limit);
-		setWindow(window);
-		setUnit(unit);
+		setWindowMillis(windowMillis);
 	}
 
     /**
-     * Constructor where we specify certain {@link Throwable} classes that will be ignored by the
-     * breaker and not be treated as failures (they will be passed through transparently without
+     * Constructor where we specify certain {@link Throwable} classes
+     * that will be ignored by the breaker and not be treated as
+     * failures (they will be passed through transparently without 
      * causing the breaker to trip).
-     *
-     * @param ignore an array of {@link Throwable} classes that will be ignored. Any given
-     *   <code>Throwable</code> that is a subclass of one of these classes will be ignored.
+     * @param ignore an array of {@link Throwable} classes that will
+     *   be ignored. Any given <code>Throwable</code> that is a
+     *   subclass of one of these classes will be ignored. 
      */
 	public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore) {
 		setIgnore(ignore);
@@ -80,26 +78,25 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     /**
      * Constructor where we specify tolerance and a set of ignored failures.
      *
-     * @param ignore an array of {@link Throwable} classes that will be ignored. Any given
-     *   <code>Throwable</code> that is a subclass of one of these classes will be ignored.
-     * @param limit the number of failures that will be tolerated (i.e. the number of
-     *   failures has to be strictly <em>greater than</em> this number in order to
-     *   trip the breaker). For example, if the limit is 3, the fourth failure during
-     *   the <code>window</code> will cause the breaker to trip.
-     * @param window length of the window, specified in conjunction with <code>unit</code>
-     * @param unit units of time used to measure the window
+     * @param ignore an array of {@link Throwable} classes that will
+     *   be ignored. Any given <code>Throwable</code> that is a
+     *   subclass of one of these classes will be ignored. 
+     * @param limit the number of failures that will be tolerated
+     *   (i.e. the number of failures has to be strictly <em>greater
+     *   than</em> this number in order to trip the breaker). For
+     *   example, if the limit is 3, the fourth failure during 
+     *   the window will cause the breaker to trip.
+     * @param windowMillis length of the window in milliseconds
      */
 	public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore,
-									   int limit, long window,
-									   TimeUnit unit) {
+									 int limit, long windowMillis) {
 		setIgnore(ignore);
 		setLimit(limit);
-		setWindow(window);
-		setUnit(unit);
+		setWindowMillis(windowMillis);
 	}
 
     private boolean hasWindowConditions() {
-        return this.limit > 0 && this.window > 0;
+        return this.limit > 0 && this.windowMillis > 0;
     }
 	
 	public boolean shouldTrip(Throwable cause) {
@@ -116,7 +113,7 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
 
 			// calculates time for which we remove any errors before
 			final long removeTimesBeforeMillis = System.currentTimeMillis()
-				- this.unit.toMillis(this.window);
+				- windowMillis;
 			
 			// removes errors before cutoff 
 			// (could we speed this up by using binary search to find the entry point,
@@ -175,31 +172,15 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
      * Returns the length of the currently configured tolerance window.
      * @return <code>long</code>
      */
-    public long getWindow(){
-        return this.window;
+    public long getWindowMillis(){
+        return this.windowMillis;
     }
 
     /**
      * Specifies the length of the tolerance window.
-     * @param window <code>long</code>
+     * @param windowMillis <code>long</code>
      */
-    public void setWindow(long window) {
-        this.window=window;
-    }
-
-    /**
-     * Returns the units of time in which the tolerance window length is expressed.
-     * @return {@link TimeUnit}
-     */
-    public TimeUnit getUnit(){
-        return this.unit;
-    }
-
-    /**
-     * Changes the unit of time in which the tolerance window length is experessed.
-     * @param unit {@link TimeUnit}
-     */
-    public void setUnit(TimeUnit unit) {
-        this.unit=unit;
+    public void setWindowMillis(long windowMillis) {
+        this.windowMillis=windowMillis;
     }
 }
