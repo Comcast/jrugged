@@ -18,9 +18,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
+import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.beans.factory.InitializingBean;
 import org.fishwife.jrugged.PerformanceMonitor;
-import org.fishwife.jrugged.spring.BaseJruggedInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +33,8 @@ import org.slf4j.LoggerFactory;
  * can be shared across methods and classes by using the same value for the
  * monitor key.
  */
-public class PerformanceMonitorInterceptor extends BaseJruggedInterceptor {
+public class PerformanceMonitorInterceptor 
+	implements MethodInterceptor, InitializingBean {
 
     private static final Logger logger = LoggerFactory.getLogger(PerformanceMonitorInterceptor.class);
 
@@ -78,10 +80,7 @@ public class PerformanceMonitorInterceptor extends BaseJruggedInterceptor {
      * by this method.
      */
     public Object invoke(final MethodInvocation invocation) throws Throwable {
-        String monitorName = (getInvocationTraceName(invocation).split("\\."))[1];
-        
-        //logger.debug("Have monitorable method with monitor name {}, wrapping call on method {} of target object {}",
-        //        new Object[] { monitorName, invocation.getSignature().getName(), invocation.getTarget() });
+		String monitorName = invocation.getMethod().getName();
         PerformanceMonitor performanceMonitor = monitors.get(monitorName);
 
         if (performanceMonitor == null) {
