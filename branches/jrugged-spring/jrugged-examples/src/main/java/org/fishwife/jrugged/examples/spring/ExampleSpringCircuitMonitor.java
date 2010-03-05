@@ -1,7 +1,7 @@
-/* CircuitBreakerException.java
- * 
+/* ExampleSpringCircuitMonitor.java
+ *
  * Copyright 2009 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,11 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged;
+package org.fishwife.jrugged.examples.spring;
+
+import org.fishwife.jrugged.spring.monitor.AbstractCircuitMonitor;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
- * This exception gets thrown by a {@link CircuitBreaker} if a wrapped
- * call is disallowed by the breaker (e.g. because it is OPEN). 
+ * JMX attributes for test operations.
  */
-public class CircuitBreakerException extends RuntimeException {
+@ManagedResource(objectName = "jrugged:name=exampleCircuitBreaker")
+public class ExampleSpringCircuitMonitor extends AbstractCircuitMonitor {
+
+    @Override
+    protected String circuitName() {
+        return "exampleCircuitBreaker";
+    }
+
 }

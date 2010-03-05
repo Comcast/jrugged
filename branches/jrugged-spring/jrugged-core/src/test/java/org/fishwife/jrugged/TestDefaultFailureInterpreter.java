@@ -15,13 +15,8 @@
 package org.fishwife.jrugged;
 
 import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
 import junit.framework.TestCase;
@@ -37,11 +32,8 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 	// constructor tests
 	public void testDefaultConstructor() {
 		
-		assertEquals(0, impl.getFrequency());
-		assertEquals(0, impl.getTime());
-
-		assertEquals(1, impl.getTrip().size());
-		assertTrue(impl.getTrip().contains(Throwable.class));
+		assertEquals(0, impl.getLimit());
+		assertEquals(0, impl.getWindow());
 
 		assertEquals(0, impl.getIgnore().size());
 	}
@@ -52,20 +44,16 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 
 		impl = new DefaultFailureInterpreter(myIgnore);
 		
-		assertEquals(0, impl.getFrequency());
-		assertEquals(0, impl.getTime());
+		assertEquals(0, impl.getLimit());
+		assertEquals(0, impl.getWindow());
 
 		assertEquals(1, impl.getIgnore().size());
 		for(Class clazz : impl.getIgnore()) {
 			assertSame(clazz, exnClass);
 		}
-
-		assertEquals(1, impl.getTrip().size());
-		assertTrue(impl.getTrip().contains(Throwable.class));
-
 	}
 
-	public void testConstructorWithIgnoreAndWindow() {
+	public void testConstructorWithIgnoreAndTolerance() {
 		final Class exnClass = RuntimeException.class;
 		final Class[] myIgnore =  { exnClass };
 		final int frequency = 7777;
@@ -74,63 +62,13 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 
 		impl = new DefaultFailureInterpreter(myIgnore, frequency, time, unit);
 		
-		assertEquals(frequency, impl.getFrequency());
-		assertEquals(time, impl.getTime());
+		assertEquals(frequency, impl.getLimit());
+		assertEquals(time, impl.getWindow());
 		assertSame(unit, impl.getUnit());
 
 		assertEquals(1, impl.getIgnore().size());
 		for(Class clazz : impl.getIgnore()) {
 			assertSame(clazz, exnClass);
-		}
-
-		assertEquals(1, impl.getTrip().size());
-		assertTrue(impl.getTrip().contains(Throwable.class));
-	}
-
-	public void testConstructorWithIgnoreAndTrip() {
-		final Class ignoreClass = RuntimeException.class;
-		final Class[] myIgnore =  { ignoreClass };
-		final Class tripClass = IOException.class;
-		final Class[] myTrip = { tripClass };
-
-		impl = new DefaultFailureInterpreter(myIgnore, myTrip);
-		
-		assertEquals(0, impl.getFrequency());
-		assertEquals(0, impl.getTime());
-
-		assertEquals(1, impl.getIgnore().size());
-		for(Class clazz : impl.getIgnore()) {
-			assertSame(clazz, ignoreClass);
-		}
-		assertEquals(1, impl.getTrip().size());
-		for(Class clazz : impl.getTrip()) {
-			assertSame(clazz, tripClass);
-		}
-	}
-
-	public void testConstructorWithIgnoreAndTripAndTolerance() {
-		final Class ignoreClass = RuntimeException.class;
-		final Class[] myIgnore =  { ignoreClass };
-		final Class tripClass = IOException.class;
-		final Class[] myTrip = { tripClass };
-		final int frequency = 7777;
-		final long time = 1234L;
-		final TimeUnit unit = TimeUnit.MILLISECONDS;
-
-		impl = new DefaultFailureInterpreter(myIgnore, myTrip, frequency,
-											   time, unit);
-		
-		assertEquals(frequency, impl.getFrequency());
-		assertEquals(time, impl.getTime());
-		assertSame(unit, impl.getUnit());
-
-		assertEquals(1, impl.getIgnore().size());
-		for(Class clazz : impl.getIgnore()) {
-			assertSame(clazz, ignoreClass);
-		}
-		assertEquals(1, impl.getTrip().size());
-		for(Class clazz : impl.getTrip()) {
-			assertSame(clazz, tripClass);
 		}
 	}
 
@@ -146,42 +84,9 @@ public final class TestDefaultFailureInterpreter extends TestCase {
         assertTrue(impl.shouldTrip(new IOException()));
 	}
 
-	public void testConfiguredTrippingExceptionsActuallyTrip() {
-		final Class ignoreClass = RuntimeException.class;
-        final Class[] myIgnore = { ignoreClass };
-		final Class tripClass = IOException.class;
-		final Class[] myTrip = { tripClass };
-
-        impl.setIgnore(myIgnore);
-		impl.setTrip(myTrip);
-        assertTrue(impl.shouldTrip(new IOException()));
-	}
-
-	public void testComplainsIfTrippingExceptionsAreSubtypesOfIgnoredExceptions() {
-		final Class[] myIgnore = { RuntimeException.class };
-		final Class[] myTrip = { IllegalArgumentException.class };
-
-		try { 
-			impl = new DefaultFailureInterpreter(myIgnore, myTrip);
-			fail("should have complained");
-		} catch (Exception expected) {
-		}
-	}
-
-	public void testAllowsIgnoredExceptionsToBeSubtypesOfTrippingExceptions() {
-		final Class[] myIgnore = { IllegalArgumentException.class };
-		final Class[] myTrip = { RuntimeException.class };
-
-		try { 
-			impl = new DefaultFailureInterpreter(myIgnore, myTrip);
-		} catch (Exception bogosity) {
-			fail("should have let me do this");
-		}
-	}
-
 	public void testDoesntTripIfFailuresAreWithinTolerance() {
-		impl.setFrequency(2);
-		impl.setTime(1);
+		impl.setLimit(2);
+		impl.setWindow(1);
 		impl.setUnit(TimeUnit.SECONDS);
 		Exception exn1 = new Exception();
 		Exception exn2 = new Exception();
@@ -192,8 +97,8 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 	}
 
 	public void testTripsIfFailuresExceedTolerance() {
-		impl.setFrequency(2);
-		impl.setTime(1);
+		impl.setLimit(2);
+		impl.setWindow(1);
 		impl.setUnit(TimeUnit.SECONDS);
 		assertFalse("this should be false 1",impl.shouldTrip(new Exception()));
 		assertFalse("this should be false 2",impl.shouldTrip(new Exception()));

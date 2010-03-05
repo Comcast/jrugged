@@ -1,7 +1,7 @@
-/* CircuitBreakerException.java
- * 
+/* ExampleService.java
+ *
  * Copyright 2009 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,11 +14,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged;
+package org.fishwife.jrugged.examples.spring;
 
-/**
- * This exception gets thrown by a {@link CircuitBreaker} if a wrapped
- * call is disallowed by the breaker (e.g. because it is OPEN). 
- */
-public class CircuitBreakerException extends RuntimeException {
+public class ExampleService {
+
+    long loopCounter = 0;
+
+    public void exampleMethodCallOne() throws Exception {
+        loopCounter++;
+        if (loopCounter % 25 == 0) {
+            throw new Exception("Duh");
+        }
+    }
+
+    public void exampleMethodCallTwo() {
+        System.out.println("Test Circuit One");
+    }
 }

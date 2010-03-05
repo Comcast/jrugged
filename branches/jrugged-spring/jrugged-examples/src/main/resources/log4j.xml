@@ -68,7 +68,7 @@
     </logger>
     
     <logger name="org.fishwife">
-        <level value="DEBUG"/>
+        <level value="ERROR"/>
     </logger>
 
     <root>

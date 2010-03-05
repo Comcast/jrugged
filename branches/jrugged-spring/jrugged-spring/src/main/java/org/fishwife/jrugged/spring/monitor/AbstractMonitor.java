@@ -1,4 +1,4 @@
-/* CircuitBreaker.java
+/* AbstractMonitor.java
  *
  * Copyright 2009 Comcast Interactive Media, LLC.
  *
@@ -17,7 +17,6 @@
 package org.fishwife.jrugged.spring.monitor;
 
 import org.fishwife.jrugged.PerformanceMonitor;
-import org.fishwife.jrugged.spring.monitor.PerformanceMonitorInterceptor;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.util.Assert;
 

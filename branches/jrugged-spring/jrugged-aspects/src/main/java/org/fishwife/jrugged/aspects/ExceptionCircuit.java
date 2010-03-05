@@ -27,36 +27,32 @@ import java.lang.annotation.Target;
 public @interface ExceptionCircuit {
 
     /**
-     * Name of the circuit.  Each annotation with a shared name shares the same
-     * CircuitBreaker.
+     * Name of the circuit.  Each annotation with a shared name shares the same CircuitBreaker.
      */
     String name();
 
     /**
-     * Exception type which trips the CircuitBreaker.
-     */
-    Class<? extends Throwable>[] trip() default {Exception.class};
-
-    /**
-     * Exception type which trips the CircuitBreaker.
+     * Exception types that the CircuitBreaker will ignore (pass through transparently without tripping).
      */
     Class<? extends Throwable>[] ignore() default {};
 
     /**
-     * Number of exceptions which must occur in <code>period</code> to trip
-     * the circuit
+     * Specifies the length of the measurement window for failure tolerances in milliseconds.
+     * i.e. if <code>limit</code> failures occur within <code>windowMillis</code> milliseconds,
+     * the circuit will trip.
      */
-    int frequency() default -1;
+     long windowMillis() default -1;
 
     /**
-     * Period of time in which <code>frequency</code> errors must occur to
-     * trip the circuit.
+     * Specifies the number of failures that must occur within a configured time window in order
+     * to trip the circuit breaker.
      */
-    long period() default -1;
+    int limit() default -1;
+
 
     /**
-     * Amount of time after which the circuit is reset into an open state.
+     * Amount of time in milliseconds after tripping at which the CircuitBreaker is reset.
      */
-    long reset() default -1;
+    long resetMillis() default -1;
 
 }

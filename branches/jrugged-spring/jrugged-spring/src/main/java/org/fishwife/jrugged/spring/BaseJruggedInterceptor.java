@@ -1,4 +1,4 @@
-/* CircuitBreaker.java
+/* BaseJruggedInterceptor.java
  *
  * Copyright 2009 Comcast Interactive Media, LLC.
  *

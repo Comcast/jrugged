@@ -17,6 +17,7 @@
 package org.fishwife.jrugged;
 
 import junit.framework.TestCase;
+
 import static org.easymock.EasyMock.*;
 
 public class TestInitializer extends TestCase {
@@ -24,70 +25,70 @@ public class TestInitializer extends TestCase {
     private Initializer impl;
 
     public void setUp() {
-	mockClient = createMock(Initializable.class);
-	impl = new Initializer(mockClient);
+        mockClient = createMock(Initializable.class);
+        impl = new Initializer(mockClient);
     }
 
     public void testFirstTimeTrial() throws Exception {
-	mockClient.tryInit();
-	mockClient.afterInit();
-	replay(mockClient);
+        mockClient.tryInit();
+        mockClient.afterInit();
+        replay(mockClient);
 
-	impl.initialize();
-	Thread.sleep(5);
+        impl.initialize();
+        Thread.sleep(5);
 
-	verify(mockClient);
-	assertTrue(impl.isInitialized());
-	assertFalse(impl.isCancelled());
-	assertEquals(1, impl.getNumAttempts());
+        verify(mockClient);
+        assertTrue(impl.isInitialized());
+        assertFalse(impl.isCancelled());
+        assertEquals(1, impl.getNumAttempts());
     }
 
     public void testThirdTimesACharm() throws Exception {
-	mockClient.tryInit();
-	expectLastCall().andThrow(new RuntimeException()).times(2);
-	mockClient.tryInit();
-	mockClient.afterInit();
-	replay(mockClient);
+        mockClient.tryInit();
+        expectLastCall().andThrow(new RuntimeException()).times(2);
+        mockClient.tryInit();
+        mockClient.afterInit();
+        replay(mockClient);
 
-	impl.setRetryMillis(1);
-	impl.initialize();
-	Thread.sleep(5);
+        impl.setRetryMillis(1);
+        impl.initialize();
+        Thread.sleep(5);
 
-	assertTrue(impl.isInitialized());
-	assertFalse(impl.isCancelled());
-	assertEquals(3, impl.getNumAttempts());
-	verify(mockClient);
+        assertTrue(impl.isInitialized());
+        assertFalse(impl.isCancelled());
+        assertEquals(3, impl.getNumAttempts());
+        verify(mockClient);
     }
 
     public void testExceededRetries() throws Exception {
-	mockClient.tryInit();
-	expectLastCall().andThrow(new RuntimeException()).times(2);
-	replay(mockClient);
+        mockClient.tryInit();
+        expectLastCall().andThrow(new RuntimeException()).times(2);
+        replay(mockClient);
 
-	impl.setMaxRetries(2);
-	impl.setRetryMillis(1);
-	impl.initialize();
-	Thread.sleep(5);
-	
-	assertFalse(impl.isInitialized());
-	assertFalse(impl.isCancelled());
-	assertEquals(2, impl.getNumAttempts());
-	verify(mockClient);
+        impl.setMaxRetries(2);
+        impl.setRetryMillis(1);
+        impl.initialize();
+        Thread.sleep(5);
+
+        assertFalse(impl.isInitialized());
+        assertFalse(impl.isCancelled());
+        assertEquals(2, impl.getNumAttempts());
+        verify(mockClient);
     }
 
     public void testCancellation() throws Exception {
-	mockClient.tryInit();
-	expectLastCall().andThrow(new RuntimeException());
-	replay(mockClient);
+        mockClient.tryInit();
+        expectLastCall().andThrow(new RuntimeException());
+        replay(mockClient);
 
-	impl.initialize();
-	Thread.sleep(1);
-	impl.destroy();
-	
-	assertFalse(impl.isInitialized());
-	assertTrue(impl.isCancelled());
-	assertEquals(1, impl.getNumAttempts());
-	verify(mockClient);
+        impl.initialize();
+        Thread.sleep(1);
+        impl.destroy();
+
+        assertFalse(impl.isInitialized());
+        assertTrue(impl.isCancelled());
+        assertEquals(1, impl.getNumAttempts());
+        verify(mockClient);
     }
 
 }

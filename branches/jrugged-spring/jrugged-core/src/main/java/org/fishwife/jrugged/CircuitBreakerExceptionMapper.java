@@ -12,13 +12,23 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package org.fishwife.jrugged.aspects;
+package org.fishwife.jrugged;
 
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.fishwife.jrugged.CircuitBreakerException;
-
+/**
+ * Allows the user to map the standard exception from Circuitbreakers into an application
+ * specific exception.
+ *
+ * @param <T> is the application specific exception type.
+ */
 public interface CircuitBreakerExceptionMapper<T extends Exception> {
 
-    public T map(ProceedingJoinPoint pjp, ExceptionCircuit circuitConfig, CircuitBreakerException e);
+    /**
+     * Turn CircuitBreakerException into the desired exception (T)
+     *
+     * @param breaker the circuitbreaker
+     * @param e the exception I get
+     * @return the Exception I want to map to
+     */
+    public T map(CircuitBreaker breaker, CircuitBreakerException e);
     
 }

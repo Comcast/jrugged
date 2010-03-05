@@ -1,4 +1,4 @@
-/* CircuitBreaker.java
+/* DelegatingPerformanceMonitor.java
  *
  * Copyright 2009 Comcast Interactive Media, LLC.
  *

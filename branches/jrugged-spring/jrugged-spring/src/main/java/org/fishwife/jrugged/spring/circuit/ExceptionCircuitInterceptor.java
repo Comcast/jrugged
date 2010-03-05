@@ -1,4 +1,4 @@
-/* CircuitBreaker.java
+/* ExceptionCircuitInterceptor.java
  *
  * Copyright 2009 Comcast Interactive Media, LLC.
  *
@@ -16,10 +16,7 @@
  */
 package org.fishwife.jrugged.spring.circuit;
 
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -32,7 +29,6 @@ import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerException;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.fishwife.jrugged.spring.BaseJruggedInterceptor;
-import org.fishwife.jrugged.spring.circuit.CircuitBreakerExceptionMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,11 +56,7 @@ public class ExceptionCircuitInterceptor extends BaseJruggedInterceptor {
     private final Map<String, CircuitConfig> circuitConfigs = new HashMap<String, CircuitConfig>();
     private final Map<String, Boolean> initializedCircuits = new HashMap<String, Boolean>();
 
-    @SuppressWarnings("unchecked")
-    private final Class<? extends Exception>[] defaultTrigger = new Class[]{Exception.class};
-
-    private List<Class<? extends Exception>> ignore = null;
-    private List<Class<? extends Exception>> triggers = Arrays.asList(defaultTrigger);
+    private Class<? extends Throwable>[] ignore = null;
 
     private Map<String, String> methodMap = new HashMap<String, String>();
 
@@ -107,18 +99,14 @@ public class ExceptionCircuitInterceptor extends BaseJruggedInterceptor {
                 final FailureInterpreter interpreter = circuit.getFailureInterpreter();
 
                 if(interpreter instanceof DefaultFailureInterpreter) {
-                    //logger.debug("setting kind for circuit '{}' to {}", name,
-                            //kind.getName());
-                    ((DefaultFailureInterpreter) interpreter).setTrip(this.triggers.toArray(new Class[0]));
-
-                    ((DefaultFailureInterpreter) interpreter).setIgnore(this.ignore.toArray(new Class[0]));
+                    ((DefaultFailureInterpreter) interpreter).setIgnore(ignore);
                 }
                 this.initializedCircuits.put(name, Boolean.TRUE);
             }
         }
 
 
-        //this.logger.debug("circuit:{}, status:{}", name, circuit.getStatus());
+        this.logger.debug("circuit:{}, status:{}", name, circuit.getStatus());
 
         try {
             return circuit.invoke(new Callable<Object>() {
@@ -203,8 +191,7 @@ public class ExceptionCircuitInterceptor extends BaseJruggedInterceptor {
                 else if (propName.equals(RESET_KEY))
                     config.reset = Integer.parseInt(value);
                 else
-                    this.logger.warn("unrecognized property: "
-                            + key);
+                    this.logger.warn("unrecognized property: " + key);
             } catch (Exception e) {
                 this.logger.warn("error parsing config", e);
             }
@@ -219,6 +206,8 @@ public class ExceptionCircuitInterceptor extends BaseJruggedInterceptor {
             if (config.frequency > 0 && config.period > 0 && config.reset > 0) {
                 final CircuitBreaker circuit = new CircuitBreaker();
 
+                // defaults to Exception for kind;
+                // I make it more specific when we process the annotation
                 circuit.setFailureInterpreter(new DefaultFailureInterpreter(
                         config.frequency, config.period,
                         TimeUnit.MILLISECONDS));
@@ -242,12 +231,8 @@ public class ExceptionCircuitInterceptor extends BaseJruggedInterceptor {
         this.loadCircuitConfig();
     }
 
-    public void setIgnore(List<Class<? extends Exception>> ignoreMe)  {
+    public void setIgnore(Class<? extends Exception>[] ignoreMe)  {
         this.ignore = ignoreMe;
-    }
-
-    public void setTriggers(List<Class<? extends Exception>> triggerMe)  {
-        this.triggers = triggerMe;
     }
 
     public void setMethods(Map<String, String> methodMap)  {
