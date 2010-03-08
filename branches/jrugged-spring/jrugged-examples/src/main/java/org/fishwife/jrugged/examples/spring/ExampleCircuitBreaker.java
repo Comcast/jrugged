@@ -32,8 +32,6 @@ public class ExampleCircuitBreaker implements Runnable {
         ctx = new ClassPathXmlApplicationContext(new String[] {"springExampleContext.xml"});
 
         serviceWrapperInterceptor = (ServiceWrapperInterceptor) ctx.getBean("exampleCircuitBreakerInterceptor");
-//         exampleCircuitBreaker = serviceWrapperInterceptor.getCircuitBreaker("exampleCircuitBreaker");
-
     }
 
     public void exampleCircuitOne() throws Exception {

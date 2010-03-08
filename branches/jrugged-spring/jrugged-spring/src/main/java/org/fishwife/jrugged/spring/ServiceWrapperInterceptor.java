@@ -18,16 +18,12 @@ package org.fishwife.jrugged.spring;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.Callable;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 
 import org.fishwife.jrugged.CircuitBreaker;
-import org.fishwife.jrugged.DefaultFailureInterpreter;
-import org.fishwife.jrugged.FailureInterpreter;
 import org.fishwife.jrugged.PerformanceMonitor;
 import org.fishwife.jrugged.ServiceWrapper;
 
@@ -45,7 +41,7 @@ public class ServiceWrapperInterceptor implements MethodInterceptor {
 	 * @param invocation the {@link MethodInvocation} in question
 	 * @return whatever the underlying method call would normally
 	 * return
-	 * @throws any Throwables that the method call would generate, or
+	 * @throws Throwable that the method call would generate, or
 	 *   that the {@link ServiceWrapper} would generate when tripped.
 	 */
     public Object invoke(final MethodInvocation invocation) throws Throwable {

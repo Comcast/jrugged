@@ -16,6 +16,7 @@
  */
 package org.fishwife.jrugged;
 
+import java.util.Collection;
 import java.util.concurrent.Callable;
 
 /** A {@link CircuitBreaker} can be used with a service to throttle traffic
@@ -242,6 +243,57 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
         resetMillis = l;
     }
 
+    public String getHealthCheck() { return getStatus().getSignal(); }
+
+    /** Specifies the failure tolerance limit for the {@link
+     *  DefaultFailureInterpreter} that comes with a {@link
+     *  CircuitBreaker} by default.
+     *  @see {@link DefaultFailureInterpreter}
+     *  @param limit the number of tolerated failures in a window
+     */
+    public void setLimit(int limit) {
+		FailureInterpreter fi = getFailureInterpreter();
+		if (!(fi instanceof DefaultFailureInterpreter)) {
+			throw new IllegalStateException("setLimit() not supported: this CircuitBreaker's FailureInterpreter isn't a DefaultFailureInterpreter.");
+		}
+        ((DefaultFailureInterpreter)fi).setLimit(limit);
+    }
+
+	/** Specifies a set of {@link Throwable} classes that should not
+	 *  be considered failures by the {@link CircuitBreaker}.
+	 *  @see {@link DefaultFailureInterpreter}
+	 *  @param ignore a {@link java.util.Collection} of {@link Throwable}
+	 *  classes
+	 */
+	public void setIgnore(Collection<Class<? extends Throwable>> ignore) {
+		FailureInterpreter fi = getFailureInterpreter();
+		if (!(fi instanceof DefaultFailureInterpreter)) {
+			throw new IllegalStateException("setIgnore() not supported: this CircuitBreaker's FailureInterpreter isn't a DefaultFailureInterpreter.");
+		}
+		
+		Class[] classes = new Class[ignore.size()];
+		int i = 0;
+		for(Class c : ignore) {
+			classes[i] = c;
+			i++;
+		}
+		((DefaultFailureInterpreter)fi).setIgnore(classes);
+	}
+
+    /** Specifies the tolerance window in milliseconds for the {@link
+     *  DefaultFailureInterpreter} that comes with a {@link
+     *  CircuitBreaker} by default.
+     *  @see {@link DefaultFailureInterpreter}
+     *  @param windowMillis length of the window in milliseconds
+     */
+    public void setWindowMillis(long windowMillis) {
+		FailureInterpreter fi = getFailureInterpreter();
+		if (!(fi instanceof DefaultFailureInterpreter)) {
+			throw new IllegalStateException("setWindowMillis() not supported: this CircuitBreaker's FailureInterpreter isn't a DefaultFailureInterpreter.");
+		}
+		((DefaultFailureInterpreter)fi).setWindowMillis(windowMillis);
+    }
+
     /**
      * Specifies a helper that determines whether a given failure will cause the breaker to trip or not.
      *
@@ -259,12 +311,13 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      * @return The FailureInterpreter for this instance or null if no failure
      * interpreter was set..
      */
-    public FailureInterpreter getFailureInterpreter(){
+    public FailureInterpreter getFailureInterpreter() {
         return this.failureInterpreter;
     }
 
     /**
-     * A helper that converts CircuitBreakerExceptions into a known 'application' exception.
+     * A helper that converts CircuitBreakerExceptions into a known
+     * 'application' exception.
      *
      * @param mapper my converter object
      */
@@ -274,10 +327,11 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     }
 
     /**
-     * get the helper that converts CircuitBreakerExceptions into a known 'application' exception.
+     * get the helper that converts CircuitBreakerExceptions into a
+     * known 'application' exception.
      *
-     * @return CircuitBreakerExceptionMapper my converter object, or <code>null</code> if one is
-     * not currently set.
+     * @return CircuitBreakerExceptionMapper my converter object, or
+     * <code>null</code> if one is not currently set.
      */
     public CircuitBreakerExceptionMapper getExceptionMapper(){
         return this.exceptionMapper;
@@ -285,7 +339,6 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 
     private Exception mappedException(CircuitBreakerException cbe) {
         if (exceptionMapper == null) return cbe;
-
         return exceptionMapper.map(this, cbe);
     }
 
@@ -317,16 +370,13 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
         if (!BreakerState.HALF_CLOSED.equals(state) || isAttemptLive) {
             return false;
         }
-
         isAttemptLive = true;
         return true;
     }
 
     /**
-     * Allows the client service to ask if it should attempt a service
-     * call.
-     *
-     * @return boolean '
+     * @return boolean whether the breaker will allow a request
+     * through or not.
      */
     private boolean allowRequest() {
         if (this.isHardTrip) {

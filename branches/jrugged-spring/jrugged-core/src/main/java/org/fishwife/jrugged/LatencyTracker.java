@@ -28,38 +28,38 @@ public class LatencyTracker implements ServiceWrapper {
     private long lastFailureMillis;
 
     public <T> T invoke(Callable<T> c) throws Exception {
-	long start = System.currentTimeMillis();
-	try {
-	    T result = c.call();
-	    lastSuccessMillis = System.currentTimeMillis() - start;
-	    return result;
-	} catch (Exception e) {
-	    lastFailureMillis = System.currentTimeMillis() - start;
-	    throw e;
-	}
+		long start = System.currentTimeMillis();
+		try {
+			T result = c.call();
+			lastSuccessMillis = System.currentTimeMillis() - start;
+			return result;
+		} catch (Exception e) {
+			lastFailureMillis = System.currentTimeMillis() - start;
+			throw e;
+		}
     }
 
     public void invoke(Runnable r) throws Exception {
-	long start = System.currentTimeMillis();
-	try {
-	    r.run();
-	    lastSuccessMillis = System.currentTimeMillis() - start;
-	} catch (Exception e) {
-	    lastFailureMillis = System.currentTimeMillis() - start;
-	    throw e;
-	}
+		long start = System.currentTimeMillis();
+		try {
+			r.run();
+			lastSuccessMillis = System.currentTimeMillis() - start;
+		} catch (Exception e) {
+			lastFailureMillis = System.currentTimeMillis() - start;
+			throw e;
+		}
     }
 
     public <T> T invoke(Runnable r, T result) throws Exception {
-	long start = System.currentTimeMillis();
-	try {
-	    r.run();
-	    lastSuccessMillis = System.currentTimeMillis() - start;
-	    return result;
-	} catch (Exception e) {
-	    lastFailureMillis = System.currentTimeMillis() - start;
-	    throw e;
-	}
+		long start = System.currentTimeMillis();
+		try {
+			r.run();
+			lastSuccessMillis = System.currentTimeMillis() - start;
+			return result;
+		} catch (Exception e) {
+			lastFailureMillis = System.currentTimeMillis() - start;
+			throw e;
+		}
     }
 
     public long getLastSuccessMillis() { return lastSuccessMillis; }

@@ -23,31 +23,22 @@
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
     http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
 
-    <util:properties id="exampleCircuitProperties">
-        <prop key="circuit.exampleCircuitBreaker.frequency">4</prop>
-        <prop key="circuit.exampleCircuitBreaker.period">5000</prop>
-        <prop key="circuit.exampleCircuitBreaker.reset">5000</prop>
-    </util:properties>
-
     <bean id="exampleCircuitService" class="org.fishwife.jrugged.examples.spring.ExampleService"/>
 
     <!--==============================
         CIRCUIT
     ================================-->
+    <bean id="exampleCircuitBreaker" class="org.fishwife.jrugged.spring.CircuitBreakerBean">
+        <property name="limit" value="5"/>
+        <property name="windowMillis" value="2000"/>
+        <property name="resetMillis" value="5000"/>
+    </bean>
 
-    <bean id="exampleCircuitBreakerInterceptor" class="org.fishwife.jrugged.spring.circuit.ExceptionCircuitInterceptor"
-          init-method="afterPropertiesSet"
-          p:properties-ref="exampleCircuitProperties">
-
-        <property name="ignore">
-            <list>
-                <value>org.fishwife.jrugged.examples.spring.ExampleCircuitBreakerException</value>
-            </list>
-        </property>
+    <bean id="exampleCircuitBreakerInterceptor" class="org.fishwife.jrugged.spring.ServiceWrapperInterceptor">
         <property name="methods">
             <map>
-              <entry key="exampleMethodCallOne" value="exampleCircuitBreaker"/>
-              <entry key="exampleMethodCallTwo" value="exampleCircuitBreaker"/>
+              <entry key="exampleMethodCallOne" value-ref="exampleCircuitBreaker"/>
+              <entry key="exampleMethodCallTwo" value-ref="exampleCircuitBreaker"/>
             </map>
         </property>
     </bean>
@@ -56,17 +47,17 @@
         MONITOR
     ================================-->
 
-    <bean id="exampleMonitorInterceptor" class="org.fishwife.jrugged.spring.monitor.PerformanceMonitorInterceptor"/>
+    <bean id="exampleMonitorInterceptor" class="org.fishwife.jrugged.spring.ServiceWrapperInterceptor">
+        <property name="methods">
+            <map>
+              <entry key="exampleMethodCallOne" value-ref="examplePerformanceMonitor"/>
+            </map>
+        </property>
+    </bean>
 
-    <bean id="exampleMonitor" class="org.fishwife.jrugged.examples.spring.ExampleSpringPerformanceMonitor" lazy-init="false"
-        p:monitorInterceptor-ref="exampleMonitorInterceptor"
-        p:delegatingMonitor-ref="delegatingPerformanceMonitor"/>
-
-    <bean id="delegatingPerformanceMonitor"
-        class="org.fishwife.jrugged.spring.monitor.DelegatingPerformanceMonitor" lazy-init="false"/>
-
-    <bean id="exampleCircuitMonitor" class="org.fishwife.jrugged.examples.spring.ExampleSpringCircuitMonitor"
-        p:monitorInterceptor-ref="exampleCircuitBreakerInterceptor"/>
+    <bean id="examplePerformanceMonitor" class="org.fishwife.jrugged.spring.PerformanceMonitorBean">
+        <constructor-arg value="3"/>
+    </bean>
 
     <bean id="exampleCircuitServiceProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
         <property name="beanNames" value="exampleCircuitService"/>
@@ -76,8 +67,7 @@
                 <value>exampleMonitorInterceptor</value>
             </list>
         </property>
-    </bean>
-
+    </bean>  
 
     <!--==============================
         JMX
@@ -86,7 +76,14 @@
     <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false"
         p:assembler-ref="assembler"
         p:namingStrategy-ref="namingStrategy"
-        p:autodetect="true"/>
+        p:autodetect="true">
+        <property name="beans">
+            <map>
+                <entry key="jrugged:name=exampleCircuitBreaker" value-ref="exampleCircuitBreaker"/>
+                <entry key="jrugged:name=exampleServicePerformance" value-ref="examplePerformanceMonitor"/>
+            </map>
+        </property>
+    </bean>
 
     <bean id="jmxAttributeSource"
           class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>

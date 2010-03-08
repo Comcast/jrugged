@@ -30,22 +30,22 @@ public class MovingAverage {
      *  @param windowMillis the length of the sliding window in
      *    milliseconds */
     public MovingAverage(long windowMillis) {
-	this.windowMillis = windowMillis;
+		this.windowMillis = windowMillis;
     }
 
     /** Updates the average with the latest measurement.
      *  @param sample the latest measurement in the rolling average */
     public synchronized void update(double sample) {
-	long now = System.currentTimeMillis();
-	if (lastMillis == 0) {	// first sample
-	    average = sample;
-	    lastMillis = now;
-	    return;
-	}
-	long deltaTime = now - lastMillis;
-	double coeff = Math.exp(-1.0 * ((double)deltaTime / windowMillis));
-	average = (1.0 - coeff) * sample + coeff * average;
-	lastMillis = now;
+		long now = System.currentTimeMillis();
+		if (lastMillis == 0) {	// first sample
+			average = sample;
+			lastMillis = now;
+			return;
+		}
+		long deltaTime = now - lastMillis;
+		double coeff = Math.exp(-1.0 * ((double)deltaTime / windowMillis));
+		average = (1.0 - coeff) * sample + coeff * average;
+		lastMillis = now;
     }
 
     /** Returns the last computed average value. */

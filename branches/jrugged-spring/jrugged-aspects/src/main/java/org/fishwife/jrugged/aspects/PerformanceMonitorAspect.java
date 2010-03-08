@@ -84,7 +84,7 @@ public class PerformanceMonitorAspect {
         PerformanceMonitor performanceMonitor = monitors.get(monitorName);
         
         if (performanceMonitor == null) {
-            performanceMonitor = new PerformanceMonitor(updateIntervalInSeconds);
+            performanceMonitor = new PerformanceMonitor();
             monitors.put(monitorName, performanceMonitor);
             logger.debug("Initialized new performance monitor for named monitor {}", monitorName);
         }
