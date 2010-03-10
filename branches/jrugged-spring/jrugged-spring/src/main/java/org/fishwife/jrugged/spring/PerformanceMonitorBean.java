@@ -20,135 +20,225 @@ import org.fishwife.jrugged.PerformanceMonitor;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-/** This is basically a {@link PerformanceMonitor} that adds JMX
- * annotations to some of the methods so that the core library
- * doesn't have to depend on spring-context.
+/** The {@link PerformanceMonitorBean} is a straightforward wrapper
+ *  around a {@link PerformanceMonitor} that allows for leveraging
+ *  automated exposure of the information via Spring's JMX annotations.
  */
 @ManagedResource
 public class PerformanceMonitorBean extends PerformanceMonitor {
-	
-	public PerformanceMonitorBean() { super(); }
+    public PerformanceMonitorBean() {
+        super();
+    }
 
+	/** Returns the one-minute moving average of the latency of successful
+	 *  requests, measured in milliseconds.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
     public double getAverageSuccessLatencyLastMinute() {
 		return super.getAverageSuccessLatencyLastMinute();
     }
 
+	/** Returns the one-hour moving average of the latency of successful
+	 *  requests, measured in milliseconds.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
     public double getAverageSuccessLatencyLastHour() {
 		return super.getAverageSuccessLatencyLastHour();
     }
 
+	/** Returns the 24-hour moving average of the latency of successful
+	 *  requests, measured in milliseconds.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
     public double getAverageSuccessLatencyLastDay() {
 		return super.getAverageSuccessLatencyLastDay();
     }
 
+	/** Returns the one-minute moving average of the latency of failed
+	 *  requests, measured in milliseconds.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
     public double getAverageFailureLatencyLastMinute() {
 		return super.getAverageFailureLatencyLastMinute();
     }
 
+	/** Returns the one-hour moving average of the latency of failed
+	 *  requests, measured in milliseconds.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
     public double getAverageFailureLatencyLastHour() {
 		return super.getAverageFailureLatencyLastHour();
     }
 
+	/** Returns the 24-hour moving average of the latency of failed
+	 *  requests, measured in milliseconds.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
     public double getAverageFailureLatencyLastDay() {
 		return super.getAverageFailureLatencyLastDay();
     }
 
+	/** Returns the one-minute moving average rate of all requests (both
+	 *  successes and failures) measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getRequestRateLastMinute() {
-		return super.getRequestRateLastMinute();
+    public double getTotalRequestsPerSecondLastMinute() {
+		return super.getTotalRequestsPerSecondLastMinute();
     }
 
+	/** Returns the one-minute moving average rate of successful requests
+	 *  measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getSuccessRateLastMinute() {
-		return super.getSuccessRateLastMinute();
+    public double getSuccessRequestsPerSecondLastMinute() {
+		return super.getSuccessRequestsPerSecondLastMinute();
     }
 
+	/** Returns the one-minute moving average rate of failed requests
+	 *  measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getFailureRateLastMinute() {
-		return super.getFailureRateLastMinute();
+    public double getFailureRequestsPerSecondLastMinute() {
+		return super.getFailureRequestsPerSecondLastMinute();
     }
 
+	/** Returns the one-hour moving average rate of all requests (both
+	 *  successes and failures) measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getRequestRateLastHour() {
-		return super.getRequestRateLastHour();
+    public double getTotalRequestsPerSecondLastHour() {
+		return super.getTotalRequestsPerSecondLastHour();
     }
 
+	/** Returns the one-hour moving average rate of successful requests
+	 *  measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getSuccessRateLastHour() {
-		return super.getSuccessRateLastHour();
+    public double getSuccessRequestsPerSecondLastHour() {
+		return super.getSuccessRequestsPerSecondLastHour();
     }
 
+	/** Returns the one-hour moving average rate of failed requests
+	 *  measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getFailureRateLastHour() {
-		return super.getFailureRateLastHour();
+    public double getFailureRequestsPerSecondLastHour() {
+		return super.getFailureRequestsPerSecondLastHour();
     }
 
+	/** Returns the 24-hour moving average rate of all requests
+	 *  measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getRequestRateLastDay() {
-		return super.getRequestRateLastDay();
+    public double getTotalRequestsPerSecondLastDay() {
+		return super.getTotalRequestsPerSecondLastDay();
     }
 
+	/** Returns the 24-hour moving average rate of successful requests
+	 *  measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getSuccessRateLastDay() {
-		return super.getSuccessRateLastDay();
+    public double getSuccessRequestsPerSecondLastDay() {
+		return super.getSuccessRequestsPerSecondLastDay();
     }
 
+	/** Returns the 24-hour moving average rate of failed requests
+	 *  measured in requests per second.
+	 *  @return double
+	 */
     @ManagedAttribute
     @Override
-    public double getFailureRateLastDay() {
-		return super.getFailureRateLastDay();
+    public double getFailureRequestsPerSecondLastDay() {
+		return super.getFailureRequestsPerSecondLastDay();
     }
 
+	/** Returns the average rate of requests measured in requests per
+	 *  second since this object was initialized.
+	 *  @return double
+	 */
+	@ManagedAttribute
+    @Override
+    public double getTotalRequestsPerSecondLifetime() {
+		return super.getTotalRequestsPerSecondLifetime();
+    }
+
+    /**
+     * Returns the average rate of successful requests, measured in
+	 * requests per second since this object was initialized.
+     * @return double
+     */
     @ManagedAttribute
     @Override
-    public double getRequestRateLifetime() {
-		return super.getRequestRateLifetime();
+    public double getSuccessRequestsPerSecondLifetime() {
+        return super.getSuccessRequestsPerSecondLifetime();
     }
 
+    /**
+     * Returns the average rate of failed requests, measured in
+     *  requests per second since this object was initialized.
+     * @return double
+     */
     @ManagedAttribute
     @Override
-    public double getSuccessRateLifetime() {
-        return super.getSuccessRateLifetime();
+    public double getFailureRequestsPerSecondLifetime() {
+		return super.getFailureRequestsPerSecondLifetime();
     }
 
-    @ManagedAttribute
-    @Override
-    public double getFailureRateLifetime() {
-		return super.getFailureRateLifetime();
-    }
-
+    /**
+     * Returns the total number of requests seen by this {@link
+     * PerformanceMonitor}.
+     * @return long
+     */
     @ManagedAttribute
     @Override
     public long getRequestCount() {
 		return super.getRequestCount();
     }
 
+    /**
+     * Returns the number of successful requests seen by this {@link
+     * PerformanceMonitor}.
+     * @return long
+     */
     @ManagedAttribute
     @Override
     public long getSuccessCount() {
 		return super.getSuccessCount();
     }
 
+    /**
+     * Returns the number of failed requests seen by this {@link
+     * PerformanceMonitor}.
+     * @return long
+     */
     @ManagedAttribute
     @Override
     public long getFailureCount() {

@@ -27,21 +27,30 @@ public class FlowMeter {
     private long lastSuccesses;
     private long lastFailures;
     private long lastSampleMillis;
+    private double[] lastKnownRates = new double[3];
 
-    /** Constructs a {@link FlowMeter}.
+    /**
+     * Constructs a {@link FlowMeter}.
      *  @param counter the {@link RequestCounter} to calculate request
      *    rates from
      */
     public FlowMeter(RequestCounter counter) {
-	this.counter = counter;
+    	this.counter = counter;
     }
 
-    /** Calculates requests per second. */
+    /**
+     * Calculates requests per second.
+     *
+     * @param events how many have occured
+     * @param t time
+     * @return double rate
+     */
     private double rate(long events, long t) {
-	return ((double)events / (double)t) * 1000.0;
+    	return ((double)events / (double)t) * 1000.0;
     }
 
-    /** Takes a sample of the request rates. Calculations are based on
+    /**
+     * Takes a sample of the request rates. Calculations are based on
      *  differences in request counts since the last call to 
      *  <code>sample()</code>.
      *  @return an array of three <code>doubles</code>: total requests per
@@ -50,26 +59,26 @@ public class FlowMeter {
      *    reported as zero requests per second.
      */
     public synchronized double[] sample() {
-	long[] currCounts = counter.sample();
-	long now = System.currentTimeMillis();
-	double[] out = new double[3];
+        long[] currCounts = counter.sample();
+        long now = System.currentTimeMillis();
 
-	if (lastSampleMillis != 0) {
-	    long deltaTime = now - lastSampleMillis;
+        if (lastSampleMillis != 0) {
+            long deltaTime = now - lastSampleMillis;
 
-	    out[0] = rate(currCounts[0] - lastTotal, deltaTime);
-	    out[1] = rate(currCounts[1] - lastSuccesses, deltaTime);
-	    out[2] = rate(currCounts[2] - lastFailures, deltaTime);
+            if (deltaTime == 0) return lastKnownRates;
 
-	} else {
-	    out[0] = out[1] = out[2] = 0.0;
-	}
-	
-	lastTotal = currCounts[0];
-	lastSuccesses = currCounts[1];
-	lastFailures = currCounts[2];
-	lastSampleMillis = now;
-	
-	return out;
+            lastKnownRates[0] = rate(currCounts[0] - lastTotal, deltaTime);
+            lastKnownRates[1] = rate(currCounts[1] - lastSuccesses, deltaTime);
+            lastKnownRates[2] = rate(currCounts[2] - lastFailures, deltaTime);
+        } else {
+            lastKnownRates[0] = lastKnownRates[1] = lastKnownRates[2] = 0.0;
+        }
+
+        lastTotal = currCounts[0];
+        lastSuccesses = currCounts[1];
+        lastFailures = currCounts[2];
+        lastSampleMillis = now;
+
+        return lastKnownRates;
     }
 }

@@ -55,9 +55,7 @@
         </property>
     </bean>
 
-    <bean id="examplePerformanceMonitor" class="org.fishwife.jrugged.spring.PerformanceMonitorBean">
-        <constructor-arg value="3"/>
-    </bean>
+    <bean id="examplePerformanceMonitor" class="org.fishwife.jrugged.spring.PerformanceMonitorBean"/>
 
     <bean id="exampleCircuitServiceProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
         <property name="beanNames" value="exampleCircuitService"/>

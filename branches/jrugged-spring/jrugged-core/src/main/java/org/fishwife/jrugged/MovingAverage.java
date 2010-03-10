@@ -37,6 +37,7 @@ public class MovingAverage {
      *  @param sample the latest measurement in the rolling average */
     public synchronized void update(double sample) {
 		long now = System.currentTimeMillis();
+
 		if (lastMillis == 0) {	// first sample
 			average = sample;
 			lastMillis = now;
@@ -44,7 +45,8 @@ public class MovingAverage {
 		}
 		long deltaTime = now - lastMillis;
 		double coeff = Math.exp(-1.0 * ((double)deltaTime / windowMillis));
-		average = (1.0 - coeff) * sample + coeff * average;
+        average = (1.0 - coeff) * sample + coeff * average;
+        
 		lastMillis = now;
     }
 

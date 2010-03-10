@@ -68,7 +68,8 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     protected long resetMillis = 15 * 1000L;
     protected boolean isAttemptLive = false;
 
-    protected FailureInterpreter failureInterpreter = new DefaultFailureInterpreter();
+    protected FailureInterpreter failureInterpreter = 
+		new DefaultFailureInterpreter();
     protected CircuitBreakerExceptionMapper exceptionMapper;
 
     private boolean isHardTrip;
@@ -83,7 +84,8 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
         exceptionMapper = mapper;
     }
 
-    public CircuitBreaker(FailureInterpreter fi, CircuitBreakerExceptionMapper mapper) {
+    public CircuitBreaker(FailureInterpreter fi, 
+						  CircuitBreakerExceptionMapper mapper) {
         failureInterpreter = fi;
         exceptionMapper = mapper;
     }
@@ -92,8 +94,9 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      *  logic.
      *  @param c the {@link Callable} to attempt
      *  @return whatever c would return on success
-     *  @throws Exception {@link CircuitBreakerException} if the breaker was OPEN or
-     *    HALF_CLOSED and this attempt wasn't the reset attempt
+     *  @throws Exception {@link CircuitBreakerException} if the
+     *    breaker was OPEN or HALF_CLOSED and this attempt wasn't the
+     *    reset attempt
      */
     public <V> V invoke(Callable<V> c) throws Exception {
         if (!allowRequest()) {
@@ -113,8 +116,9 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     /** Wrap the given service call with the CircuitBreaker protection
      *  logic.
      *  @param r the {@link Runnable} to attempt
-     *  @throws Exception {@link CircuitBreakerException} if the breaker was OPEN or
-     *    HALF_CLOSED and this attempt wasn't the reset attempt
+     *  @throws Exception {@link CircuitBreakerException} if the
+     *    breaker was OPEN or HALF_CLOSED and this attempt wasn't the
+     *    reset attempt
      */
     public void invoke(Runnable r) throws Exception {
         if (!allowRequest()) {
@@ -135,8 +139,9 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      *  @param r the {@link Runnable} to attempt
      *  @param result what to return after <code>r</code> succeeds
      *  @return result
-     *  @throws Exception {@link CircuitBreakerException} if the breaker was OPEN or
-     *    HALF_CLOSED and this attempt wasn't the reset attempt
+     *  @throws Exception {@link CircuitBreakerException} if the
+     *    breaker was OPEN or HALF_CLOSED and this attempt wasn't the
+     *    reset attempt
      */
     public <V> V invoke(Runnable r, V result) throws Exception {
     	if (!allowRequest()) {
@@ -203,26 +208,24 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
         isHardTrip = false;
     }
 
-    /** Returns the current {@link org.fishwife.jrugged.Status} of the {@link CircuitBreaker}.
-     *  In this case, it really refers to the status of the client service.
-     *  If the <code>CircuitBreaker</code> is CLOSED, we report that the
-     *  client is UP; if it is HALF_CLOSED, we report that the client is
-     *  DEGRADED; if it is OPEN, we report the client is DOWN.
+    /** Returns the current {@link org.fishwife.jrugged.Status} of the
+     *  {@link CircuitBreaker}.  In this case, it really refers to the
+     *  status of the client service.  If the
+     *  <code>CircuitBreaker</code> is CLOSED, we report that the
+     *  client is UP; if it is HALF_CLOSED, we report that the client
+     *  is DEGRADED; if it is OPEN, we report the client is DOWN.
      */
     public Status getStatus() {
-        if (state == BreakerState.OPEN
-                && !isHardTrip
-                && lastFailure > 0 
-                && (System.currentTimeMillis() - lastFailure >= resetMillis)) {
-
-            return Status.DEGRADED;
-        }
+		boolean canSendProbeRequest = !isHardTrip && lastFailure > 0
+			&& (System.currentTimeMillis() - lastFailure >= resetMillis);
 
         switch(state) {
-            case OPEN: return Status.DOWN;
-            case HALF_CLOSED: return Status.DEGRADED;
-            case CLOSED: return Status.UP;
-            default: return (!isHardTrip && lastFailure > 0 && (System.currentTimeMillis() - lastFailure >= resetMillis) ? Status.DEGRADED: Status.UP);
+		case OPEN: 
+			return (canSendProbeRequest ? Status.DEGRADED : Status.DOWN);
+		case HALF_CLOSED: return Status.DEGRADED;
+		case CLOSED: 
+		default:
+			return Status.UP;
         }
     }
 
@@ -245,10 +248,11 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 
     public String getHealthCheck() { return getStatus().getSignal(); }
 
-    /** Specifies the failure tolerance limit for the {@link
+    /**
+     * Specifies the failure tolerance limit for the {@link
      *  DefaultFailureInterpreter} that comes with a {@link
      *  CircuitBreaker} by default.
-     *  @see {@link DefaultFailureInterpreter}
+     *  @see DefaultFailureInterpreter
      *  @param limit the number of tolerated failures in a window
      */
     public void setLimit(int limit) {
@@ -259,9 +263,10 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
         ((DefaultFailureInterpreter)fi).setLimit(limit);
     }
 
-	/** Specifies a set of {@link Throwable} classes that should not
+	/**
+     * Specifies a set of {@link Throwable} classes that should not
 	 *  be considered failures by the {@link CircuitBreaker}.
-	 *  @see {@link DefaultFailureInterpreter}
+	 *  @see DefaultFailureInterpreter
 	 *  @param ignore a {@link java.util.Collection} of {@link Throwable}
 	 *  classes
 	 */
@@ -280,10 +285,11 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 		((DefaultFailureInterpreter)fi).setIgnore(classes);
 	}
 
-    /** Specifies the tolerance window in milliseconds for the {@link
+    /**
+     * Specifies the tolerance window in milliseconds for the {@link
      *  DefaultFailureInterpreter} that comes with a {@link
      *  CircuitBreaker} by default.
-     *  @see {@link DefaultFailureInterpreter}
+     *  @see DefaultFailureInterpreter
      *  @param windowMillis length of the window in milliseconds
      */
     public void setWindowMillis(long windowMillis) {
@@ -295,7 +301,8 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     }
 
     /**
-     * Specifies a helper that determines whether a given failure will cause the breaker to trip or not.
+     * Specifies a helper that determines whether a given failure will
+     * cause the breaker to trip or not.
      *
      * @param failureInterpreter the interp
      */
@@ -304,12 +311,13 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     }
 
     /**
-     * Get the failure interpreter for this instance.  The failure interpreter
-     * provides the configuration for determining which exceptions trip
-     * the circuit breaker, in what time interval, etc.
+     * Get the failure interpreter for this instance.  The failure
+     * interpreter provides the configuration for determining which
+     * exceptions trip the circuit breaker, in what time interval,
+     * etc.
      *
-     * @return The FailureInterpreter for this instance or null if no failure
-     * interpreter was set..
+     * @return The FailureInterpreter for this instance or null if no
+     * failure interpreter was set..
      */
     public FailureInterpreter getFailureInterpreter() {
         return this.failureInterpreter;
@@ -331,7 +339,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      * known 'application' exception.
      *
      * @return CircuitBreakerExceptionMapper my converter object, or
-     * <code>null</code> if one is not currently set.
+     *   <code>null</code> if one is not currently set.
      */
     public CircuitBreakerExceptionMapper getExceptionMapper(){
         return this.exceptionMapper;
@@ -358,7 +366,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 
     /**
      * Reports a successful service call to the {@link CircuitBreaker},
-     * putting the <code>CircuitBreaker</code> back into the Closed
+     * putting the <code>CircuitBreaker</code> back into the CLOSED
      * state serving requests.
      */
     private void close() {

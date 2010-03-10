@@ -68,7 +68,7 @@ public class ExceptionCircuitAspect {
 
     @Around("@annotation(circuitTag)")
     public Object monitor(final ProceedingJoinPoint pjp,
-            ExceptionCircuit circuitTag) throws Throwable {
+						  ExceptionCircuit circuitTag) throws Throwable {
         final String name = circuitTag.name();
         CircuitBreaker circuit;
         
@@ -91,11 +91,13 @@ public class ExceptionCircuitAspect {
             
             // sets trip for circuit if it hasn't been initialized
             if (!this.initializedCircuits.containsKey(name)) {
-                final FailureInterpreter interpreter = circuit.getFailureInterpreter();
+                final FailureInterpreter interpreter = 
+					circuit.getFailureInterpreter();
 
                 if(interpreter instanceof DefaultFailureInterpreter) {
-                    final Class<? extends Throwable>[] ignore = circuitTag.ignore();
-                    ((DefaultFailureInterpreter) interpreter).setIgnore(ignore);
+                    final Class<? extends Throwable>[] ignore = 
+						circuitTag.ignore();
+                    ((DefaultFailureInterpreter)interpreter).setIgnore(ignore);
                 }
                 this.initializedCircuits.put(name, Boolean.TRUE);
             }            
@@ -109,25 +111,31 @@ public class ExceptionCircuitAspect {
                  try {
                      return pjp.proceed();
                  } catch (Throwable e) {
-                     if (e instanceof Exception)
+                     if (e instanceof Exception) {
                          throw (Exception) e;
-                     else if (e instanceof Error)
+					 } else if (e instanceof Error) {
                          throw (Error) e;
-                     else
+					 } else {
                          throw (RuntimeException) e;
+					 }
                  }
              }
          });
     }
 
+	/** Returns the names of all configured {@link CircuitBreaker}
+	 * aspects.
+	 * @return {@link Set} of {@link String}s
+	 */
     public Set<String> getCircuitBreakerNames() {
         return this.circuits.keySet();
     }
 
     /**
-     * @return the named {@link CirctuitBreaker} if it exists, or
+     * Returns the named {@link CircuitBreaker} if it exists, or
 	 *   <code>null</code> if it doesn't.
      * @param circuitName name of the desired CircuitBreaker
+	 * @return <code>CircuitBreaker</code> or <code>null</code>
      */
     public CircuitBreaker getCircuitBreaker(String circuitName) {
         return this.circuits.get(circuitName);
@@ -182,13 +190,16 @@ public class ExceptionCircuitAspect {
             }
         }
         
-        for (final Map.Entry<String, CircuitConfig> e : this.circuitConfigs.entrySet()) {
+        for (final Map.Entry<String, CircuitConfig> e : 
+				 this.circuitConfigs.entrySet()) {
             final String circuitName = e.getKey();
             final CircuitConfig config = e.getValue();
 
             // if these 3 values were set, we can inject a 
             // FailureInterpreter
-            if (config.limit > 0 && config.windowMillis > 0 && config.resetMillis > 0) {
+            if (config.limit > 0 && config.windowMillis > 0
+				&& config.resetMillis > 0) {
+
                 final CircuitBreaker circuit = new CircuitBreaker();
                 
                 // defaults to Exception for trip;
@@ -201,8 +212,9 @@ public class ExceptionCircuitAspect {
                 
                 // only sets values if > 0, 
                 // since default values in annotation are -1
-                if (config.resetMillis > 0)
+                if (config.resetMillis > 0) {
                     circuit.setResetMillis(config.resetMillis);
+				}
 
                 this.circuits.put(circuitName, circuit);
                 this.logger.info(
