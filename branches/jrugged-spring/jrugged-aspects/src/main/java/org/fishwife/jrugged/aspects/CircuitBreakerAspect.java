@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @see ExceptionCircuit
  */
 @Aspect
-public class ExceptionCircuitAspect {
+public class CircuitBreakerAspect {
 
     /**
      * Used to grab properties.
@@ -64,11 +64,12 @@ public class ExceptionCircuitAspect {
 
     private Properties props;
 
-    public ExceptionCircuitAspect() {}
+    public CircuitBreakerAspect() {}
 
     @Around("@annotation(circuitTag)")
     public Object monitor(final ProceedingJoinPoint pjp,
-						  ExceptionCircuit circuitTag) throws Throwable {
+						  org.fishwife.jrugged.aspects.CircuitBreaker circuitTag) 
+		throws Throwable {
         final String name = circuitTag.name();
         CircuitBreaker circuit;
         

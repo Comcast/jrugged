@@ -29,9 +29,6 @@ import org.fishwife.jrugged.PerformanceMonitor;
  * in the Monitorable annotation for the method, or you may share a
  * PerformanceMonitor across classes and methods by using the same key name
  * for many Monitorable annotations.
- * 
- * @author bschmaus
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
