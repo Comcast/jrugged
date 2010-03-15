@@ -33,5 +33,6 @@ import org.fishwife.jrugged.PerformanceMonitor;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Monitorable {
+    /** A name for the configured {@link PerformanceMonitor}. */
     String value();
 }

@@ -30,10 +30,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Surrounds methods annotated with <code>ExceptionCircuit</code> with a 
- * named CircuitBreaker.
- * 
- * @see ExceptionCircuit
+ * Surrounds methods decorated with the {@link
+ * org.fishwife.jrugged.aspects.CircuitBreaker} annotation with a named
+ * {@link org.fishwife.jrugged.CircuitBreaker}.
  */
 @Aspect
 public class CircuitBreakerAspect {
@@ -64,11 +63,23 @@ public class CircuitBreakerAspect {
 
     private Properties props;
 
+    /** Default constructor. */
     public CircuitBreakerAspect() {}
 
+    /** Runs a method call through the configured {@link
+     * org.fishwife.jrugged.CircuitBreaker}.
+     * @param pjp a {@link ProceedingJoinPoint} representing an annotated
+     *   method call
+     * @param circuitTag the {@link
+     *   org.fishwife.jrugged.aspects.CircuitBreaker} annotation that
+     *   actually wrapped the method
+     * @throws Throwable if the method invocation itself or the wrapping
+     *   {@link org.jrugged.fishwife.CircuitBreaker} throws one during
+     *   execution
+     */
     @Around("@annotation(circuitTag)")
     public Object monitor(final ProceedingJoinPoint pjp,
-						  org.fishwife.jrugged.aspects.CircuitBreaker circuitTag) 
+			  org.fishwife.jrugged.aspects.CircuitBreaker circuitTag) 
 		throws Throwable {
         final String name = circuitTag.name();
         CircuitBreaker circuit;
@@ -143,7 +154,8 @@ public class CircuitBreakerAspect {
     }
 
     /**
-     * Specifies the tolerance configurations for the annotated CircuitBreakers.
+     * Specifies the tolerance configurations for the annotated {@link
+     * org.fishwife.jrugged.CircuitBreaker} objects.
      * @param props configuration specified as {@link Properties}
      */
     public void setProperties(Properties props) {
@@ -221,13 +233,17 @@ public class CircuitBreakerAspect {
                 this.logger.info(
                         "circuit '{}' -> frequency:{}, period:{}, reset:{}",
                         new Object[] { circuitName, 
-									   config.limit, 
-									   config.windowMillis, 
-									   config.resetMillis });
+				       config.limit, 
+				       config.windowMillis, 
+				       config.resetMillis });
             }
         }
     }
-    
+
+    /** Performs final initialization steps after all required configuration
+     *  properties have been specified.
+     *  @throws Exception if there is an initialization error
+     */
     public void afterPropertiesSet() throws Exception {
         if (this.props == null)
             throw new IllegalArgumentException("[properties] must be provided.");

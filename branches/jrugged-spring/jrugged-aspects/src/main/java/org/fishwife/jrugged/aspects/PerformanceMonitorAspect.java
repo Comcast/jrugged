@@ -38,17 +38,14 @@ public class PerformanceMonitorAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(PerformanceMonitorAspect.class);
 
-    private int updateIntervalInSeconds = 5;
     private Map<String, PerformanceMonitor> monitors = new HashMap<String, PerformanceMonitor>();
 
-    public int getUpdateIntervalInSeconds() {
-        return updateIntervalInSeconds;
-    }
+    /** Default constructor. */
+    public PerformanceMonitorAspect() { }
 
-    public void setUpdateIntervalInSeconds(int updateIntervalInSeconds) {
-        this.updateIntervalInSeconds = updateIntervalInSeconds;
-    }
-
+    /** Returns a directory of configured {@link PerformanceMonitor} instances.
+     *  @return {@link Map} of {@link String} to {@link PerformanceMonitor}
+     */
     public Map<String, PerformanceMonitor> getMonitors() {
         return monitors;
     }

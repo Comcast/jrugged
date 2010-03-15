@@ -79,6 +79,10 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
+		    <links>
+		      <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+		      <link>http://www.eclipse.org/aspectj//doc/next/runtime-api</link>
+		    </links>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
                 <executions>
