@@ -1,0 +1,13 @@
+#summary What changed between various releases of Jrugged.
+
+= Version 2.0.0 : 16 March 2010 =
+
+ * Added support for the [http://www.springsource.org/ Spring framework] in the jrugged-spring subproject.
+ * Refactored !CircuitBreakers to use an external helper !FailureInterpreter class to determine whether a failure should cause them to trip or not.
+ * Simplified the !DefaultFailureInterpreter.
+ * Renamed some classes in jrugged-aspects to more closely align with the naming of things in the jrugged-core library.
+ * !PerformanceMonitors now record their !MovingAverage updates inline rather than spawning a background thread to do periodic sampling.
+ * Thorough Javadoc review and cleanup.
+
+= 1.3.0 and older =
+ * We started maintaining this page with the 2.0.0 release, so if you would like details about previous releases please let us know via the jrugged-users list and we'll try to do the mining to fill this in....
