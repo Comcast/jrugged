@@ -23,9 +23,9 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * Trips if the number of failures in a given time window exceed a
- * specified tolerance.  By default, all {@link Throwable} occurrences
- * will be considered failures.
+ * Trips a {@link CircuitBreaker} if the number of failures in a given
+ * time window exceed a specified tolerance.  By default, all {@link
+ * Throwable} occurrences will be considered failures.
  */
 public final class DefaultFailureInterpreter implements FailureInterpreter {
 
@@ -160,8 +160,11 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     public int getLimit(){
         return this.limit;
     }
+
     /**
-     * Specifies the number of tolerated failures within the configured time window.
+     * Specifies the number of tolerated failures within the
+     * configured time window. If limit is set to <em>n</em> then the
+     * <em>(n+1)</em>th failure will trip the breaker.
      * @param limit <code>int</code>
      */
     public void setLimit(int limit) {
@@ -169,7 +172,8 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     }
 
     /**
-     * Returns the length of the currently configured tolerance window.
+     * Returns the length of the currently configured tolerance window
+     * in milliseconds.
      * @return <code>long</code>
      */
     public long getWindowMillis(){
@@ -177,7 +181,7 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     }
 
     /**
-     * Specifies the length of the tolerance window.
+     * Specifies the length of the tolerance window in milliseconds.
      * @param windowMillis <code>long</code>
      */
     public void setWindowMillis(long windowMillis) {

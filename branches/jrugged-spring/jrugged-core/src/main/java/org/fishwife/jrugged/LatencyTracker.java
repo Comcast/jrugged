@@ -62,6 +62,11 @@ public class LatencyTracker implements ServiceWrapper {
 		}
     }
 
+	/** Returns how long the last successful request took.
+	 *  @return long request service time in milliseconds */
     public long getLastSuccessMillis() { return lastSuccessMillis; }
+
+	/** Returns how long the last failed request took.
+	 *  @return long request service time in milliseconds. */
     public long getLastFailureMillis() { return lastFailureMillis; }
 }

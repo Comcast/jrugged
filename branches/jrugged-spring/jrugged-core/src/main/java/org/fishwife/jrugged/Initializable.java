@@ -16,8 +16,8 @@
  */
 package org.fishwife.jrugged;
 
-/** Clients who use the {@link Initializer} should implement this interface;
- *  this lets them do, for example:
+/** Clients who use the {@link Initializer} should implement this interface.
+ *  This lets them do, for example:
  *  <pre>
  *    new Initializer(this).initialize();
  *  </pre>

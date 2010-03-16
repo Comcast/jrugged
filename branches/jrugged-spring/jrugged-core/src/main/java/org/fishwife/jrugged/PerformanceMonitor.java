@@ -59,6 +59,7 @@ public class PerformanceMonitor implements ServiceWrapper {
     private MovingAverage successRequestsPerSecondLastDay;
     private MovingAverage failureRequestsPerSecondLastDay;
 
+	/** Default constructor. */
     public PerformanceMonitor() {
 		createMovingAverages();
     }

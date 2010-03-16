@@ -82,6 +82,8 @@
 		    <links>
 		      <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
 		      <link>http://www.eclipse.org/aspectj//doc/next/runtime-api</link>
+			  <link>http://static.springsource.org/spring/docs/2.5.x/api</link>
+			  <link>http://aopalliance.sourceforge.net/doc/</link>
 		    </links>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>

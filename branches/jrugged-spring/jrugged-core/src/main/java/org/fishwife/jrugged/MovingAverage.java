@@ -19,14 +19,15 @@ package org.fishwife.jrugged;
 /** This class implements an exponential moving average, using the
  *  algorithm described at <a href="http://en.wikipedia.org/wiki/Moving_average">http://en.wikipedia.org/wiki/Moving_average</a>. The average does not
  *  sample itself; it merely computes the new average when updated with
- *  a sample by an external polling mechanism. */
+ *  a sample by an external mechanism. */
 public class MovingAverage {
     private long windowMillis;
     private long lastMillis;
     private double average;
 
     /** Construct a {@link MovingAverage}, providing the time window
-     *  we want the average over.
+     *  we want the average over. For example, providing a value of
+	 *  3,600,000 provides a moving average over the last hour.
      *  @param windowMillis the length of the sliding window in
      *    milliseconds */
     public MovingAverage(long windowMillis) {

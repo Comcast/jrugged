@@ -18,7 +18,10 @@ package org.fishwife.jrugged;
 
 /**
  * This exception gets thrown by a {@link CircuitBreaker} if a wrapped
- * call is disallowed by the breaker (e.g. because it is OPEN). 
+ * call is disallowed by a tripped (OPEN) breaker.
  */
 public class CircuitBreakerException extends RuntimeException {
+
+	/** Default constructor. */
+	public CircuitBreakerException() { }
 }

@@ -29,7 +29,7 @@ import org.fishwife.jrugged.ServiceWrapper;
 
 /** A Spring interceptor that allows wrapping a method invocation with
  *  a {@link ServiceWrapper} (for example, a {@link CircuitBreaker} or
- *  {@link PerformanceMonitor}.
+ *  {@link PerformanceMonitor}).
  */
 public class ServiceWrapperInterceptor implements MethodInterceptor {
 

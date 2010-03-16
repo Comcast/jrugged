@@ -28,6 +28,9 @@ public class RequestCounter implements ServiceWrapper {
     private long numSuccesses = 0L;
     private long numFailures = 0L;
 
+	/** Default constructor. */
+	public RequestCounter() { }
+
     private synchronized void succeed() {
     	numRequests++;
     	numSuccesses++;

@@ -39,14 +39,6 @@
         Aspects
     ================================-->
 
-    <bean id="performanceMonitorAspect" class="org.fishwife.jrugged.aspects.PerformanceMonitorAspect"
-        p:updateIntervalInSeconds="5"/>
-    
-    <!--    
-    <bean id="exceptionCircuitAspect" class="org.fishwife.jrugged.aspects.ExceptionCircuitAspect"
-        init-method="afterPropertiesSet"
-        p:properties-ref="hossProperties"/>
-    -->
-
+    <bean id="performanceMonitorAspect" class="org.fishwife.jrugged.aspects.PerformanceMonitorAspect"/>
 
 </beans>

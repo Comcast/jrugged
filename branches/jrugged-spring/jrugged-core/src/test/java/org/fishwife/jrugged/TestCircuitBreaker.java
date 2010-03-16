@@ -28,7 +28,7 @@ public class TestCircuitBreaker extends TestCase {
     private Callable mockCallable;
 
     public void setUp() {
-        impl = new CircuitBreaker();
+		impl = new CircuitBreaker();
         mockCallable = createMock(Callable.class);
     }
 

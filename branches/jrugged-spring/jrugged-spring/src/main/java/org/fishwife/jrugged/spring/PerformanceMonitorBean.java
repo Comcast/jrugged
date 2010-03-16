@@ -26,6 +26,8 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  */
 @ManagedResource
 public class PerformanceMonitorBean extends PerformanceMonitor {
+
+	/** Constructs a <code>PerformanceMonitorBean</code>. */
     public PerformanceMonitorBean() {
         super();
     }
