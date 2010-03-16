@@ -1,6 +1,6 @@
 /* Initializable.java
  * 
- * Copyright 2009 Comcast Interactive Media, LLC.
+ * Copyright 2009-2010 Comcast Interactive Media, LLC.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
  */
 package org.fishwife.jrugged;
 
-/** Clients who use the {@link Initializer} should implement this interface;
- *  this lets them do, for example:
+/** Clients who use the {@link Initializer} should implement this interface.
+ *  This lets them do, for example:
  *  <pre>
  *    new Initializer(this).initialize();
  *  </pre>

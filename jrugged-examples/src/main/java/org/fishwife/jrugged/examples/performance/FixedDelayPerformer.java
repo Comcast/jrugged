@@ -1,4 +1,4 @@
-/* Copyright 2009 Comcast Interactive Media, LLC.
+/* Copyright 2009-2010 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -12,21 +12,23 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package org.fishwife.jrugged;
+package org.fishwife.jrugged.examples.performance;
 
-/**
- * Thrown to indicate that an exception occurred and the circuit should close.
- * 
- * @see CircuitBreaker
+/** A test class that can be used to model a wrapped call that takes a
+ * specific amount of time to execute.
  */
-public class CircuitShouldBeClosedException extends RuntimeException {
+public class FixedDelayPerformer implements Runnable {
 
-    public CircuitShouldBeClosedException(Throwable cause) {
-        super(cause);
+    private final long _delayMillis;
+
+    public FixedDelayPerformer(Long delayMillis) {
+        _delayMillis = delayMillis;
     }
 
-    public CircuitShouldBeClosedException(String message, Throwable cause) {
-        super(message, cause);
+    public void run() {
+        try {
+            Thread.sleep(_delayMillis);
+        } catch (Exception e) {
+        }
     }
-
 }

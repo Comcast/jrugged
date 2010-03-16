@@ -1,4 +1,4 @@
-/* Copyright 2009 Comcast Interactive Media, LLC.
+/* Copyright 2009-2010 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,20 +17,16 @@ package org.fishwife.jrugged;
 import java.util.concurrent.Callable;
 
 /**
- * Invokes provided actions and reports success or failure.
+ * A {@link FailureInterpreter} is a helper class that can be used by
+ * a {@link CircuitBreaker} to determine whether a given failure
+ * should cause the breaker to trip.
  */
 public interface FailureInterpreter {
 
-    /**
-     * Invokes provided <code>Callable</code>.
-     * 
-     * @param c
-     * @return value returned from c
-     * @throws CircuitShouldStayOpenException if an exception occurred, but calling 
-     * circuit should stay open.
-     * @throws Exception if an unacceptable exception occurred.
-     */
-    <V> V invoke(Callable<V> c) throws CircuitShouldStayOpenException,
-            CircuitShouldBeClosedException, Exception;
+	/** Returns whether the governed {@link CircuitBreaker} should
+	 * trip OPEN as a result of this failure.
+	 * @param oops the {@link Throwable} failure that occurred
+	 * @return boolean <code>true</code> iff the circuit should trip */
+	boolean shouldTrip(Throwable oops);
 
 }

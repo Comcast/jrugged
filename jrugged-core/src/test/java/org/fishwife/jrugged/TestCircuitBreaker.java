@@ -1,6 +1,6 @@
 /* TestCircuitBreaker.java
  * 
- * Copyright 2009 Comcast Interactive Media, LLC.
+ * Copyright 2009-2010 Comcast Interactive Media, LLC.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package org.fishwife.jrugged;
 
 import java.util.concurrent.Callable;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
+
 import static org.easymock.EasyMock.*;
 
 public class TestCircuitBreaker extends TestCase {
@@ -26,123 +28,120 @@ public class TestCircuitBreaker extends TestCase {
     private Callable mockCallable;
 
     public void setUp() {
-	impl = new CircuitBreaker();
-	mockCallable = createMock(Callable.class);
+		impl = new CircuitBreaker();
+        mockCallable = createMock(Callable.class);
     }
 
-    public void testStaysOpenOnSuccess() throws Exception {
-	impl.state = CircuitBreaker.BreakerState.OPEN;
-	final Object obj = new Object();
-	expect(mockCallable.call()).andReturn(obj);
-	replay(mockCallable);
+    public void testStaysClosedOnSuccess() throws Exception {
+        impl.state = CircuitBreaker.BreakerState.CLOSED;
+        final Object obj = new Object();
+        expect(mockCallable.call()).andReturn(obj);
+        replay(mockCallable);
 
-	Object result = impl.invoke(mockCallable);
+        Object result = impl.invoke(mockCallable);
 
-	verify(mockCallable);
-	assertSame(obj, result);
-	assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        verify(mockCallable);
+        assertSame(obj, result);
+        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
     }
 
-    public void testTripsOnFailure() throws Exception {
-	long start = System.currentTimeMillis();
-	impl.state = CircuitBreaker.BreakerState.OPEN;
-	expect(mockCallable.call()).andThrow(new RuntimeException());
-	replay(mockCallable);
+    public void testOpensOnFailure() throws Exception {
+        long start = System.currentTimeMillis();
+        impl.state = CircuitBreaker.BreakerState.OPEN;
+        expect(mockCallable.call()).andThrow(new RuntimeException());
+        replay(mockCallable);
 
-	try {
-	    Object result = impl.invoke(mockCallable);
-	    fail("should have thrown an exception");
-	} catch (RuntimeException expected) {
-	}
-	long end = System.currentTimeMillis();
+        try {
+            impl.invoke(mockCallable);
+            fail("should have thrown an exception");
+        }
+        catch (RuntimeException expected) {
+        }
 
-	verify(mockCallable);
-	assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
-	assertTrue(impl.lastFailure >= start);
-	assertTrue(impl.lastFailure <= end);
+        long end = System.currentTimeMillis();
+
+        verify(mockCallable);
+        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertTrue(impl.lastFailure >= start);
+        assertTrue(impl.lastFailure <= end);
     }
 
-    public void testHalfOpenWithLiveAttemptThrowsCBException() 
+    public void testHalfClosedWithLiveAttemptThrowsCBException()
 	throws Exception {
 
-	impl.state = CircuitBreaker.BreakerState.HALF_OPEN;
-	impl.isAttemptLive = true;
-	final Object obj = new Object();
-	replay(mockCallable);
+        impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
+        impl.isAttemptLive = true;
+        replay(mockCallable);
 
-	try {
-	    Object result = impl.invoke(mockCallable);
-	    fail("should have thrown an exception");
-	} catch (CircuitBreakerException expected) {
-	}
-	
-	verify(mockCallable);
-	assertEquals(CircuitBreaker.BreakerState.HALF_OPEN, impl.state);
-	assertTrue(impl.isAttemptLive);
+        try {
+            impl.invoke(mockCallable);
+            fail("should have thrown an exception");
+        }
+        catch (CircuitBreakerException expected) {
+        }
+
+        verify(mockCallable);
+        assertEquals(CircuitBreaker.BreakerState.HALF_CLOSED, impl.state);
+        assertTrue(impl.isAttemptLive);
     }
 
-    public void testClosedDuringCooldownThrowsCBException() 
+    public void testOpenDuringCooldownThrowsCBException()
 	throws Exception {
 
-	impl.state = CircuitBreaker.BreakerState.CLOSED;
-	impl.lastFailure = System.currentTimeMillis();
-	final Object obj = new Object();
-	replay(mockCallable);
+        impl.state = CircuitBreaker.BreakerState.OPEN;
+        impl.lastFailure = System.currentTimeMillis();
+        replay(mockCallable);
 
-	try {
-	    Object result = impl.invoke(mockCallable);
-	    fail("should have thrown an exception");
-	} catch (CircuitBreakerException expected) {
-	}
+        try {
+            impl.invoke(mockCallable);
+            fail("should have thrown an exception");
+        }
+        catch (CircuitBreakerException expected) {
+        }
 
-	verify(mockCallable);
-	assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+        verify(mockCallable);
+        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
     }
 
-    public void testClosedAfterCooldownGoesHalfOpen() 
+    public void testOpenAfterCooldownGoesHalfClosed()
 	throws Exception {
 
-	impl.state = CircuitBreaker.BreakerState.CLOSED;
-	impl.resetMillis = 1000;
-	impl.lastFailure = System.currentTimeMillis() - 2000;
-	final Object obj = new Object();
-	expect(mockCallable.call()).andReturn(obj);
-	replay(mockCallable);
-	final CircuitBreaker cb = impl;
-	Object result = impl.invoke(mockCallable);
+        impl.state = CircuitBreaker.BreakerState.OPEN;
+        impl.resetMillis = 1000;
+        impl.lastFailure = System.currentTimeMillis() - 2000;
 
-	verify(mockCallable);
-	assertSame(obj, result);
-	assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertEquals(Status.DEGRADED, impl.getStatus());
     }
 
-    public void testHalfOpenFailureClosesAgain() 
+    public void testHalfClosedFailureOpensAgain()
 	throws Exception {
 
-	impl.state = CircuitBreaker.BreakerState.CLOSED;
-	impl.resetMillis = 1000;
-	impl.lastFailure = System.currentTimeMillis() - 2000;
+        impl.state = CircuitBreaker.BreakerState.CLOSED;
+        impl.resetMillis = 1000;
+        impl.lastFailure = System.currentTimeMillis() - 2000;
 
-	long start = System.currentTimeMillis();
-	final CircuitBreaker cb = impl;
-	expect(mockCallable.call()).andThrow(new RuntimeException());
-	replay(mockCallable);
+        long start = System.currentTimeMillis();
 
-	try {
-	    Object result = impl.invoke(mockCallable);
-	    fail("should have thrown exception");
-	} catch (RuntimeException expected) {
-	}
-	long end = System.currentTimeMillis();
+        expect(mockCallable.call()).andThrow(new RuntimeException());
+        replay(mockCallable);
 
-	verify(mockCallable);
-	assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
-	assertTrue(impl.lastFailure >= start);
-	assertTrue(impl.lastFailure <= end);
+        try {
+            Object result = impl.invoke(mockCallable);
+            fail("should have thrown exception");
+        }
+        catch (RuntimeException expected) {
+        }
+
+        long end = System.currentTimeMillis();
+
+        verify(mockCallable);
+        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertTrue(impl.lastFailure >= start);
+        assertTrue(impl.lastFailure <= end);
     }
 
     public void testManualTripAndReset() throws Exception {
-        impl.state = CircuitBreaker.BreakerState.CLOSED;
+        impl.state = CircuitBreaker.BreakerState.OPEN;
         final Object obj = new Object();
         expect(mockCallable.call()).andReturn(obj);
         replay(mockCallable);
@@ -151,7 +150,9 @@ public class TestCircuitBreaker extends TestCase {
         try {
             impl.invoke(mockCallable);
             fail("Manual trip method failed.");
-        } catch(CircuitBreakerException e){}
+        }
+        catch(CircuitBreakerException e) {
+        }
 
         impl.reset();
 
@@ -159,7 +160,7 @@ public class TestCircuitBreaker extends TestCase {
 
         verify(mockCallable);
         assertSame(obj, result);
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
     }
 
     public void testTripHard() throws Exception {
@@ -171,38 +172,38 @@ public class TestCircuitBreaker extends TestCase {
         try {
         impl.invoke(mockCallable);
             fail("exception expected after CircuitBreaker.tripHard()");
-        } catch (CircuitBreakerException e) {}
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+        }
+        catch (CircuitBreakerException e) {
+        }
+        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
         
         impl.reset();
         impl.invoke(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
         
-        verify(mockCallable);
-        
-        
+        verify(mockCallable);         
     }
     
     public void testGetStatusWhenOpen() {
         impl.state = CircuitBreaker.BreakerState.OPEN;  
-        assertEquals(Status.UP, impl.getStatus());
+        Assert.assertEquals(Status.DOWN, impl.getStatus());
     }
     
-    public void testGetStatusWhenHalfOpen() {
-        impl.state = CircuitBreaker.BreakerState.HALF_OPEN;
+    public void testGetStatusWhenHalfClosed() {
+        impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
         assertEquals(Status.DEGRADED, impl.getStatus());
     }
 
-    public void testGetStatusWhenClosedBeforeReset() {
+    public void testGetStatusWhenOpenBeforeReset() {
         impl.state = CircuitBreaker.BreakerState.CLOSED;
         impl.resetMillis = 1000;
         impl.lastFailure = System.currentTimeMillis() - 50;
         
-        assertEquals(Status.DOWN, impl.getStatus());
+        assertEquals(Status.UP, impl.getStatus());
     }
     
-    public void testGetStatusWhenClosedAfterReset() {
-        impl.state = CircuitBreaker.BreakerState.CLOSED;
+    public void testGetStatusWhenOpenAfterReset() {
+        impl.state = CircuitBreaker.BreakerState.OPEN;
         impl.resetMillis = 1000;
         impl.lastFailure = System.currentTimeMillis() - 2000;
         

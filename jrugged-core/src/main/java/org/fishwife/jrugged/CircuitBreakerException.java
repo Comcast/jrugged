@@ -1,6 +1,6 @@
 /* CircuitBreakerException.java
  * 
- * Copyright 2009 Comcast Interactive Media, LLC.
+ * Copyright 2009-2010 Comcast Interactive Media, LLC.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,12 @@
  */
 package org.fishwife.jrugged;
 
-/** This exception gets thrown by a {@link CircuitBreaker} if a wrapped
- *  call is disallowed by the breaker (e.g. because it is CLOSED). */
+/**
+ * This exception gets thrown by a {@link CircuitBreaker} if a wrapped
+ * call is disallowed by a tripped (OPEN) breaker.
+ */
 public class CircuitBreakerException extends RuntimeException {
+
+	/** Default constructor. */
+	public CircuitBreakerException() { }
 }

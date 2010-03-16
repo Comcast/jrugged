@@ -1,6 +1,6 @@
 /* Status.java
  * 
- * Copyright 2009 Comcast Interactive Media, LLC.
+ * Copyright 2009-2010 Comcast Interactive Media, LLC.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,9 +56,10 @@ public enum Status {
 
     private final int value;
     private final String signal;
+
     Status(int value, String signal) {
-	this.value = value;
-	this.signal = signal;
+		this.value = value;
+		this.signal = signal;
     }
 
     /** Returns the current status as an integer. Higher values are for 
