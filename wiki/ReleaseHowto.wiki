@@ -13,3 +13,9 @@
   # Check in the updated poms; development work can now continue against the working branch.
   # Check out the tag from the /tags directory.
   # Run `mvn package` and upload the appropriate artifacts to the project site on Google code.
+    # JAR, apidocs, sources for jrugged-core, jrugged-aspects, jrugged-spring
+    # source only for jrugged-examples
+    # mark the new JARs as 'Featured'
+  # Deploy new Javadoc to the S3 'jrugged' bucket and update links on the [http://code.google.com/p/jrugged/ project homepage].
+  # Update the ChangeLog.
+  # Send a mail announcing the release to all mailing lists.
