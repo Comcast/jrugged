@@ -1,5 +1,7 @@
 #summary Steps to get an example app up and running quickly.
 
+*TODO Alert*: These steps need to be updated somewhat, as the examples are now a sub-project of the mainline codebase. However, the steps are similar in spirit to what's below.
+
 To run the example app:
 
   * svn checkout http://jrugged.googlecode.com/svn/branches/jrugged-aspects-plus-examples
