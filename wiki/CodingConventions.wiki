@@ -4,6 +4,7 @@
 
   * Unix-style (\n) line endings
   * Use tabs, not spaces for indentation
+  * Format for an 80-character-wide display
   * Use curly braces for all if-then-else statements, except for a one-liner with no "else" clause. Both of these are ok:
 
 {{{
