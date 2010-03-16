@@ -1,6 +1,6 @@
 /* LatencyTracker.java
  * 
- * Copyright 2009 Comcast Interactive Media, LLC.
+ * Copyright 2009-2010 Comcast Interactive Media, LLC.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,40 +28,45 @@ public class LatencyTracker implements ServiceWrapper {
     private long lastFailureMillis;
 
     public <T> T invoke(Callable<T> c) throws Exception {
-	long start = System.currentTimeMillis();
-	try {
-	    T result = c.call();
-	    lastSuccessMillis = System.currentTimeMillis() - start;
-	    return result;
-	} catch (Exception e) {
-	    lastFailureMillis = System.currentTimeMillis() - start;
-	    throw e;
-	}
+		long start = System.currentTimeMillis();
+		try {
+			T result = c.call();
+			lastSuccessMillis = System.currentTimeMillis() - start;
+			return result;
+		} catch (Exception e) {
+			lastFailureMillis = System.currentTimeMillis() - start;
+			throw e;
+		}
     }
 
     public void invoke(Runnable r) throws Exception {
-	long start = System.currentTimeMillis();
-	try {
-	    r.run();
-	    lastSuccessMillis = System.currentTimeMillis() - start;
-	} catch (Exception e) {
-	    lastFailureMillis = System.currentTimeMillis() - start;
-	    throw e;
-	}
+		long start = System.currentTimeMillis();
+		try {
+			r.run();
+			lastSuccessMillis = System.currentTimeMillis() - start;
+		} catch (Exception e) {
+			lastFailureMillis = System.currentTimeMillis() - start;
+			throw e;
+		}
     }
 
     public <T> T invoke(Runnable r, T result) throws Exception {
-	long start = System.currentTimeMillis();
-	try {
-	    r.run();
-	    lastSuccessMillis = System.currentTimeMillis() - start;
-	    return result;
-	} catch (Exception e) {
-	    lastFailureMillis = System.currentTimeMillis() - start;
-	    throw e;
-	}
+		long start = System.currentTimeMillis();
+		try {
+			r.run();
+			lastSuccessMillis = System.currentTimeMillis() - start;
+			return result;
+		} catch (Exception e) {
+			lastFailureMillis = System.currentTimeMillis() - start;
+			throw e;
+		}
     }
 
+	/** Returns how long the last successful request took.
+	 *  @return long request service time in milliseconds */
     public long getLastSuccessMillis() { return lastSuccessMillis; }
+
+	/** Returns how long the last failed request took.
+	 *  @return long request service time in milliseconds. */
     public long getLastFailureMillis() { return lastFailureMillis; }
 }

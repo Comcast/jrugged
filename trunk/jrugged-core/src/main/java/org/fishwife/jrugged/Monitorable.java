@@ -1,6 +1,6 @@
 /* Monitorable.java
  * 
- * Copyright 2009 Comcast Interactive Media, LLC.
+ * Copyright 2009-2010 Comcast Interactive Media, LLC.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,9 @@ package org.fishwife.jrugged;
  *  {@link Status} when asked.
  */
 public interface Monitorable {
-    /** Returns the current {@link Status} of this subsystem. */
+    /** Returns the current {@link Status} of this subsystem.
+     * 
+     * @return Status
+     */
     Status getStatus();
 }

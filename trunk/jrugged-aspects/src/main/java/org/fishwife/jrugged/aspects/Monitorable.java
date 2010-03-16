@@ -1,4 +1,4 @@
-/* Copyright 2009 Comcast Interactive Media, LLC.
+/* Copyright 2009-2010 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -29,12 +29,10 @@ import org.fishwife.jrugged.PerformanceMonitor;
  * in the Monitorable annotation for the method, or you may share a
  * PerformanceMonitor across classes and methods by using the same key name
  * for many Monitorable annotations.
- * 
- * @author bschmaus
- *
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Monitorable {
+    /** A name for the configured {@link PerformanceMonitor}. */
     String value();
 }

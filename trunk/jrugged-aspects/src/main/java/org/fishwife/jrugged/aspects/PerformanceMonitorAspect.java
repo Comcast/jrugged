@@ -1,4 +1,4 @@
-/* Copyright 2009 Comcast Interactive Media, LLC.
+/* Copyright 2009-2010 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -32,27 +32,36 @@ import org.slf4j.LoggerFactory;
  * have a PerformanceMonitor per method.  Alternatively, a PerformanceMonitor
  * can be shared across methods and classes by using the same value for the
  * monitor key.
- * 
- * @author bschmaus
- *
  */
 @Aspect
 public class PerformanceMonitorAspect {
 
     private static final Logger logger = LoggerFactory.getLogger(PerformanceMonitorAspect.class);
 
-    private int updateIntervalInSeconds = 5;
-    public int getUpdateIntervalInSeconds() {
-        return updateIntervalInSeconds;
-    }
-    public void setUpdateIntervalInSeconds(int updateIntervalInSeconds) {
-        this.updateIntervalInSeconds = updateIntervalInSeconds;
-    }
-
     private Map<String, PerformanceMonitor> monitors = new HashMap<String, PerformanceMonitor>();
+
+    /** Default constructor. */
+    public PerformanceMonitorAspect() { }
+
+    /** Returns a directory of configured {@link PerformanceMonitor} instances.
+     *  @return {@link Map} of {@link String} to {@link PerformanceMonitor}
+     */
     public Map<String, PerformanceMonitor> getMonitors() {
         return monitors;
     }
+
+    /**
+     * Gets a performance monitor instance for the given monitor name (ie, key).
+     *
+     * @param key The value of a {@link Monitorable} annotation that will be
+     * used to lookup a corresponding {@link PerformanceMonitor} instance.
+     * @return The PerformanceMonitor for the given key or null if there is
+     * no monitor for the given key.
+     */
+    public PerformanceMonitor getMonitor(String key) {
+        return monitors.get(key);
+    }
+
     /**
      * Wraps a method annotated with the {@link Monitorable} annotation
      * with a {@link PerformanceMonitor}.
@@ -67,17 +76,20 @@ public class PerformanceMonitorAspect {
     @Around("@annotation(monitorable)")
     public Object monitor(final ProceedingJoinPoint pjp, Monitorable monitorable) throws Throwable {
         String monitorName = monitorable.value();
-        logger.debug("Have monitorable method with monitor name {}, wrapping call on method {} of target object {}", new Object[] { monitorName, pjp.getSignature().getName(), pjp.getTarget() });
+        logger.debug("Have monitorable method with monitor name {}, wrapping call on method {} of target object {}",
+                new Object[] { monitorName, pjp.getSignature().getName(), pjp.getTarget() });
         PerformanceMonitor performanceMonitor = monitors.get(monitorName);
+        
         if (performanceMonitor == null) {
-            performanceMonitor = new PerformanceMonitor(updateIntervalInSeconds);
+            performanceMonitor = new PerformanceMonitor();
             monitors.put(monitorName, performanceMonitor);
             logger.debug("Initialized new performance monitor for named monitor {}", monitorName);
         }
-        Object retval = performanceMonitor.invoke(
+
+        return performanceMonitor.invoke(
             new Callable<Object>() {
                 public Object call() throws Exception {
-                    Object retval = null;
+                    Object retval;
                     try {
                         retval = pjp.proceed();
                     } catch (Throwable e) {
@@ -91,19 +103,5 @@ public class PerformanceMonitorAspect {
                 }
             }
         );
-        return retval;
     }
-
-    /**
-     * Gets a performance monitor instance for the given monitor name (ie, key).
-     * 
-     * @param key The value of a {@link Monitorable} annotation that will be
-     * used to lookup a corresponding {@link PerformanceMonitor} instance.
-     * @return The PerformanceMonitor for the given key or null if there is
-     * no monitor for the given key.
-     */
-    public PerformanceMonitor getMonitor(String key) {
-        return monitors.get(key);
-    }
-    
 }

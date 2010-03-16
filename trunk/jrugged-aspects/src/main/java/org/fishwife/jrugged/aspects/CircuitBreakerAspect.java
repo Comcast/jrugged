@@ -1,4 +1,4 @@
-/* Copyright 2009 Comcast Interactive Media, LLC.
+/* Copyright 2009-2010 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,36 +19,33 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeUnit;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.fishwife.jrugged.CircuitBreaker;
-import org.fishwife.jrugged.CircuitBreakerException;
-import org.fishwife.jrugged.ExceptionFailureInterpreter;
+import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Surrounds methods annotated with <code>ExceptionCircuit</code> with a 
- * named CircuitBreaker.
- * 
- * @see org.fishwife.jrugged.ExceptionCircuit
+ * Surrounds methods decorated with the {@link
+ * org.fishwife.jrugged.aspects.CircuitBreaker} annotation with a named
+ * {@link org.fishwife.jrugged.CircuitBreaker}.
  */
 @Aspect
-public class ExceptionCircuitAspect {
+public class CircuitBreakerAspect {
 
     /**
      * Used to grab properties.
      */
-    private static final String CONFIG_KEY_PREFIX = "hoss.circuits.";
+    private static final String CONFIG_KEY_PREFIX = "circuit.";
 
     // configuration keys
-    private static final String FREQUENCY_KEY = "frequency";
-    private static final String PERIOD_KEY = "period";
-    private static final String RESET_KEY = "reset";
+    private static final String LIMIT_KEY = "limit";
+    private static final String WINDOWMILLIS_KEY = "windowMillis";
+    private static final String RESETMILLIS_KEY = "resetMillis";
 
     /**
      * Maps names to CircuitBreakers.
@@ -66,29 +63,30 @@ public class ExceptionCircuitAspect {
 
     private Properties props;
 
-    /**
-     * Allows user-provided class to map a {@link CircuitBreakerException} to
-     * an application-specific exception class.
-     */
-    private CircuitBreakerExceptionMapper<? extends Exception> circuitBreakerExceptionMapper;
-    public CircuitBreakerExceptionMapper<? extends Exception> getCircuitBreakerExceptionMapper() {
-        return circuitBreakerExceptionMapper;
-    }
-    public void setCircuitBreakerExceptionMapper(CircuitBreakerExceptionMapper<? extends Exception> circuitBreakerExceptionMapper) {
-        this.circuitBreakerExceptionMapper = circuitBreakerExceptionMapper;
-    }
- 
-    public ExceptionCircuitAspect() {}
+    /** Default constructor. */
+    public CircuitBreakerAspect() {}
 
+    /** Runs a method call through the configured {@link
+     * org.fishwife.jrugged.CircuitBreaker}.
+     * @param pjp a {@link ProceedingJoinPoint} representing an annotated
+     *   method call
+     * @param circuitTag the {@link
+     *   org.fishwife.jrugged.aspects.CircuitBreaker} annotation that
+     *   actually wrapped the method
+     * @throws Throwable if the method invocation itself or the wrapping
+     *   {@link org.jrugged.fishwife.CircuitBreaker} throws one during
+     *   execution
+     */
     @Around("@annotation(circuitTag)")
     public Object monitor(final ProceedingJoinPoint pjp,
-            ExceptionCircuit circuitTag) throws Throwable {
+			  org.fishwife.jrugged.aspects.CircuitBreaker circuitTag) 
+		throws Throwable {
         final String name = circuitTag.name();
         CircuitBreaker circuit;
         
         // locks on circuit map to ensure that I don't create 2 copies of a
-        // CircuitBreaker if 2 simultanous threads with the same circuit
-        // name hit this block for the 1st time
+        // CircuitBreaker if 2 simultaneous threads with the same circuit
+        // name hit this block for the first time
         synchronized (this.circuits) {
             if (circuits.containsKey(name)) {
                 circuit = circuits.get(name);
@@ -96,21 +94,22 @@ public class ExceptionCircuitAspect {
                 circuit = new CircuitBreaker();
 
                 // property config was not provided, so I use
-                // a default CircuitBreaker (which closes on a single exception) 
+                // a default CircuitBreaker (which trips on a single exception)
                 this.logger.info(
                         "circuit '{}' -> using default CircuitBreaker.", name);
 
                 circuits.put(name, circuit);
             }
             
-            // sets kind for circuit if it hasn't been initialized
+            // sets trip for circuit if it hasn't been initialized
             if (!this.initializedCircuits.containsKey(name)) {
-                final FailureInterpreter interpreter = circuit.getFailureInterpreter();
-                if(interpreter instanceof ExceptionFailureInterpreter) {
-                    final Class<? extends Exception> kind = circuitTag.kind();
-                    logger.debug("setting kind for circuit '{}' to {}", name,
-                            kind.getName());
-                    ((ExceptionFailureInterpreter) interpreter).setKind(kind);
+                final FailureInterpreter interpreter = 
+					circuit.getFailureInterpreter();
+
+                if(interpreter instanceof DefaultFailureInterpreter) {
+                    final Class<? extends Throwable>[] ignore = 
+						circuitTag.ignore();
+                    ((DefaultFailureInterpreter)interpreter).setIgnore(ignore);
                 }
                 this.initializedCircuits.put(name, Boolean.TRUE);
             }            
@@ -119,49 +118,46 @@ public class ExceptionCircuitAspect {
         
         this.logger.debug("circuit:{}, status:{}", name, circuit.getStatus());
 
-        try {
-            return circuit.invoke(new Callable<Object>() {
-                public Object call() throws Exception {
-                    try {
-                        return pjp.proceed();
-                    } catch (Throwable e) {
-                        if (e instanceof Exception)
-                            throw (Exception) e;
-                        else if (e instanceof Error)
-                            throw (Error) e;
-                        else
-                            throw new RuntimeException(e);
-                    }
-                }
-            });
-        } catch (CircuitBreakerException e) {
-            if (circuitBreakerExceptionMapper != null) {
-                throw circuitBreakerExceptionMapper.map(pjp, circuitTag, e);
-            } else {
-                throw e;
-            }
-        }
+        return circuit.invoke(new Callable<Object>() {
+             public Object call() throws Exception {
+                 try {
+                     return pjp.proceed();
+                 } catch (Throwable e) {
+                     if (e instanceof Exception) {
+                         throw (Exception) e;
+					 } else if (e instanceof Error) {
+                         throw (Error) e;
+					 } else {
+                         throw (RuntimeException) e;
+					 }
+                 }
+             }
+         });
     }
 
+	/** Returns the names of all configured {@link CircuitBreaker}
+	 * aspects.
+	 * @return {@link Set} of {@link String}s
+	 */
     public Set<String> getCircuitBreakerNames() {
         return this.circuits.keySet();
     }
 
     /**
-     * @return <code>true</code> if named CircuitBreaker exists,
-     *  <code>false</code> otherwise.
+     * Returns the named {@link CircuitBreaker} if it exists, or
+	 *   <code>null</code> if it doesn't.
+     * @param circuitName name of the desired CircuitBreaker
+	 * @return <code>CircuitBreaker</code> or <code>null</code>
      */
-    public boolean hasCircuitBreaker(String name) {
-        return this.circuits.containsKey(name);
-    }
-    
-    public CircuitBreaker getCircuitBreaker(String name) {
-        if (!this.circuits.containsKey(name))
-            throw new IllegalArgumentException(String.format(
-                    "circuit '%s' not found", name));
-        return this.circuits.get(name);
+    public CircuitBreaker getCircuitBreaker(String circuitName) {
+        return this.circuits.get(circuitName);
     }
 
+    /**
+     * Specifies the tolerance configurations for the annotated {@link
+     * org.fishwife.jrugged.CircuitBreaker} objects.
+     * @param props configuration specified as {@link Properties}
+     */
     public void setProperties(Properties props) {
         this.props = props;
     }
@@ -171,18 +167,19 @@ public class ExceptionCircuitAspect {
             try {
                 final String key = (String) entry.getKey();
                 final String value = (String) entry.getValue();
+
                 if (!key.startsWith(CONFIG_KEY_PREFIX)) {
                     continue;
                 }
 
-                final String[] parts = key
-                        .substring(CONFIG_KEY_PREFIX.length()).split("\\.", 2);
+                final String[] parts = key.substring(CONFIG_KEY_PREFIX.length()).split("\\.", 2);
 
                 if (parts.length != 2)
                     continue;
 
                 final String circuitName = parts[0];
                 CircuitConfig config;
+
                 if (this.circuitConfigs.containsKey(circuitName)) {
                     config = this.circuitConfigs.get(circuitName);
                 } else {
@@ -191,12 +188,13 @@ public class ExceptionCircuitAspect {
                 }
 
                 final String propName = parts[1];
-                if (propName.equals(FREQUENCY_KEY))
-                    config.frequency = Integer.parseInt(value);
-                else if (propName.equals(PERIOD_KEY))
-                    config.period = Integer.parseInt(value);
-                else if (propName.equals(RESET_KEY))
-                    config.reset = Integer.parseInt(value);
+
+                if (propName.equals(LIMIT_KEY))
+                    config.limit = Integer.parseInt(value);
+                else if (propName.equals(WINDOWMILLIS_KEY))
+                    config.windowMillis = Integer.parseInt(value);
+                else if (propName.equals(RESETMILLIS_KEY))
+                    config.resetMillis = Integer.parseInt(value);
                 else
                     this.logger.warn("unrecognized property: "
                             + key);
@@ -205,37 +203,47 @@ public class ExceptionCircuitAspect {
             }
         }
         
-        for (final Map.Entry<String, CircuitConfig> e : this.circuitConfigs
-                .entrySet()) {
+        for (final Map.Entry<String, CircuitConfig> e : 
+				 this.circuitConfigs.entrySet()) {
             final String circuitName = e.getKey();
             final CircuitConfig config = e.getValue();
 
             // if these 3 values were set, we can inject a 
             // FailureInterpreter
-            if (config.frequency > 0
-                    && config.period > 0 && config.reset > 0) {
+            if (config.limit > 0 && config.windowMillis > 0
+				&& config.resetMillis > 0) {
+
                 final CircuitBreaker circuit = new CircuitBreaker();
                 
-                // defaults to Exception for kind;
-                // I make it more specific when we process the annotation
-                circuit.setFailureInterpreter(new ExceptionFailureInterpreter(
-                        Exception.class, config.frequency, config.period,
-                        TimeUnit.MILLISECONDS));
+                // defaults to Exception for trip;
+                // I make it more specific when we process the
+                // annotation
+				FailureInterpreter fi = 
+					new DefaultFailureInterpreter(config.limit,
+												  config.windowMillis);
+                circuit.setFailureInterpreter(fi);
                 
                 // only sets values if > 0, 
                 // since default values in annotation are -1
-                if (config.reset > 0)
-                    circuit.setResetMillis(config.reset);
+                if (config.resetMillis > 0) {
+                    circuit.setResetMillis(config.resetMillis);
+				}
 
                 this.circuits.put(circuitName, circuit);
-                this.logger
-                .info(
+                this.logger.info(
                         "circuit '{}' -> frequency:{}, period:{}, reset:{}",
-                        new Object[] {circuitName, config.frequency, config.period, config.reset});
+                        new Object[] { circuitName, 
+				       config.limit, 
+				       config.windowMillis, 
+				       config.resetMillis });
             }
         }
     }
-    
+
+    /** Performs final initialization steps after all required configuration
+     *  properties have been specified.
+     *  @throws Exception if there is an initialization error
+     */
     public void afterPropertiesSet() throws Exception {
         if (this.props == null)
             throw new IllegalArgumentException("[properties] must be provided.");
@@ -243,8 +251,8 @@ public class ExceptionCircuitAspect {
     }
 
     private static final class CircuitConfig {
-        long reset = -1, period = -1;
-        int frequency = -1;
+        long resetMillis = -1, windowMillis = -1;
+        int limit = -1;
     }
 
 }

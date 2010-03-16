@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-   Copyright 2009 Comcast Interactive Media, LLC.
+   Copyright 2009-2010 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -39,14 +39,6 @@
         Aspects
     ================================-->
 
-    <bean id="performanceMonitorAspect" class="org.fishwife.jrugged.aspects.PerformanceMonitorAspect"
-        p:updateIntervalInSeconds="5"/>
-    
-    <!--    
-    <bean id="exceptionCircuitAspect" class="org.fishwife.jrugged.aspects.ExceptionCircuitAspect"
-        init-method="afterPropertiesSet"
-        p:properties-ref="hossProperties"/>
-    -->
-
+    <bean id="performanceMonitorAspect" class="org.fishwife.jrugged.aspects.PerformanceMonitorAspect"/>
 
 </beans>

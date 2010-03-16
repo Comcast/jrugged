@@ -1,4 +1,6 @@
-/* Copyright 2009 Comcast Interactive Media, LLC.
+<html>
+<!--
+   Copyright 2009-2010 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -11,14 +13,14 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
- */
-package org.fishwife.jrugged.aspects;
-
-import org.aspectj.lang.ProceedingJoinPoint;
-import org.fishwife.jrugged.CircuitBreakerException;
-
-public interface CircuitBreakerExceptionMapper<T extends Exception> {
-
-    public T map(ProceedingJoinPoint pjp, ExceptionCircuit circuitConfig, CircuitBreakerException e);
-    
-}
+-->
+<body>
+<p>If you are using <a href="http://www.springframework.org/">the Spring
+framework</a>, this package provides more convenient access to the core
+Jrugged functionality.</p>
+<p>Spring interceptors are provided that allow you to easily wrap
+specified methods in one of the jrugged "core"
+ServiceWrappers. Currently CircuitBreakers and PerformanceMonitors are
+supported.</p>
+</body>
+</html>

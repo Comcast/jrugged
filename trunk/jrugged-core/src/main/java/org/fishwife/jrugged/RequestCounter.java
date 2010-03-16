@@ -1,6 +1,6 @@
 /* RequestCounter.java
  * 
- * Copyright 2009 Comcast Interactive Media, LLC.
+ * Copyright 2009-2010 Comcast Interactive Media, LLC.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,46 +28,49 @@ public class RequestCounter implements ServiceWrapper {
     private long numSuccesses = 0L;
     private long numFailures = 0L;
 
+	/** Default constructor. */
+	public RequestCounter() { }
+
     private synchronized void succeed() {
-	numRequests++;
-	numSuccesses++;
+    	numRequests++;
+    	numSuccesses++;
     }
 
     private synchronized void fail() {
-	numRequests++;
-	numFailures++;
+    	numRequests++;
+    	numFailures++;
     }
 
     public <T> T invoke(Callable<T> c) throws Exception {
-	try {
-	    T result = c.call();
-	    succeed();
-	    return result;
-	} catch (Exception e) {
-	    fail();
-	    throw e;
-	}
+        try {
+            T result = c.call();
+            succeed();
+            return result;
+        } catch (Exception e) {
+            fail();
+            throw e;
+        }
     }
 
     public void invoke(Runnable r) throws Exception {
-	try {
-	    r.run();
-	    succeed();
-	} catch (Exception e) {
-	    fail();
-	    throw e;
-	}
+        try {
+            r.run();
+            succeed();
+        } catch (Exception e) {
+            fail();
+            throw e;
+        }
     }
 
     public <T> T invoke(Runnable r, T result) throws Exception {
-	try {
-	    r.run();
-	    succeed();
-	    return result;
-	} catch (Exception e) {
-	    fail();
-	    throw e;
-	}
+        try {
+            r.run();
+            succeed();
+            return result;
+        } catch (Exception e) {
+            fail();
+            throw e;
+        }
     }
 
     /** Samples the current counts.
@@ -76,8 +79,8 @@ public class RequestCounter implements ServiceWrapper {
      *    and the number of failed requests.
      */
     public synchronized long[] sample() {
-	long[] out = { numRequests, numSuccesses, numFailures };
-	return out;
+    	long[] out = { numRequests, numSuccesses, numFailures };
+	    return out;
     }
 
 }
