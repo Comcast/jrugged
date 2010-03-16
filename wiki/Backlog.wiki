@@ -9,7 +9,4 @@ Higher numbers are higher priority, so the list below should be in descending nu
 
 = Backlog =
 
-  # Expose Monitorable/Status et al. and PerformanceMonitor as JMX controls.
-  # Provide Spring-style wrappers to ease use and configuration, perhaps as a separate subproject (jrugged-spring).
-  # Provide AOP wrappers for the ServiceWrapper interfaces to make it easier to do drop-in decoration of existing code.
   # Provide support for exposing Monitorable/Status as text/html or application/atom+xml web pages.
