@@ -2,12 +2,51 @@
 
 = Introduction =
 
-Add your content here.
+The tools that are included in the Jrugged CORE library allow anyone to wrap a method call that they are making with a number of interesting additional functionality.  The two pieces of additional functionality, CircuitBreakers and PerformanceMonitors are shown in a code snip-it below.  
 
+It should also be noted that it is possible to wrap a method call in more then one piece of additional functionality allowing programmers to choose to use both a CircuitBreaker and a PerformanceMonitor on the same method call.
 
 = Details =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+This is an example of wrapping a backend call in a circuit breaker.
+
+public class MySystem {
+.........
+       //This is the method I want to decorate
+public BackEndData processArgument(final String myArg) {
+     final BackEndService theBackend = backend;
+
+     try {
+          return cBreaker.invoke(new Callable< BackEndData >() {
+               public BackEndData call() throws Exception {
+                    return theBackend.processArgument(myArg);
+               }
+          });
+     } catch (RuntimeException re) {
+          throw re;
+     } catch (Exception e) {
+          throw new RuntimeException("wrapped", e);
+     }
+ }
+
+
+This is an example of wrapping a backend call in a performance monitor.  You should note that the performance monitor decoration looks nearly identical to the circuit breaker decoration.  
+
+public class MySystem {
+.........
+       //This is the method I want to decorate
+public BackEndData processArgument(final String myArg) {
+     final BackEndService theBackend = backend;
+
+     try {
+          return perfMonitor.invoke(new Callable< BackEndData >() {
+               public BackEndData call() throws Exception {
+                    return theBackend.processArgument(myArg);
+               }
+          });
+     } catch (RuntimeException re) {
+          throw re;
+     } catch (Exception e) {
+          throw new RuntimeException("wrapped", e);
+     }
+ }
