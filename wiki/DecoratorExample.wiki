@@ -9,24 +9,26 @@ It should also be noted that it is possible to wrap a method call in more then o
 = Details =
 
 This is an example of wrapping a backend call in a circuit breaker.
-
+<pre>
 public class MySystem {
 .........
        //This is the method I want to decorate
-public BackEndData processArgument(final String myArg) {
-     final BackEndService theBackend = backend;
+     public BackEndData processArgument(final String myArg) {
+          final BackEndService theBackend = backend;
 
-     try {
-          return cBreaker.invoke(new Callable< BackEndData >() {
-               public BackEndData call() throws Exception {
-                    return theBackend.processArgument(myArg);
-               }
-          });
-     } catch (RuntimeException re) {
-          throw re;
-     } catch (Exception e) {
-          throw new RuntimeException("wrapped", e);
-     }
+          try {
+               return cBreaker.invoke(new Callable< BackEndData >() {
+                    public BackEndData call() throws Exception {
+                         return theBackend.processArgument(myArg);
+                    }
+               });
+          } catch (RuntimeException re) {
+               throw re;
+          } catch (Exception e) {
+               throw new RuntimeException("wrapped", e);
+          }
+}
+</pre>
  }
 
 
