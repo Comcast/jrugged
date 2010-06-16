@@ -1,10 +1,10 @@
-#summary One-sentence summary of this page.
+#summary An example of circuit breakers and performance monitors using the decorator pattern.
 
 = Introduction =
 
-The tools that are included in the Jrugged CORE library allow anyone to wrap a method call that they are making with a number of interesting additional functionality.  The two pieces of additional functionality, CircuitBreakers and PerformanceMonitors are shown in a code snip-it below.  
+The tools that are included in the Jrugged CORE library allow anyone to wrap a method call that they are making with a number of interesting additional functionalities.  The two pieces of additional functionality, circuit breakers and performance monitors are shown in a code snip-it below.  
 
-It should also be noted that it is possible to wrap a method call in more then one piece of additional functionality allowing programmers to choose to use both a CircuitBreaker and a PerformanceMonitor on the same method call.
+It should also be noted that it is possible to wrap a method call in more than one piece of additional functionality. This allows programmers to choose to use both a [http://jrugged.s3.amazonaws.com/jrugged-core-2.0.0/apidocs/org/fishwife/jrugged/CircuitBreaker.html CircuitBreaker] and a [http://jrugged.s3.amazonaws.com/jrugged-core-2.0.0/apidocs/org/fishwife/jrugged/PerformanceMonitor.html PerformanceMonitor] on the same method call.
 
 = Details =
 
