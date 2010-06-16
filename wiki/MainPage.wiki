@@ -9,4 +9,6 @@ Although there are several lower-level building block classes here available for
   * !PerformanceMonitor provides a way to wrap a service and collect a series of useful statistics about its latency and throughput, even calculating moving averages across different time windows.
   * Monitorable, Status, and !RolledUpStatus are related classes that provide a simple RED/YELLOW/GREEN encoding for service health, possibly useful for constructing operational dashboards.
 
-Generally speaking, most of these classes implement a !ServiceWrapper interface to allow them to be applied around existing services using the Decorator design pattern. Those classes providing operational information, such as !PerformanceMonitor and Monitorable can be wrapped in classes that expose their data to JMX controls or on web-accessible health status pages as desired. 
+Generally speaking, most of these classes implement a !ServiceWrapper interface to allow them to be applied around existing services using the [http://en.wikipedia.org/wiki/Decorator_pattern Decorator] design pattern. Those classes providing operational information, such as !PerformanceMonitor and Monitorable can be wrapped in classes that expose their data to JMX controls or on web-accessible health status pages as desired. 
+
+Check out our [Examples] page to get information on the library and how it works.
