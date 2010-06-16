@@ -1,0 +1,79 @@
+#summary An example of configuring a service with circuit breakers and performance monitors in Spring.
+
+= Introduction =
+
+The bases classes in Jrugged CORE are designed such that they have no dependancies on outside libraries.  This makes the jrugged library very easy to incorporate into many projects with little effect on the other dependancies that the project may have.  The Jrugged Spring library depends on the core library but also brings springs ease of integration and configuration into the mix.  If you are already using spring, the jrugged Spring library will make using jrugged to incorporate one or more circuit breakers or performance monitors a breeze.
+
+The jrugged spring library uses Spring Interceptors to allow methods to be wrapped in circuit breakers or performance monitors without having to change the original code at all.
+
+= Details =
+
+To use a circuit breaker you will first need to define one in the spring config:
+
+{{{
+    <bean id="exampleCircuitBreaker" class="org.fishwife.jrugged.spring.CircuitBreakerBean">
+        <property name="limit" value="5"/>
+        <property name="windowMillis" value="2000"/>
+        <property name="resetMillis" value="5000"/>
+    </bean>
+}}}
+
+Once you have the breaker - you will need to define an interceptor and what methods you would like the breaker to be associated with.  If you leave the "methods" property off the configuration, by default, all methods will be intercepted.
+
+{{{
+    <bean id="exampleCircuitBreakerInterceptor" class="org.fishwife.jrugged.spring.ServiceWrapperInterceptor">
+        <property name="methods">
+            <map>
+              <entry key="exampleMethodCallOne" value-ref="exampleCircuitBreaker"/>
+              <entry key="exampleMethodCallTwo" value-ref="exampleCircuitBreaker"/>
+            </map>
+        </property>
+    </bean>
+}}}
+
+Now that I have a circuit breaker and an interceptor - I need to tell spring which class I would like the interceptor attached to, I do this by creating a spring bean proxy like the following:
+
+{{{
+    <bean id="exampleCircuitServiceProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="exampleCircuitService"/>
+        <property name="interceptorNames">
+            <list>
+                <value>exampleCircuitBreakerInterceptor</value>
+            </list>
+        </property>
+    </bean>  
+}}}
+
+You will note in the proxy configuration above that it refers to an "exampleCircuitService" bean... this is the name of the bean I would like the proxy to wrap interceptors around.  it will be defined elsewhere in the spring configuration, for the purposes of this example it is defined as follows:
+
+{{{
+    <bean id="exampleCircuitService" class="org.fishwife.jrugged.examples.spring.ExampleService"/>
+}}}
+
+That should get you up and running.  If you wanted to add a performance monitor around the same calls in the "exampleCircuitService" bean, you would define a performance monitor and its interceptor and then add that interceptor to the proxy definition:
+
+{{{
+    <bean id="exampleMonitorInterceptor" class="org.fishwife.jrugged.spring.ServiceWrapperInterceptor">
+        <property name="methods">
+            <map>
+              <entry key="exampleMethodCallOne" value-ref="examplePerformanceMonitor"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="examplePerformanceMonitor" class="org.fishwife.jrugged.spring.PerformanceMonitorBean"/>
+}}}
+
+When you add the performance monitor to the proxy, you don't need two proxies just need to add the additional Interceptor definition so that the proxy definition now looks like this:
+
+{{{    
+<bean id="exampleCircuitServiceProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="exampleCircuitService"/>
+        <property name="interceptorNames">
+            <list>
+                <value>exampleCircuitBreakerInterceptor</value>
+                <value>exampleMonitorInterceptor</value>
+            </list>
+        </property>
+    </bean>  
+}}}
