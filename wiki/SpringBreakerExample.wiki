@@ -49,3 +49,31 @@ You will note in the proxy configuration above that it refers to an "exampleCirc
 {{{
     <bean id="exampleCircuitService" class="org.fishwife.jrugged.examples.spring.ExampleService"/>
 }}}
+
+That should get you up and running.  If you wanted to add a performance monitor around the same calls in the "exampleCircuitService" bean, you would define a performance monitor and its interceptor and then add that interceptor to the proxy definition:
+
+{{{
+    <bean id="exampleMonitorInterceptor" class="org.fishwife.jrugged.spring.ServiceWrapperInterceptor">
+        <property name="methods">
+            <map>
+              <entry key="exampleMethodCallOne" value-ref="examplePerformanceMonitor"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="examplePerformanceMonitor" class="org.fishwife.jrugged.spring.PerformanceMonitorBean"/>
+}}}
+
+When you add the performance monitor to the proxy, you don't need two proxies just need to add the additional Interceptor definition so that the proxy definition now looks like this:
+
+{{{    
+<bean id="exampleCircuitServiceProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="exampleCircuitService"/>
+        <property name="interceptorNames">
+            <list>
+                <value>exampleCircuitBreakerInterceptor</value>
+                <value>exampleMonitorInterceptor</value>
+            </list>
+        </property>
+    </bean>  
+}}}
