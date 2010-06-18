@@ -20,7 +20,7 @@
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
-                value="[jrugged-examples-fork] %p [%t] %c{1}.%M(%L) | %m%n"/>
+                value="[jrugged-examples] %p [%t] %c{1}.%M(%L) | %m%n"/>
         </layout>
     </appender>
 

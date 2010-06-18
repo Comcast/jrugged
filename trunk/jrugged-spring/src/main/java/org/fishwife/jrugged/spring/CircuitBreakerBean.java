@@ -31,12 +31,12 @@ public class CircuitBreakerBean extends CircuitBreaker {
 
 	/** Creates a {@link CircuitBreakerBean} with a {@link
 	 *  DefaultFailureInterpreter} and the default "tripped" exception
-	 *  behavior (throwing a {@link CircuitBreakerException}). */
+	 *  behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}). */
     public CircuitBreakerBean() { super(); }
 
 	/** Creates a {@link CircuitBreakerBean} with the specified {@link
 	 *	FailureInterpreter} and the default "tripped" exception
-	 *	behavior (throwing a {@link CircuitBreakerException}).
+	 *	behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
 	 *  @param fi the <code>FailureInterpreter</code> to use when
 	 *    determining whether a specific failure ought to cause the 
 	 *    breaker to trip
@@ -50,7 +50,7 @@ public class CircuitBreakerBean extends CircuitBreaker {
 	 *  CircuitBreakerExceptionMapper} when client calls are made
 	 *  while the breaker is tripped.
 	 *  @param mapper helper used to translate a {@link
-	 *    CircuitBreakerException} into an application-specific one */
+	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one */
     public CircuitBreakerBean(CircuitBreakerExceptionMapper mapper) {
         super(mapper);
     }
@@ -63,7 +63,7 @@ public class CircuitBreakerBean extends CircuitBreaker {
 	 *    determining whether a specific failure ought to cause the 
 	 *    breaker to trip
 	 *  @param mapper helper used to translate a {@link
-	 *    CircuitBreakerException} into an application-specific one */
+	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one */
     public CircuitBreakerBean(FailureInterpreter fi, CircuitBreakerExceptionMapper mapper) {
         super(fi, mapper);
     }
@@ -75,6 +75,15 @@ public class CircuitBreakerBean extends CircuitBreaker {
     @Override
     public void tripHard() {
         super.tripHard();
+    }
+
+    /**
+     * Manually trips the CircuitBreaker until {@link #reset()} is invoked.
+     */
+    @ManagedOperation
+    @Override
+    public void trip() {
+        super.trip();
     }
 
     /**
@@ -97,6 +106,29 @@ public class CircuitBreakerBean extends CircuitBreaker {
     @Override
     public long getTripCount() {
         return super.getTripCount();
+    }
+
+    /**
+     * When called with true - causes the {@link CircuitBreaker} to byPass
+     * its functionality allowing requests to be executed unmolested
+     * until the <code>CircuitBreaker</code> is reset or the byPass
+     * is manually set to false.
+     */
+    @ManagedAttribute
+    @Override
+    public void setByPassState(boolean b) {
+        super.setByPassState(b);
+    }
+
+    /**
+     * Get the current state of the {@link CircuitBreaker} byPass
+     *
+     * @return boolean the byPass flag's current value
+     */
+    @ManagedAttribute
+    @Override
+    public boolean getByPassState() {
+        return super.getByPassState();
     }
 
     /**
@@ -127,7 +159,7 @@ public class CircuitBreakerBean extends CircuitBreaker {
      * @param l number of milliseconds to "cool down" after tripping
      *   before allowing a "test request" through again
      */
-    @ManagedOperation
+    @ManagedAttribute
     @Override
     public void setResetMillis(long l) {
         super.setResetMillis(l);
@@ -150,7 +182,7 @@ public class CircuitBreakerBean extends CircuitBreaker {
      *  @see DefaultFailureInterpreter
      *  @param limit the number of tolerated failures in a window
      */
-    @ManagedOperation
+    @ManagedAttribute
     @Override
     public void setLimit(int limit) {
         ((DefaultFailureInterpreter) super.getFailureInterpreter()).setLimit(limit);
@@ -163,7 +195,7 @@ public class CircuitBreakerBean extends CircuitBreaker {
      *  @see DefaultFailureInterpreter
      *  @param windowMillis length of the window in milliseconds
      */
-    @ManagedOperation
+    @ManagedAttribute
     @Override
     public void setWindowMillis(long windowMillis) {
         super.setWindowMillis(windowMillis);
