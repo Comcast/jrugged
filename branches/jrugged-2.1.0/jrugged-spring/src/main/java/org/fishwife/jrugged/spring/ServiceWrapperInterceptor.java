@@ -16,7 +16,6 @@
  */
 package org.fishwife.jrugged.spring;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
@@ -27,14 +26,14 @@ import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.PerformanceMonitor;
 import org.fishwife.jrugged.ServiceWrapper;
 
-/** A Spring interceptor that allows wrapping a method invocation with
- *  a {@link ServiceWrapper} (for example, a {@link CircuitBreaker} or
- *  {@link PerformanceMonitor}).
+/** 
+ * A Spring interceptor that allows wrapping a method invocation with
+ * a {@link ServiceWrapper} (for example, a {@link CircuitBreaker} or
+ * {@link PerformanceMonitor}).
  */
 public class ServiceWrapperInterceptor implements MethodInterceptor {
 
-	private Map<String, ServiceWrapper> methodMap =
-		new HashMap<String, ServiceWrapper>();
+	private Map<String, ServiceWrapper> methodMap;
 
 	/** See if the given method invocation is one that needs to be
 	 * called through a {@link ServiceWrapper}, and if so, do so.
@@ -45,28 +44,45 @@ public class ServiceWrapperInterceptor implements MethodInterceptor {
 	 *   that the {@link ServiceWrapper} would generate when tripped.
 	 */
     public Object invoke(final MethodInvocation invocation) throws Throwable {
-		String methodName = invocation.getMethod().getName();
-        ServiceWrapper wrapper = methodMap.get(methodName);
-		if (wrapper == null) {
-			return invocation.proceed();
-		}
-		return wrapper.invoke(new Callable<Object>() {
-                public Object call() throws Exception {
-                    try {
-                        return invocation.proceed();
-                    } catch (Throwable e) {
-                        if (e instanceof Exception)
-                            throw (Exception) e;
-                        else if (e instanceof Error)
-                            throw (Error) e;
-                        else
-                            throw new RuntimeException(e);
+        String methodName = invocation.getMethod().getName();
+
+        if (!shouldWrapMethodCall(methodName)) {
+            return invocation.proceed();
+        }
+        else {
+            ServiceWrapper wrapper = methodMap.get(methodName);
+
+            return wrapper.invoke(new Callable<Object>() {
+                    public Object call() throws Exception {
+                        try {
+                            return invocation.proceed();
+                        } catch (Throwable e) {
+                            if (e instanceof Exception)
+                                throw (Exception) e;
+                            else if (e instanceof Error)
+                                throw (Error) e;
+                            else
+                                throw new RuntimeException(e);
+                        }
                     }
-                }
-            });
+                });
+        }
     }
 
-	/** Specifies which methods will be wrapped with which ServiceWrappers.
+    private boolean shouldWrapMethodCall(String methodName) {
+        if (methodMap == null) {
+            return true; // Wrap all by default
+        }
+
+        if (methodMap.get(methodName) != null) {
+            return true; //Wrap a specific method
+        }
+
+        // If I get to this point, I should not wrap the call.
+        return false;
+    }
+
+    /** Specifies which methods will be wrapped with which ServiceWrappers.
 	 *  @param methodMap the mapping!
 	 */
     public void setMethods(Map<String, ServiceWrapper> methodMap)  {

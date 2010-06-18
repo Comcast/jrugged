@@ -14,9 +14,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<project name="jrugged-examples-fork">
+<project name="jrugged-examples">
     <bannerLeft>
-        <name>jrugged-examples-fork</name>
+        <name>jrugged-examples</name>
         <src>https://appfuse.dev.java.net/images/appfuse-title.gif</src>
         <href>http://appfuse.org</href>
     </bannerLeft>

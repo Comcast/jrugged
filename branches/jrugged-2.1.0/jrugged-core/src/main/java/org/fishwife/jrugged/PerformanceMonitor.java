@@ -141,38 +141,38 @@ public class PerformanceMonitor implements ServiceWrapper {
     public void invoke(final Runnable r) throws Exception {
 		try {
 			requestCounter.invoke(new Runnable() {
-					public void run() {
-						try {
-							latencyTracker.invoke(r);
-						} catch (Exception e) {
-							throw new RuntimeException(WRAP_MSG, e);
-						}
-					}
-				});
-			recordSuccess();
-		} catch (RuntimeException re) {
-			recordFailure();
-			if (WRAP_MSG.equals(re.getMessage())) {
-				throw (Exception)re.getCause();
-			} else {
-				throw re;
-			}
-		}
+                public void run() {
+                    try {
+                        latencyTracker.invoke(r);
+                    } catch (Exception e) {
+                        throw new RuntimeException(WRAP_MSG, e);
+                    }
+                }
+            });
+            recordSuccess();
+        } catch (RuntimeException re) {
+            recordFailure();
+            if (WRAP_MSG.equals(re.getMessage())) {
+                throw (Exception)re.getCause();
+            } else {
+                throw re;
+            }
+        }
     }
 
     public <T> T invoke(final Runnable r, T result) throws Exception {
-		try {
-			this.invoke(r);
-			recordSuccess();
-			return result;
-		} catch (RuntimeException re) {
-			recordFailure();
-			if (WRAP_MSG.equals(re.getMessage())) {
-				throw (Exception)re.getCause();
-			} else {
-				throw re;
-			}
-		}
+        try {
+            this.invoke(r);
+            recordSuccess();
+            return result;
+        } catch (RuntimeException re) {
+            recordFailure();
+            if (WRAP_MSG.equals(re.getMessage())) {
+                throw (Exception)re.getCause();
+            } else {
+                throw re;
+            }
+        }
     }
 
     /**
@@ -181,7 +181,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getAverageSuccessLatencyLastMinute() {
-		return averageSuccessLatencyLastMinute.getAverage();
+        return averageSuccessLatencyLastMinute.getAverage();
     }
 
     /**
@@ -190,7 +190,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getAverageSuccessLatencyLastHour() {
-		return averageSuccessLatencyLastHour.getAverage();
+        return averageSuccessLatencyLastHour.getAverage();
     }
 
     /**
@@ -199,7 +199,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getAverageSuccessLatencyLastDay() {
-		return averageSuccessLatencyLastDay.getAverage();
+        return averageSuccessLatencyLastDay.getAverage();
     }
 
     /**
@@ -208,7 +208,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getAverageFailureLatencyLastMinute() {
-		return averageFailureLatencyLastMinute.getAverage();
+        return averageFailureLatencyLastMinute.getAverage();
     }
 
     /**
@@ -217,7 +217,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getAverageFailureLatencyLastHour() {
-		return averageFailureLatencyLastHour.getAverage();
+        return averageFailureLatencyLastHour.getAverage();
     }
 
     /**
@@ -226,7 +226,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getAverageFailureLatencyLastDay() {
-		return averageFailureLatencyLastDay.getAverage();
+        return averageFailureLatencyLastDay.getAverage();
     }
 
     /**
@@ -235,7 +235,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getTotalRequestsPerSecondLastMinute() {
-		return totalRequestsPerSecondLastMinute.getAverage();
+        return totalRequestsPerSecondLastMinute.getAverage();
     }
 
     /**
@@ -244,7 +244,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getSuccessRequestsPerSecondLastMinute() {
-		return successRequestsPerSecondLastMinute.getAverage();
+        return successRequestsPerSecondLastMinute.getAverage();
     }
 
     /**
@@ -253,7 +253,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getFailureRequestsPerSecondLastMinute() {
-		return failureRequestsPerSecondLastMinute.getAverage();
+        return failureRequestsPerSecondLastMinute.getAverage();
     }
 
     /**
@@ -262,7 +262,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getTotalRequestsPerSecondLastHour() {
-		return totalRequestsPerSecondLastHour.getAverage();
+        return totalRequestsPerSecondLastHour.getAverage();
     }
 
     /**
@@ -271,7 +271,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getSuccessRequestsPerSecondLastHour() {
-		return successRequestsPerSecondLastHour.getAverage();
+        return successRequestsPerSecondLastHour.getAverage();
     }
 
     /** Returns the average request rate in requests per second of
@@ -279,7 +279,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getFailureRequestsPerSecondLastHour() {
-		return failureRequestsPerSecondLastHour.getAverage();
+        return failureRequestsPerSecondLastHour.getAverage();
     }
 
     /**
@@ -288,7 +288,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getTotalRequestsPerSecondLastDay() {
-		return totalRequestsPerSecondLastDay.getAverage();
+        return totalRequestsPerSecondLastDay.getAverage();
     }
 
     /**
@@ -297,7 +297,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getSuccessRequestsPerSecondLastDay() {
-		return successRequestsPerSecondLastDay.getAverage();
+        return successRequestsPerSecondLastDay.getAverage();
     }
 
     /**
@@ -306,7 +306,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getFailureRequestsPerSecondLastDay() {
-		return failureRequestsPerSecondLastDay.getAverage();
+        return failureRequestsPerSecondLastDay.getAverage();
     }
 
     /**
@@ -315,8 +315,8 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getTotalRequestsPerSecondLifetime() {
-		long deltaT = System.currentTimeMillis() - startupMillis;
-		return (((double)requestCounter.sample()[0])/(double)deltaT) * 1000;
+        long deltaT = System.currentTimeMillis() - startupMillis;
+        return (((double)requestCounter.sample()[0])/(double)deltaT) * 1000;
     }
 
     /**
@@ -326,8 +326,8 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getSuccessRequestsPerSecondLifetime() {
-		long deltaT = System.currentTimeMillis() - startupMillis;
-		return (((double)requestCounter.sample()[1])/(double)deltaT) * 1000;
+        long deltaT = System.currentTimeMillis() - startupMillis;
+        return (((double)requestCounter.sample()[1])/(double)deltaT) * 1000;
     }
 
     /**
@@ -337,8 +337,19 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return double
      */
     public double getFailureRequestsPerSecondLifetime() {
-		long deltaT = System.currentTimeMillis() - startupMillis;
-		return (((double)requestCounter.sample()[2])/(double)deltaT) * 1000;
+        long deltaT = System.currentTimeMillis() - startupMillis;
+        return (((double)requestCounter.sample()[2])/(double)deltaT) * 1000;
+    }
+
+    /**
+     * Returns the underlying request counter that this performance
+     * monitor is using.  This can be used in conjunction with
+     * {@link PercentErrPerTimeFailureInterpreter}.
+     *
+     * @return RequestCounter the request count tracker class
+     */
+    public RequestCounter getRequestCounter() {
+        return this.requestCounter;
     }
 
     /**
@@ -347,7 +358,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return long
      */
     public long getRequestCount() {
-		return requestCounter.sample()[0];
+        return requestCounter.sample()[0];
     }
 
     /**
@@ -356,7 +367,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return long
      */
     public long getSuccessCount() {
-		return requestCounter.sample()[1];
+        return requestCounter.sample()[1];
     }
 
     /**
@@ -365,6 +376,6 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return long
      */
     public long getFailureCount() {
-		return requestCounter.sample()[2];
+        return requestCounter.sample()[2];
     }
 }

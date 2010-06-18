@@ -16,8 +16,12 @@
  */
 package org.fishwife.jrugged;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Callable;
+import java.util.concurrent.atomic.AtomicLong;
 
 /** A {@link CircuitBreaker} can be used with a service to throttle traffic
  *  to a failed subsystem (particularly one we might not be able to monitor,
@@ -73,21 +77,17 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     }
 
 	/** Current state of the breaker. */
-    protected BreakerState state = BreakerState.CLOSED;
+    protected volatile BreakerState state = BreakerState.CLOSED;
 
 	/** The time the breaker last tripped, in milliseconds since the
 		epoch. */
-    protected long lastFailure;
+    protected AtomicLong lastFailure = new AtomicLong(0L);
 
 	/** How many times the breaker has tripped during its lifetime. */
-    protected long openCount = 0L;
+    protected AtomicLong openCount = new AtomicLong(0L);
 	
 	/** How long the cooldown period is in milliseconds. */
-    protected long resetMillis = 15 * 1000L;
-
-	/** Whether the "test" attempt permitted in the HALF_CLOSED state
-	 *  is currently in-flight. */
-    protected boolean isAttemptLive = false;
+    protected AtomicLong resetMillis = new AtomicLong(15 * 1000L);
 
 	/** The {@link FailureInterpreter} to use to determine whether a
 		given failure should cause the breaker to trip. */
@@ -99,7 +99,22 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 * CircuitBreakerException}. */
     protected CircuitBreakerExceptionMapper exceptionMapper;
 
+    protected List<CircuitBreakerNotificationCallback> cbNotifyList =
+            Collections.synchronizedList(new ArrayList<CircuitBreakerNotificationCallback>());
+
     private boolean isHardTrip;
+
+    /**
+     * Bypass this CircuitBreaker - used for testing, or other operational
+     * situations where verification of the Break might be required.
+     */
+    protected boolean byPass = false;
+
+    /**
+     * Whether the "test" attempt permitted in the HALF_CLOSED state
+     *  is currently in-flight.
+     */
+    protected boolean isAttemptLive = false;
 
 	/** Creates a {@link CircuitBreaker} with a {@link
 	 *  DefaultFailureInterpreter} and the default "tripped" exception
@@ -153,18 +168,23 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 *    execution
      */
     public <V> V invoke(Callable<V> c) throws Exception {
-        if (!allowRequest()) {
-            throw mappedException(new CircuitBreakerException());
-        }
+        if (!byPass) {
+            if (!allowRequest()) {
+                throw mappedException(new CircuitBreakerException());
+            }
 
-		try {
-            V result = c.call();
-            close();
-			return result;
-		} catch (Throwable cause) {
-			handleFailure(cause);
-		}
-		throw new IllegalStateException("not possible");
+            try {
+                V result = c.call();
+                close();
+                return result;
+            } catch (Throwable cause) {
+                handleFailure(cause);
+            }
+            throw new IllegalStateException("not possible");
+        }
+        else {
+            return c.call();
+        }
     }
 
     /** Wrap the given service call with the {@link CircuitBreaker}
@@ -177,17 +197,22 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 *    execution
      */
     public void invoke(Runnable r) throws Exception {
-        if (!allowRequest()) {
-            throw mappedException(new CircuitBreakerException());
-        }
+        if (!byPass) {
+            if (!allowRequest()) {
+                throw mappedException(new CircuitBreakerException());
+            }
 
-        try {
-    	    r.run();
-	        close();
-        } catch (Throwable cause) {
-			handleFailure(cause);
+            try {
+                r.run();
+                close();
+            } catch (Throwable cause) {
+                handleFailure(cause);
+            }
+            throw new IllegalStateException("not possible");
         }
-		throw new IllegalStateException("not possible");
+        else {
+            r.run();
+        }
     }
 
     /** Wrap the given service call with the {@link CircuitBreaker}
@@ -202,18 +227,44 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 *    execution
      */
     public <V> V invoke(Runnable r, V result) throws Exception {
-    	if (!allowRequest()) {
-            throw mappedException(new CircuitBreakerException());
-        }
+        if (!byPass) {
+            if (!allowRequest()) {
+                throw mappedException(new CircuitBreakerException());
+            }
 
-        try {
-            r.run();
-            close();
-            return result;
-        } catch (Throwable cause) {
-			handleFailure(cause);
+            try {
+                r.run();
+                close();
+                return result;
+            } catch (Throwable cause) {
+                handleFailure(cause);
+            }
+            throw new IllegalStateException("not possible");
         }
-		throw new IllegalStateException("not possible");
+        else {
+            r.run();
+            return result;
+        }
+    }
+
+    /**
+     * When called with true - causes the {@link CircuitBreaker} to byPass
+     * its functionality allowing requests to be executed unmolested
+     * until the <code>CircuitBreaker</code> is reset or the byPass
+     * is manually set to false.
+     */
+    public void setByPassState(boolean b) {
+        byPass = b;
+        notifyBreakerStateChange(getStatus());
+    }
+
+    /**
+     * Get the current state of the {@link CircuitBreaker} byPass
+     *
+     * @return boolean the byPass flag's current value
+     */
+    public boolean getByPassState() {
+        return byPass;
     }
 
     /**
@@ -223,11 +274,13 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      */
     public void trip() {
         state = BreakerState.OPEN;
-        lastFailure = System.currentTimeMillis();
-        openCount++;
+        lastFailure.set(System.currentTimeMillis());
+        openCount.getAndIncrement();
         isAttemptLive = false;
+
+        notifyBreakerStateChange(getStatus());
     }
-    
+
     /**
      * Manually trips the CircuitBreaker until {@link #reset()} is invoked.
      */
@@ -242,7 +295,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      * @return long the last failure time
      */
     public long getLastTripTime() {
-        return lastFailure;
+        return lastFailure.get();
     }
 
     /**
@@ -251,7 +304,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      * @return long the number of times the circuit breaker tripped
      */
     public long getTripCount() {
-        return openCount;
+        return openCount.get();
     }
 
     /**
@@ -263,6 +316,10 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     public void reset() {
         state = BreakerState.CLOSED;
         isHardTrip = false;
+        byPass = false;
+        isAttemptLive = false;
+
+        notifyBreakerStateChange(getStatus());
     }
 
     /** Returns the current {@link org.fishwife.jrugged.Status} of the
@@ -273,16 +330,20 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      *  is DEGRADED; if it is OPEN, we report the client is DOWN.
      */
     public Status getStatus() {
-		boolean canSendProbeRequest = !isHardTrip && lastFailure > 0
-			&& (System.currentTimeMillis() - lastFailure >= resetMillis);
+		boolean canSendProbeRequest = !isHardTrip && lastFailure.get() > 0
+			&& (System.currentTimeMillis() - lastFailure.get() >= resetMillis.get());
 
+        if (byPass) {
+            return Status.BYPASS;
+        }
+        
         switch(state) {
-		case OPEN: 
-			return (canSendProbeRequest ? Status.DEGRADED : Status.DOWN);
-		case HALF_CLOSED: return Status.DEGRADED;
-		case CLOSED: 
-		default:
-			return Status.UP;
+		    case OPEN:
+			    return (canSendProbeRequest ? Status.DEGRADED : Status.DOWN);
+		    case HALF_CLOSED: return Status.DEGRADED;
+		    case CLOSED:
+		    default:
+			    return Status.UP;
         }
     }
 
@@ -291,7 +352,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      * @return long
      */
     public long getResetMillis() {
-        return resetMillis;
+        return resetMillis.get();
     }
 
     /** Sets the reset period to the given number of milliseconds. The
@@ -301,7 +362,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      *   before allowing a "test request" through again
      */
     public void setResetMillis(long l) {
-        resetMillis = l;
+        resetMillis.set(l);
     }
 
 	/** Returns a {@link String} representation of the breaker's
@@ -310,7 +371,9 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 *   the breaker is CLOSED; <code>"YELLOW"</code> if the breaker
 	 *   is HALF_CLOSED; and <code>"RED"</code> if the breaker is
 	 *   OPEN (tripped). */
-    public String getHealthCheck() { return getStatus().getSignal(); }
+    public String getHealthCheck() {
+        return getStatus().getSignal();
+    }
 
     /**
      * Specifies the failure tolerance limit for the {@link
@@ -398,6 +461,26 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     }
 
     /**
+     * Add an interested party for {@link CircuitBreaker} events, like up,
+     * down, degraded status state changes.
+     *
+     * @param listener an interested party for {@link CircuitBreaker} status events.
+     */
+    public void addListener(CircuitBreakerNotificationCallback listener) {
+        cbNotifyList.add(listener);
+    }
+
+    /**
+     * Set a list of interested parties for {@link CircuitBreaker} events, like up,
+     * down, degraded status state changes.
+     *
+     * @param listeners a list of interested parties for {@link CircuitBreaker} status events.
+     */
+    public void setListeners(ArrayList<CircuitBreakerNotificationCallback> listeners) {
+        cbNotifyList = Collections.synchronizedList(listeners);
+    }
+
+    /**
      * Get the helper that converts {@link CircuitBreakerException}s into
 	 * application-specific exceptions.
      * @return {@link CircuitBreakerExceptionMapper} my converter object, or
@@ -417,6 +500,11 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 			failureInterpreter.shouldTrip(cause)) {
 			trip();
 		}
+
+        if (isAttemptLive) {
+            close();
+        }
+        
 		if (cause instanceof Exception) {
 			throw (Exception)cause;
 		} else if (cause instanceof Error) {
@@ -434,14 +522,23 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     private void close() {
         state = BreakerState.CLOSED;
         isAttemptLive = false;
+        notifyBreakerStateChange(getStatus());
     }
 
     private synchronized boolean canAttempt() {
-        if (!BreakerState.HALF_CLOSED.equals(state) || isAttemptLive) {
+        if (!(BreakerState.HALF_CLOSED == state) || isAttemptLive) {
             return false;
         }
         isAttemptLive = true;
         return true;
+    }
+
+    private void notifyBreakerStateChange(Status status) {
+        if (cbNotifyList != null && cbNotifyList.size() >= 1) {
+            for (CircuitBreakerNotificationCallback notifyObject : cbNotifyList) {
+                notifyObject.notify(status);
+            }
+        }
     }
 
     /**
@@ -452,12 +549,12 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
         if (this.isHardTrip) {
             return false;
         }
-        else if (BreakerState.CLOSED.equals(state)) {
+        else if (BreakerState.CLOSED == state) {
             return true;
         }
 
-        if (BreakerState.OPEN.equals(state) &&
-            System.currentTimeMillis() - lastFailure >= resetMillis) {
+        if (BreakerState.OPEN == state &&
+            System.currentTimeMillis() - lastFailure.get() >= resetMillis.get()) {
             state = BreakerState.HALF_CLOSED;
         }
         return canAttempt();
