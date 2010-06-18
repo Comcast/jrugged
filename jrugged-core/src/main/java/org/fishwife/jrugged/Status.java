@@ -52,7 +52,9 @@ public enum Status {
     DEGRADED(1,"YELLOW"),
 
     /** Everything is operating as expected. */
-    UP(2,"GREEN");
+    UP(2,"GREEN"),
+
+    BYPASS(3, "GREEN");
 
     private final int value;
     private final String signal;
