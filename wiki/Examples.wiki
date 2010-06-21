@@ -4,7 +4,7 @@
 
 = Details =
 
-  * DecoratorExample - How the jrugged Core library utilizes the decorator pattern to wrap itself around method calls that you are making.  Allowing for things like circuit breakers and performance monitor to be easily added to your code:
-  * SpringInterceptorExample - How the jrugged-spring library can be used in conjunction with the jrugged core library to easily wrap existing methods and services with jrugged functionality.
+  * DecoratorExample - How the jrugged core library utilizes the decorator pattern to wrap itself around method calls that you are making, allowing for things like circuit breakers and performance monitors to be easily added to your code.
+  * SpringInterceptorExample - How the jrugged-spring library can be used in conjunction with the jrugged-core library to easily wrap existing methods and services with jrugged functionality.
   * RunningExampleApp - Explains how to get the jrugged code and execute an example application that runs.
-  * PercentageFailureInterpreterExample - Using a combination of jrugged abilities to create a circuit breaker that trips based on percentage of failed requests rather then a tolerance window of failures per unit time.
+  * PercentageFailureInterpreterExample - Using a combination of jrugged abilities to create a circuit breaker that trips based on percentage of failed requests rather than a tolerance window of failures per unit time.
