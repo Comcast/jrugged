@@ -128,12 +128,12 @@ public class PerformanceMonitor implements ServiceWrapper {
 				});
 			recordSuccess();
 			return result;
-		} catch (RuntimeException re) {
+		} catch (Exception e) {
 			recordFailure();
-			if (WRAP_MSG.equals(re.getMessage())) {
-				throw (Exception)re.getCause();
+			if (WRAP_MSG.equals(e.getMessage())) {
+				throw (Exception)e.getCause();
 			} else {
-				throw re;
+				throw e;
 			}
 		}
     }
