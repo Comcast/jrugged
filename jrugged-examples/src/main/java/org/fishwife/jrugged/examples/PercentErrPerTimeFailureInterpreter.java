@@ -56,7 +56,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     /**
      * Constructor that allows a tolerance for a certain number of
      * failures within a given window of time without tripping.
-     * @param rc A {@klink RequestCounter} wrapped around the same thing that this
+     * @param rc A {@link RequestCounter} wrapped around the same thing that this
      *   {@link org.fishwife.jrugged.CircuitBreaker} is protecting.  This is
      *   needed in order to keep track of the total number of requests, enabling a
      *   percentage calculation to be done.
@@ -78,7 +78,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     /**
      * Constructor that allows a tolerance for a certain number of
      * failures within a given window of time without tripping.
-     * @param p A {@klink PerformanceMonitor} from which we can get an underlying
+     * @param p A {@link PerformanceMonitor} from which we can get an underlying
      *   {@link RequestCounter} that is wrapped around the same thing that this
      *   {@link org.fishwife.jrugged.CircuitBreaker} is protecting.  This is
      *   needed in order to keep track of the total number of requests, enabling a
@@ -114,7 +114,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     /**
      * Constructor where we specify tolerance and a set of ignored failures.
      *
-     * @param rc A {@klink RequestCounter} wrapped around the same thing that this
+     * @param rc A {@link RequestCounter} wrapped around the same thing that this
      *   {@link org.fishwife.jrugged.CircuitBreaker} is protecting.  This is
      *   needed in order to keep track of the total number of requests, enabling a
      *   percentage calculation to be done.
@@ -252,7 +252,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     /**
      * Specifies the {@link RequestCounter} that will be supplying the "total" requests
      * made information for this interpreter.
-     * @param rc
+     * @param rc A {@link RequestCounter}
      */
     public void setRequestCounter(RequestCounter rc) {
         requestCounter = rc;
