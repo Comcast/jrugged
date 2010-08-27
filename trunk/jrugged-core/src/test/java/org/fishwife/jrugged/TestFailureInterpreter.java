@@ -25,9 +25,10 @@ import junit.framework.TestCase;
 
 public final class TestFailureInterpreter extends TestCase {
 
-    public void testAcceptableException() throws Exception {
+    @SuppressWarnings("unchecked")
+	public void testAcceptableException() throws Exception {
 		final RuntimeException theExn = new RuntimeException();
-        final Callable callable = createMock(Callable.class);
+        final Callable<Object> callable = createMock(Callable.class);
         final FailureInterpreter interpreter = createMock(FailureInterpreter.class);
         final CircuitBreaker cb = new CircuitBreaker(interpreter);
 
@@ -47,9 +48,10 @@ public final class TestFailureInterpreter extends TestCase {
         verify(interpreter);
     }
 
-    public void testUnacceptableException() throws Exception {
+    @SuppressWarnings("unchecked")
+	public void testUnacceptableException() throws Exception {
 		final RuntimeException theExn = new RuntimeException();
-        final Callable callable = createMock(Callable.class);
+        final Callable<Object> callable = createMock(Callable.class);
         final FailureInterpreter interpreter = createMock(FailureInterpreter.class);
         final CircuitBreaker cb = new CircuitBreaker(interpreter);
 

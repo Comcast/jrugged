@@ -97,7 +97,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	/** Helper class to allow throwing an application-specific
 	 * exception rather than the default {@link
 	 * CircuitBreakerException}. */
-    protected CircuitBreakerExceptionMapper exceptionMapper;
+    protected CircuitBreakerExceptionMapper<? extends Exception> exceptionMapper;
 
     protected List<CircuitBreakerNotificationCallback> cbNotifyList =
             Collections.synchronizedList(new ArrayList<CircuitBreakerNotificationCallback>());
@@ -138,7 +138,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 *  while the breaker is tripped.
 	 *  @param mapper helper used to translate a {@link
 	 *    CircuitBreakerException} into an application-specific one */
-    public CircuitBreaker(CircuitBreakerExceptionMapper mapper) {
+    public CircuitBreaker(CircuitBreakerExceptionMapper<? extends Exception> mapper) {
         exceptionMapper = mapper;
     }
 
@@ -152,7 +152,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 *  @param mapper helper used to translate a {@link
 	 *    CircuitBreakerException} into an application-specific one */
     public CircuitBreaker(FailureInterpreter fi, 
-						  CircuitBreakerExceptionMapper mapper) {
+						  CircuitBreakerExceptionMapper<? extends Exception> mapper) {
         failureInterpreter = fi;
         exceptionMapper = mapper;
     }
@@ -403,9 +403,10 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 			throw new IllegalStateException("setIgnore() not supported: this CircuitBreaker's FailureInterpreter isn't a DefaultFailureInterpreter.");
 		}
 		
-		Class[] classes = new Class[ignore.size()];
+		@SuppressWarnings("unchecked")
+		Class<? extends Throwable>[] classes = new Class[ignore.size()];
 		int i = 0;
-		for(Class c : ignore) {
+		for(Class<? extends Throwable> c : ignore) {
 			classes[i] = c;
 			i++;
 		}
@@ -456,7 +457,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      *
      * @param mapper my converter object
      */
-    public void setExceptionMapper(CircuitBreakerExceptionMapper mapper) {
+    public void setExceptionMapper(CircuitBreakerExceptionMapper<? extends Exception> mapper) {
         this.exceptionMapper = mapper;
     }
 
@@ -486,7 +487,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      * @return {@link CircuitBreakerExceptionMapper} my converter object, or
      *   <code>null</code> if one is not currently set.
      */
-    public CircuitBreakerExceptionMapper getExceptionMapper(){
+    public CircuitBreakerExceptionMapper<? extends Exception> getExceptionMapper(){
         return this.exceptionMapper;
     }
 

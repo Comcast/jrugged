@@ -22,6 +22,8 @@ package org.fishwife.jrugged;
  */
 public class CircuitBreakerException extends RuntimeException {
 
+	private static final long serialVersionUID = 1L;
+
 	/** Default constructor. */
 	public CircuitBreakerException() { }
 }

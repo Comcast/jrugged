@@ -14,8 +14,6 @@
  */
 package org.fishwife.jrugged;
 
-import static org.easymock.EasyMock.createStrictMock;
-
 import java.io.IOException;
 
 import junit.framework.TestCase;
@@ -37,6 +35,7 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 		assertEquals(0, impl.getIgnore().size());
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void testConstructorWithIgnore() {
 		final Class exnClass = RuntimeException.class;
 		final Class[] myIgnore =  { exnClass };
@@ -52,6 +51,7 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void testConstructorWithIgnoreAndTolerance() {
 		final Class exnClass = RuntimeException.class;
 		final Class[] myIgnore =  { exnClass };
@@ -69,6 +69,7 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public void testIgnoredExceptionDoesNotTrip() {
 		final Class ignoreClass = IOException.class;
         final Class[] myIgnore = { ignoreClass };

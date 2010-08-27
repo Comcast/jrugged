@@ -37,7 +37,9 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     private List<Long> errorTimes = Collections
             .synchronizedList(new LinkedList<Long>());
 
-	private static Class[] defaultIgnore = { };
+	@SuppressWarnings("unchecked")
+	private static Class<? extends Throwable>[] defaultIgnore = 
+		new Class[0];
 
     /**
      * Default constructor. Any {@link Throwable} will cause the breaker to trip.
@@ -100,7 +102,7 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     }
 	
 	public boolean shouldTrip(Throwable cause) {
-		for(Class clazz : ignore) {
+		for(Class<?> clazz : ignore) {
 			if (clazz.isInstance(cause)) {
 				return false;
 			}
