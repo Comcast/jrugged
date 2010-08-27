@@ -25,10 +25,11 @@ import static org.easymock.EasyMock.*;
 
 public class TestCircuitBreaker extends TestCase {
     private CircuitBreaker impl;
-    private Callable mockCallable;
+    private Callable<Object> mockCallable;
     Status theStatus;
 
-    public void setUp() {
+    @SuppressWarnings("unchecked")
+	public void setUp() {
 		impl = new CircuitBreaker();
         mockCallable = createMock(Callable.class);
     }
@@ -127,7 +128,7 @@ public class TestCircuitBreaker extends TestCase {
         replay(mockCallable);
 
         try {
-            Object result = impl.invoke(mockCallable);
+            impl.invoke(mockCallable);
             fail("should have thrown exception");
         }
         catch (RuntimeException expected) {

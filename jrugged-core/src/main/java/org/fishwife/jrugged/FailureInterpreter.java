@@ -14,8 +14,6 @@
  */
 package org.fishwife.jrugged;
 
-import java.util.concurrent.Callable;
-
 /**
  * A {@link FailureInterpreter} is a helper class that can be used by
  * a {@link CircuitBreaker} to determine whether a given failure

@@ -30,7 +30,7 @@ public class TestLatencyTracker extends TestCase {
     public void testCallableSuccess() throws Exception {
 	final Object o = new Object();
 	
-	Object result = impl.invoke(new Callable() {
+	Object result = impl.invoke(new Callable<Object>() {
 		public Object call() throws Exception {
 		    Thread.sleep(1);
 		    return o;
@@ -45,7 +45,7 @@ public class TestLatencyTracker extends TestCase {
     public void testCallableFailure() throws Exception {
 	
 	try {
-	    Object result = impl.invoke(new Callable() {
+	    impl.invoke(new Callable<Object>() {
 		    public Object call() throws Exception {
 			Thread.sleep(1);
 			throw new Exception();
