@@ -51,7 +51,7 @@ public class CircuitBreakerBean extends CircuitBreaker {
 	 *  while the breaker is tripped.
 	 *  @param mapper helper used to translate a {@link
 	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one */
-    public CircuitBreakerBean(CircuitBreakerExceptionMapper mapper) {
+    public CircuitBreakerBean(CircuitBreakerExceptionMapper<? extends Exception> mapper) {
         super(mapper);
     }
 
@@ -64,7 +64,8 @@ public class CircuitBreakerBean extends CircuitBreaker {
 	 *    breaker to trip
 	 *  @param mapper helper used to translate a {@link
 	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one */
-    public CircuitBreakerBean(FailureInterpreter fi, CircuitBreakerExceptionMapper mapper) {
+    public CircuitBreakerBean(FailureInterpreter fi,
+    		CircuitBreakerExceptionMapper<? extends Exception> mapper) {
         super(fi, mapper);
     }
 
