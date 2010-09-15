@@ -21,14 +21,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.fishwife.jrugged.PerformanceMonitor;
 import org.fishwife.jrugged.aspects.PerformanceMonitorAspect;
-import org.fishwife.jrugged.examples.ResponseTweaker;
+import org.fishwife.jrugged.examples.AspectResponseTweaker;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 @Controller()
-public class PerformanceMonitorExample {
+public class AspectPerformanceMonitorExample {
 
     @Autowired
     private PerformanceMonitorAspect performanceAspect;
@@ -40,23 +40,23 @@ public class PerformanceMonitorExample {
     }
 
     @Autowired
-    private ResponseTweaker responseTweaker;
-    public ResponseTweaker getResponseTweaker() {
-        return responseTweaker;
+    private AspectResponseTweaker aspectResponseTweaker;
+    public AspectResponseTweaker getResponseTweaker() {
+        return aspectResponseTweaker;
     }
-    public void setResponseTweaker(ResponseTweaker responseTweaker) {
-        this.responseTweaker = responseTweaker;
+    public void setAspectResponseTweaker(AspectResponseTweaker aspectResponseTweaker) {
+        this.aspectResponseTweaker = aspectResponseTweaker;
     }
 
-    @RequestMapping("/performanceMonitor")
+    @RequestMapping("/aspectPerformanceMonitor")
     public ModelAndView viewMain(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        int delayedFor = responseTweaker.delay();
-        ModelAndView view = new ModelAndView("perf-monitor");
+        int delayedFor = aspectResponseTweaker.delay();
+        ModelAndView view = new ModelAndView("aspectPerf-monitor");
         view.addObject("delay", new Integer(delayedFor));
         return view;
     }
 
-    @RequestMapping("/performanceMonitor/stats")
+    @RequestMapping("/aspectPerformanceMonitor/stats")
     public ModelAndView viewPerformanceMonitor(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         final StringBuilder sb = new StringBuilder();

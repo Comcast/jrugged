@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 public class PercentileTracker {
     private long windowMillis;
 
-    private ConcurrentSkipListMap<Long, Double> cslm = new ConcurrentSkipListMap<Long, Double>();
+    protected ConcurrentSkipListMap<Long, Double> cslm = new ConcurrentSkipListMap<Long, Double>();
 
     public PercentileTracker(long windowMillis) {
 		this.windowMillis = windowMillis;
@@ -41,9 +41,8 @@ public class PercentileTracker {
     public synchronized void update(double sample) {
 		long now = System.currentTimeMillis();
 
-        cslm.put(now, sample);
-
         removeOutOfTimeWindowEntries();
+        cslm.put(now, sample);
     }
 
     /**
@@ -57,6 +56,10 @@ public class PercentileTracker {
     }
 
     protected double getPercentile(int requestedPercentile, ArrayList<Double> values) {
+        if (values == null || values.size() == 0) {
+            return 0d;
+        }
+
         Collections.sort(values);
         Double[] mySampleSet = values.toArray(new Double[values.size()]);
 
@@ -86,6 +89,17 @@ public class PercentileTracker {
     }
 
     private void removeOutOfTimeWindowEntries() {
+        if (cslm.isEmpty()) {
+            return;
+        }
+        
+        // Optimization - if the last entry is also outside
+        // the time window, all items in the list can be cleared.
+        if (System.currentTimeMillis() - cslm.lastKey() > windowMillis) {
+            cslm.clear();
+            return;
+        }
+
         while ((cslm.lastKey() - cslm.firstKey()) > windowMillis) {
             cslm.pollFirstEntry(); //The first entry is now too old, remove it
         }

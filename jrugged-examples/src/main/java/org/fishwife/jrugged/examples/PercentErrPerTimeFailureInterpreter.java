@@ -17,6 +17,8 @@ package org.fishwife.jrugged.examples;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.fishwife.jrugged.PerformanceMonitor;
 import org.fishwife.jrugged.RequestCounter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -46,11 +48,14 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
 
 	private static Class[] defaultIgnore = { };
 
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
     /**
      * Default constructor. Any {@link Throwable} will cause the breaker to trip.
      */
     public PercentErrPerTimeFailureInterpreter() {
 		setIgnore(defaultIgnore);
+        requestCounter = new RequestCounter();
 	}
 
     /**
@@ -151,47 +156,61 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
         // if Exception is of specified type, and window conditions exist,
         // keep circuit open unless exception threshold has passed
         if (hasWindowConditions()) {
-            Long requestLow;
-            Long requestHigh;
-            int numberOfErrorsAfter;
+            Long currentRequestCount = -1L;
+            Long previousRequestHighWaterMark = -1L;
+            long numberOfErrorsAfter;
 
             synchronized (modificationLock) {
                 errorTimes.add(System.currentTimeMillis());
                 requestCounts.add(requestCounter.sample()[0]);
 
                 // calculates time for which we remove any errors before
-                final long removeTimesBeforeMillis = System.currentTimeMillis()
-                           - windowMillis;
-
+                final long removeTimeBeforeMillis = System.currentTimeMillis() - windowMillis;
                 final int numberOfErrorsBefore = this.errorTimes.size();
+
+                boolean windowRemoval = false;
 
                 // removes errors before cutoff
                 // (could we speed this up by using binary search to find the entry point,
                 // then removing any items before that point?)
-                for (int i = 0; i == numberOfErrorsBefore - 1; i++) {
+                for (int j = numberOfErrorsBefore - 1; j >= 0; j--) {
 
-                    final Long time = this.errorTimes.get(i);
+                    final Long time = this.errorTimes.get(j);
 
-                    if (time < removeTimesBeforeMillis) {
-                        this.errorTimes.remove(i);
-                        this.requestCounts.remove(i);
-                    } else {
-                        // the list is sorted by time, if I didn't remove this item
-                        // I won't be removing any after it either
-                        break;
+                    logger.debug("J: " + j + " RemoveTimeBefore: " + removeTimeBeforeMillis + " EntryTime: " + time);
+
+                    if (time < removeTimeBeforeMillis) {
+                        if (!windowRemoval) {
+                            previousRequestHighWaterMark = requestCounts.get(j);
+                            windowRemoval = true;
+                        }
+
+                        this.errorTimes.remove(j);
+                        this.requestCounts.remove(j);
                     }
                 }
 
                 numberOfErrorsAfter = this.errorTimes.size();
-                requestLow = this.requestCounts.get(0);
-                requestHigh = this.requestCounts.get(this.requestCounts.size() - 1);
+                logger.debug("#Errors Before: " + numberOfErrorsBefore + " #Errors After: " + numberOfErrorsAfter);
+
+                if (!windowRemoval) {
+                    previousRequestHighWaterMark = this.requestCounts.get(this.requestCounts.size() - 1);
+                }
+
+                currentRequestCount = this.requestCounts.get(requestCounts.size() - 1);
+                logger.debug("previousRequestHighWaterMark: " + previousRequestHighWaterMark + " Current REQUEST Count: " + currentRequestCount);
             }
 
-            Long windowRequests = requestHigh - requestLow;
+            long windowRequests = (currentRequestCount - previousRequestHighWaterMark);
+            if (windowRequests == 0) {
+                windowRequests = currentRequestCount;
+            }
+            logger.debug("windowRequests: " + windowRequests);
 
             // Trip if the number of errors over the total of requests over the same period
             // is over the percentage limit.
-            return ((numberOfErrorsAfter / windowRequests) * 100 > percent);
+            logger.debug("Percent: " + ((double)numberOfErrorsAfter / (double)windowRequests) * 100d);
+            return (((double)numberOfErrorsAfter / (double)windowRequests) * 100d >= percent);
         }
         return true;
 	}

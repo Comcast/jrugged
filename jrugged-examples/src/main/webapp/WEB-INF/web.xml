@@ -38,9 +38,17 @@
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/performanceMonitor*</url-pattern>
+        <url-pattern>/aspectPerformanceMonitor*</url-pattern>
     </servlet-mapping>
-    
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/interceptPerformanceMonitor*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>dispatcher</servlet-name>
+        <url-pattern>/interceptCircuitBreaker*</url-pattern>
+    </servlet-mapping>
+
     <listener>
         <listener-class>org.springframework.web.util.Log4jConfigListener</listener-class>
     </listener>
