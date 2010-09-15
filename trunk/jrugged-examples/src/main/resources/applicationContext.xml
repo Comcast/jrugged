@@ -46,4 +46,83 @@
 
     <bean id="performanceMonitorAspect" class="org.fishwife.jrugged.aspects.PerformanceMonitorAspect"/>
 
+    <!--==============================
+    Interceptors - Performance
+    ================================-->
+
+    <bean id="performanceMonitor" class="org.fishwife.jrugged.spring.PerformanceMonitorBean"/>
+
+    <bean id="performanceMonitorInterceptor" class="org.fishwife.jrugged.spring.ServiceWrapperInterceptor">
+        <property name="methods">
+            <map>
+                <entry key="delay" value-ref="performanceMonitor"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="interceptorProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="interceptResponseTweaker"/>
+        <property name="interceptorNames">
+            <list>
+                <value>performanceMonitorInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--==============================
+        Interceptors - Breaker
+    ================================-->
+
+    <bean id="interceptCircuitBreaker" class="org.fishwife.jrugged.spring.CircuitBreakerBean">
+        <property name="limit" value="2"/>
+        <property name="windowMillis" value="5000"/>
+        <property name="resetMillis" value="10000"/>
+    </bean>
+
+    <bean id="circuitBreakerInterceptor" class="org.fishwife.jrugged.spring.ServiceWrapperInterceptor">
+        <property name="methods">
+            <map>
+                <entry key="delay" value-ref="interceptCircuitBreaker"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="breakerProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="breakerResponseTweaker"/>
+        <property name="interceptorNames">
+            <list>
+                <value>circuitBreakerInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+    <!--==============================
+        JMX
+    ================================-->
+
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false"
+          p:assembler-ref="assembler"
+          p:namingStrategy-ref="namingStrategy"
+          p:autodetect="true">
+        <property name="beans">
+            <map>
+                <entry key="jrugged:name=interceptCircuitBreaker" value-ref="interceptCircuitBreaker"/>
+                <entry key="jrugged:name=performanceMonitor" value-ref="performanceMonitor"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="jmxAttributeSource"
+          class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+
+    <!-- will create management interface using annotation metadata -->
+    <bean id="assembler"
+          class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler"
+          p:attributeSource-ref="jmxAttributeSource"/>
+
+    <!-- will pick up the ObjectName from the annotation -->
+    <bean id="namingStrategy"
+          class="org.springframework.jmx.export.naming.MetadataNamingStrategy"
+          p:attributeSource-ref="jmxAttributeSource"/>
+
 </beans>
