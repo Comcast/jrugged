@@ -17,13 +17,12 @@
 <beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:p="http://www.springframework.org/schema/p"
-           xsi:schemaLocation="
-    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
     http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
-    
+
     <!-- Automatically generates AOP proxies at runtime using CGLIB. -->
-    <aop:aspectj-autoproxy proxy-target-class="true" />
-        
+    <aop:aspectj-autoproxy proxy-target-class="true"/>
+
     <!-- For mail settings and future properties files -->
     <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
         <property name="locations">
@@ -32,8 +31,14 @@
         </property>
     </bean>
 
-    <bean id="responseTweaker"
-        class="org.fishwife.jrugged.examples.ResponseTweaker"/>
+    <bean id="aspectResponseTweaker"
+          class="org.fishwife.jrugged.examples.AspectResponseTweaker"/>
+
+    <bean id="breakerResponseTweaker"
+          class="org.fishwife.jrugged.examples.BreakerResponseTweaker"/>
+
+    <bean id="interceptResponseTweaker"
+          class="org.fishwife.jrugged.examples.InterceptResponseTweaker"/>
 
     <!--==============================
         Aspects

@@ -1,7 +1,5 @@
-/* ExampleService.java
- *
- * Copyright 2009-2010 Comcast Interactive Media, LLC.
- *
+/* Copyright 2009-2010 Comcast Interactive Media, LLC.
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,20 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged.examples.spring;
+package org.fishwife.jrugged.examples;
 
-public class ExampleService {
+import java.util.Random;
 
-    long loopCounter = 0;
+public class BreakerResponseTweaker {
 
-    public void exampleMethodCallOne() throws Exception {
-        loopCounter++;
-        if (loopCounter % 25 == 0) {
-            throw new Exception("Duh");
+    public int delay() throws Exception {
+        Random r = new Random();
+        int count = r.nextInt(2001);
+
+        if (count > 1000) {
+            throw new Exception("Count was over the limit.");
         }
-    }
 
-    public void exampleMethodCallTwo() {
-        System.out.println("Test Circuit One");
+        try {
+            Thread.sleep(count);
+        } catch (InterruptedException e) { }
+        return count;
     }
+    
 }
