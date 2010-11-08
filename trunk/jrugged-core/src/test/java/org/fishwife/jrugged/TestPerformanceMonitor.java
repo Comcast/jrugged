@@ -16,10 +16,13 @@
  */
 package org.fishwife.jrugged;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public class TestPerformanceMonitor extends TestCase {
+import static org.junit.Assert.assertEquals;
 
+public class TestPerformanceMonitor {
+
+    @Test
     public void testSuccessAndFailureCounts() {
         int numberOfTimesToTryAMethodCall = 500;
         int numberOfAttemptsBeforeThrowingException = 5;

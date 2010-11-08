@@ -18,45 +18,54 @@ package org.fishwife.jrugged;
 
 import java.util.concurrent.Callable;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public class TestLatencyTracker extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+public class TestLatencyTracker {
     private LatencyTracker impl;
 
+    @Before
     public void setUp() { 
-	impl = new LatencyTracker(); 
+	    impl = new LatencyTracker();
     }
 
+    @Test
     public void testCallableSuccess() throws Exception {
-	final Object o = new Object();
-	
-	Object result = impl.invoke(new Callable<Object>() {
-		public Object call() throws Exception {
-		    Thread.sleep(1);
-		    return o;
-		}
-	    });
+        final Object o = new Object();
 
-	assertSame(result, o);
-	assertTrue(impl.getLastSuccessMillis() > 0);
-	assertEquals(0, impl.getLastFailureMillis());
+        Object result = impl.invoke(new Callable<Object>() {
+            public Object call() throws Exception {
+                Thread.sleep(1);
+                return o;
+            }
+            });
+
+        assertSame(result, o);
+        assertTrue(impl.getLastSuccessMillis() > 0);
+        assertEquals(0, impl.getLastFailureMillis());
     }
 
+    @Test
     public void testCallableFailure() throws Exception {
 	
-	try {
-	    impl.invoke(new Callable<Object>() {
-		    public Object call() throws Exception {
-			Thread.sleep(1);
-			throw new Exception();
-		    }
-		});
-	    fail("should have thrown exception");
-	} catch (Exception expected) {
-	}
-	assertTrue(impl.getLastFailureMillis() > 0);
-	assertEquals(0, impl.getLastSuccessMillis());
+        try {
+            impl.invoke(new Callable<Object>() {
+                public Object call() throws Exception {
+                Thread.sleep(1);
+                throw new Exception();
+                }
+            });
+            fail("should have thrown exception");
+        }
+        catch (Exception expected) {
+        }
+
+        assertTrue(impl.getLastFailureMillis() > 0);
+        assertEquals(0, impl.getLastSuccessMillis());
     }
-
-
 }

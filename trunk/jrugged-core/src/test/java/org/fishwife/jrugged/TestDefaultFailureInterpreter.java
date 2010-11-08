@@ -16,17 +16,25 @@ package org.fishwife.jrugged;
 
 import java.io.IOException;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-public final class TestDefaultFailureInterpreter extends TestCase {
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+
+public final class TestDefaultFailureInterpreter{
 
 	private DefaultFailureInterpreter impl;
 
+    @Before
 	public void setUp() {
 		impl = new DefaultFailureInterpreter();
 	}
 
 	// constructor tests
+    @Test
 	public void testDefaultConstructor() {
 		
 		assertEquals(0, impl.getLimit());
@@ -36,6 +44,7 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
 	public void testConstructorWithIgnore() {
 		final Class exnClass = RuntimeException.class;
 		final Class[] myIgnore =  { exnClass };
@@ -52,6 +61,7 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
 	public void testConstructorWithIgnoreAndTolerance() {
 		final Class exnClass = RuntimeException.class;
 		final Class[] myIgnore =  { exnClass };
@@ -70,6 +80,7 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
 	public void testIgnoredExceptionDoesNotTrip() {
 		final Class ignoreClass = IOException.class;
         final Class[] myIgnore = { ignoreClass };
@@ -78,10 +89,12 @@ public final class TestDefaultFailureInterpreter extends TestCase {
         assertFalse(impl.shouldTrip(new IOException()));
 	}
 
+    @Test
 	public void testAnyExceptionTripsByDefault() {
         assertTrue(impl.shouldTrip(new IOException()));
 	}
 
+    @Test
 	public void testDoesntTripIfFailuresAreWithinTolerance() {
 		impl.setLimit(2);
 		impl.setWindowMillis(1000);
@@ -93,6 +106,7 @@ public final class TestDefaultFailureInterpreter extends TestCase {
 		assertFalse("this should be false 2",result);
 	}
 
+    @Test
 	public void testTripsIfFailuresExceedTolerance() {
 		impl.setLimit(2);
 		impl.setWindowMillis(1000);
