@@ -16,19 +16,28 @@
  */
 package org.fishwife.jrugged;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
-public class TestInitializer extends TestCase {
+public class TestInitializer {
     private Initializable mockClient;
     private Initializer impl;
 
+    @Before
     public void setUp() {
         mockClient = createMock(Initializable.class);
         impl = new Initializer(mockClient);
     }
 
+    @Test
     public void testFirstTimeTrial() throws Exception {
         mockClient.tryInit();
         mockClient.afterInit();
@@ -60,6 +69,7 @@ public class TestInitializer extends TestCase {
         verify(mockClient);
     }
 
+    @Test
     public void testExceededRetries() throws Exception {
         mockClient.tryInit();
         expectLastCall().andThrow(new RuntimeException()).times(2);
@@ -76,6 +86,7 @@ public class TestInitializer extends TestCase {
         verify(mockClient);
     }
 
+    @Test
     public void testCancellation() throws Exception {
         mockClient.tryInit();
         expectLastCall().andThrow(new RuntimeException());

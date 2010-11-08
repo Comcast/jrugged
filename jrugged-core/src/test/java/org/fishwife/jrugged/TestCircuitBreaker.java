@@ -19,21 +19,29 @@ package org.fishwife.jrugged;
 import java.util.concurrent.Callable;
 
 import junit.framework.Assert;
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class TestCircuitBreaker extends TestCase {
+public class TestCircuitBreaker {
     private CircuitBreaker impl;
     private Callable<Object> mockCallable;
     Status theStatus;
 
     @SuppressWarnings("unchecked")
+    @Before
 	public void setUp() {
 		impl = new CircuitBreaker();
         mockCallable = createMock(Callable.class);
     }
 
+    @Test
     public void testStaysClosedOnSuccess() throws Exception {
         impl.state = CircuitBreaker.BreakerState.CLOSED;
         final Object obj = new Object();
@@ -47,6 +55,7 @@ public class TestCircuitBreaker extends TestCase {
         assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
     }
 
+    @Test
     public void testOpensOnFailure() throws Exception {
         long start = System.currentTimeMillis();
         impl.state = CircuitBreaker.BreakerState.OPEN;
@@ -68,6 +77,7 @@ public class TestCircuitBreaker extends TestCase {
         assertTrue(impl.lastFailure.get() <= end);
     }
 
+    @Test
     public void testHalfClosedWithLiveAttemptThrowsCBException()
 	throws Exception {
 
@@ -87,6 +97,7 @@ public class TestCircuitBreaker extends TestCase {
         assertTrue(impl.isAttemptLive);
     }
 
+    @Test
     public void testOpenDuringCooldownThrowsCBException()
 	throws Exception {
 
@@ -105,6 +116,7 @@ public class TestCircuitBreaker extends TestCase {
         assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
     }
 
+    @Test
     public void testOpenAfterCooldownGoesHalfClosed()
 	throws Exception {
 
@@ -115,6 +127,7 @@ public class TestCircuitBreaker extends TestCase {
         assertEquals(Status.DEGRADED, impl.getStatus());
     }
 
+    @Test
     public void testHalfClosedFailureOpensAgain()
 	throws Exception {
 
@@ -142,6 +155,7 @@ public class TestCircuitBreaker extends TestCase {
         assertTrue(impl.lastFailure.get() <= end);
     }
 
+    @Test
     public void testManualTripAndReset() throws Exception {
         impl.state = CircuitBreaker.BreakerState.OPEN;
         final Object obj = new Object();
@@ -165,6 +179,7 @@ public class TestCircuitBreaker extends TestCase {
         assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
     }
 
+    @Test
     public void testTripHard() throws Exception {
         expect(mockCallable.call()).andReturn("hi");
         
@@ -186,16 +201,19 @@ public class TestCircuitBreaker extends TestCase {
         verify(mockCallable);         
     }
     
+    @Test
     public void testGetStatusWhenOpen() {
         impl.state = CircuitBreaker.BreakerState.OPEN;  
         Assert.assertEquals(Status.DOWN, impl.getStatus());
     }
     
+    @Test
     public void testGetStatusWhenHalfClosed() {
         impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
         assertEquals(Status.DEGRADED, impl.getStatus());
     }
 
+    @Test
     public void testGetStatusWhenOpenBeforeReset() {
         impl.state = CircuitBreaker.BreakerState.CLOSED;
         impl.resetMillis.set(1000);
@@ -204,6 +222,7 @@ public class TestCircuitBreaker extends TestCase {
         assertEquals(Status.UP, impl.getStatus());
     }
     
+    @Test
     public void testGetStatusWhenOpenAfterReset() {
         impl.state = CircuitBreaker.BreakerState.OPEN;
         impl.resetMillis.set(1000);
@@ -212,6 +231,7 @@ public class TestCircuitBreaker extends TestCase {
         assertEquals(Status.DEGRADED, impl.getStatus());
     }
     
+    @Test
     public void testGetStatusAfterHardTrip() {
         impl.tripHard();
         impl.resetMillis.set(1000);
@@ -220,11 +240,13 @@ public class TestCircuitBreaker extends TestCase {
         assertEquals(Status.DOWN, impl.getStatus());
     }
 
+    @Test
     public void testStatusIsByPassWhenSet() {
         impl.setByPassState(true);
         assertEquals(Status.BYPASS, impl.getStatus());
     }
     
+    @Test
     public void testByPassIgnoresCurrentBreakerStateWhenSet() {
         impl.state = CircuitBreaker.BreakerState.OPEN;
         assertEquals(Status.DOWN, impl.getStatus());
@@ -236,6 +258,7 @@ public class TestCircuitBreaker extends TestCase {
         assertEquals(Status.DOWN, impl.getStatus());
     }
 
+    @Test
     public void testByPassIgnoresBreakerStateAndCallsWrappedMethod() throws Exception {
         expect(mockCallable.call()).andReturn("hi").anyTimes();
 
@@ -261,6 +284,7 @@ public class TestCircuitBreaker extends TestCase {
         verify(mockCallable);               
     }
 
+    @Test
     public void testNotificationCallback() throws Exception {
 
         CircuitBreakerNotificationCallback cb = new CircuitBreakerNotificationCallback() {

@@ -1,6 +1,6 @@
 package org.fishwife.jrugged;
 
-import junit.framework.TestCase;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.concurrent.Callable;
@@ -10,12 +10,16 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
-public class TestConstantFlowRegulator extends TestCase {
+public class TestConstantFlowRegulator {
     private ConstantFlowRegulator impl;
     private Callable<Object> mockCallable;
 
     @SuppressWarnings("unchecked")
+    @Before
 	public void setUp() {
 		impl = new ConstantFlowRegulator();
         mockCallable = createMock(Callable.class);

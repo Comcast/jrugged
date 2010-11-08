@@ -18,14 +18,17 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.concurrent.Callable;
 
-import junit.framework.TestCase;
+import org.junit.Test;
 
-public final class TestFailureInterpreter extends TestCase {
+public final class TestFailureInterpreter {
 
     @SuppressWarnings("unchecked")
+    @Test
 	public void testAcceptableException() throws Exception {
 		final RuntimeException theExn = new RuntimeException();
         final Callable<Object> callable = createMock(Callable.class);
@@ -49,6 +52,7 @@ public final class TestFailureInterpreter extends TestCase {
     }
 
     @SuppressWarnings("unchecked")
+    @Test
 	public void testUnacceptableException() throws Exception {
 		final RuntimeException theExn = new RuntimeException();
         final Callable<Object> callable = createMock(Callable.class);

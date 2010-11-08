@@ -18,15 +18,21 @@ package org.fishwife.jrugged;
 
 import java.util.Arrays;
 
-import junit.framework.TestCase;
+import org.junit.Before;
+import org.junit.Test;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertEquals;
 
-public class TestRolledUpStatus extends TestCase {
+public class TestRolledUpStatus {
     private RolledUpStatus impl;
     private Monitorable mockCritical;
     private Monitorable mockNoncritical;
 
+    @Before
     public void setUp() {
         mockCritical = createMock(Monitorable.class);
         mockNoncritical = createMock(Monitorable.class);
@@ -44,6 +50,7 @@ public class TestRolledUpStatus extends TestCase {
         verify(mockNoncritical);
     }
 
+    @Test
     public void testAllSystemsGo() {
         expect(mockCritical.getStatus()).andReturn(Status.UP);
         expect(mockNoncritical.getStatus()).andReturn(Status.UP);
@@ -55,6 +62,7 @@ public class TestRolledUpStatus extends TestCase {
         verifyMocks();
     }
 
+    @Test
     public void testNoncriticalYellowGivesYellow() {
         expect(mockCritical.getStatus()).andReturn(Status.UP);
         expect(mockNoncritical.getStatus()).andReturn(Status.DEGRADED);
@@ -66,6 +74,7 @@ public class TestRolledUpStatus extends TestCase {
         verifyMocks();
     }
 
+    @Test
     public void testNoncriticalRedGivesYellow() {
         expect(mockCritical.getStatus()).andReturn(Status.UP);
         expect(mockNoncritical.getStatus()).andReturn(Status.DOWN);
@@ -77,6 +86,7 @@ public class TestRolledUpStatus extends TestCase {
         verifyMocks();
     }
 
+    @Test
     public void testCriticalYellowGivesYellow() {
         expect(mockCritical.getStatus()).andReturn(Status.DEGRADED);
         expect(mockNoncritical.getStatus()).andReturn(Status.UP);
@@ -88,6 +98,7 @@ public class TestRolledUpStatus extends TestCase {
         verifyMocks();
     }
 
+    @Test
     public void testCriticalRedGivesRed() {
         expect(mockCritical.getStatus()).andReturn(Status.DOWN);
         expect(mockNoncritical.getStatus()).andReturn(Status.UP);
@@ -99,6 +110,7 @@ public class TestRolledUpStatus extends TestCase {
         verifyMocks();
     }
 
+    @Test
     public void testNoncriticalYellowAndCriticalRedGivesRed() {
         expect(mockCritical.getStatus()).andReturn(Status.DOWN);
         expect(mockNoncritical.getStatus()).andReturn(Status.DEGRADED);
