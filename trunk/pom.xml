@@ -109,18 +109,18 @@
         <module>jrugged-core</module>
         <module>jrugged-aspects</module>
         <module>jrugged-spring</module>
-        <module>jrugged-examples</module>
+        <!--module>jrugged-examples</module-->
   </modules>
     <distributionManagement>
         <repository>
             <id>cimrepo</id>
             <name>CIM Maven Repository</name>
-            <url>http://cimdev-04.comcastonline.com:8081/nexus/content/repositories/releases</url>
+            <url>http://repo.dev.cim.comcast.net/nexus/content/repositories/releases</url>
         </repository>
         <snapshotRepository>
             <id>cimrepo</id>
             <name>CIM Maven Repository</name>
-            <url>http://cimdev-04.comcastonline.com:8081/nexus/content/repositories/snapshots</url>
+            <url>http://repo.dev.cim.comcast.net/nexus/content/repositories/snapshots</url>
             <uniqueVersion>false</uniqueVersion>
         </snapshotRepository>
     </distributionManagement>
