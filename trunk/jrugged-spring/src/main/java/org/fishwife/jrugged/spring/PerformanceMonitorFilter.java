@@ -10,6 +10,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.fishwife.jrugged.WrappedException;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
  * This class is a standard Servlet filter that can be configured in web.xml to wrap all
@@ -21,6 +22,7 @@ import org.fishwife.jrugged.WrappedException;
  * that you can get a high-level performance monitor wrapped around all of your application's
  * request handling.
  */
+@ManagedResource
 public class PerformanceMonitorFilter extends PerformanceMonitorBean implements Filter {
 	
 	public void doFilter(final ServletRequest req, final ServletResponse resp,
