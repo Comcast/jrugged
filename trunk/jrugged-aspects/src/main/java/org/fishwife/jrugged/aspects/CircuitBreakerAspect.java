@@ -74,7 +74,7 @@ public class CircuitBreakerAspect {
      *   org.fishwife.jrugged.aspects.CircuitBreaker} annotation that
      *   actually wrapped the method
      * @throws Throwable if the method invocation itself or the wrapping
-     *   {@link org.jrugged.fishwife.CircuitBreaker} throws one during
+     *   {@link org.fishwife.jrugged.CircuitBreaker} throws one during
      *   execution
      */
     @Around("@annotation(circuitTag)")
