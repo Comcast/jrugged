@@ -8,5 +8,5 @@
   * SpringInterceptorExample - How the jrugged-spring library can be used in conjunction with the jrugged-core library to easily wrap existing methods and services with jrugged functionality.
   * RunningExampleApp - Explains how to get the jrugged code and execute an example application that runs.
   * PercentageFailureInterpreterExample - Using a combination of jrugged abilities to create a circuit breaker that trips based on percentage of failed requests rather than a tolerance window of failures per unit time.
-* PerformanceMonitorFilter -  This class is a standard Servlet filter that can be configured in web.xml to wrap all
+ * PerformanceMonitorFilter -  This class is a standard Servlet filter that can be configured in web.xml to wrap all
  request handling in a org.fishwife.jrugged.PerformanceMonitor class.
