@@ -10,7 +10,7 @@ Here is a sample configuration if you are using spring and are intersted to get 
  
  Web.xml :-
  {{{
-     <filter>
+    <filter>
         <filter-name>SystemMonitorFilterForVideo</filter-name>
         <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
     </filter>
