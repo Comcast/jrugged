@@ -2,7 +2,7 @@
 
 = Introduction =
 
-This class is a standard Servlet filter that can be configured in web.xml to wrap all request handling in a [http://jrugged.s3.amazonaws.com/jrugged-core-2.2.0/apidocs/org/fishwife/jrugged/PerformanceMonitor.html org.fishwife.jrugged.PerformanceMonitor] class.  In order to get useful access to the statistics, however, it is most convenient to make use of Spring's (org.springframework.web.filter.DelegatingFilterProxy) in web.xml and instantiate this filter within a Spring application context. This will allow the JMX annotations inherited from [http://jrugged.s3.amazonaws.com/jrugged-spring-2.2.0/apidocs/org/fishwife/jrugged/spring/PerformanceMonitorBean.html PerformanceMonitorBean] to take effect, with the result that you can get a high-level performance monitor wrapped around all of your application's request handling.
+This class is a standard Servlet filter that can be configured in web.xml to wrap all request handling in a [http://jrugged.s3.amazonaws.com/jrugged-core-2.2.0/apidocs/org/fishwife/jrugged/PerformanceMonitor.html org.fishwife.jrugged.PerformanceMonitor] class.  In order to get useful access to the statistics, however, it is most convenient to make use of Spring's (`org.springframework.web.filter.DelegatingFilterProxy`) in web.xml and instantiate this filter within a Spring application context. This will allow the JMX annotations inherited from [http://jrugged.s3.amazonaws.com/jrugged-spring-2.2.0/apidocs/org/fishwife/jrugged/spring/PerformanceMonitorBean.html PerformanceMonitorBean] to take effect, with the result that you can get a high-level performance monitor wrapped around all of your application's request handling.
 
 = Details =
 
