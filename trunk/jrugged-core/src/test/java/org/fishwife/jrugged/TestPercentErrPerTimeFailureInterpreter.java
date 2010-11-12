@@ -1,5 +1,6 @@
-package org.fishwife.jrugged.examples;
+package org.fishwife.jrugged;
 
+import org.fishwife.jrugged.PercentErrPerTimeFailureInterpreter;
 import org.fishwife.jrugged.RequestCounter;
 import org.junit.Test;
 

@@ -12,11 +12,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package org.fishwife.jrugged.examples;
+package org.fishwife.jrugged;
 
-import org.fishwife.jrugged.FailureInterpreter;
-import org.fishwife.jrugged.PerformanceMonitor;
-import org.fishwife.jrugged.RequestCounter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
