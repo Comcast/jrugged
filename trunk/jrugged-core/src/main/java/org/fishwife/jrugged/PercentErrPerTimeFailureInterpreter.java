@@ -144,17 +144,13 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     }
 
 	public boolean shouldTrip(Throwable cause) {
-        for(Class clazz : ignore) {
-            if (clazz.isInstance(cause)) {
-                return false;
-            }
-        }
+        if (isExceptionIgnorable(cause)) return false;
 
         // if Exception is of specified type, and window conditions exist,
         // keep circuit open unless exception threshold has passed
         if (hasWindowConditions()) {
             Long currentRequestCount = -1L;
-            Long previousRequestHighWaterMark = -1L;
+            Long previousRequestHighWaterMark;
             long numberOfErrorsAfter;
 
             synchronized (modificationLock) {
@@ -165,36 +161,17 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
                 final long removeTimeBeforeMillis = System.currentTimeMillis() - windowMillis;
                 final int numberOfErrorsBefore = this.errorTimes.size();
 
-                boolean windowRemoval = false;
-
-                // removes errors before cutoff
-                // (could we speed this up by using binary search to find the entry point,
-                // then removing any items before that point?)
-                for (int j = numberOfErrorsBefore - 1; j >= 0; j--) {
-
-                    final Long time = this.errorTimes.get(j);
-
-                    logger.debug("J: " + j + " RemoveTimeBefore: " + removeTimeBeforeMillis + " EntryTime: " + time);
-
-                    if (time < removeTimeBeforeMillis) {
-                        if (!windowRemoval) {
-                            previousRequestHighWaterMark = requestCounts.get(j);
-                            windowRemoval = true;
-                        }
-
-                        this.errorTimes.remove(j);
-                        this.requestCounts.remove(j);
-                    }
-                }
+                previousRequestHighWaterMark = removeErrorsPriorToCutoffTime(numberOfErrorsBefore, removeTimeBeforeMillis);
 
                 numberOfErrorsAfter = this.errorTimes.size();
                 logger.debug("#Errors Before: " + numberOfErrorsBefore + " #Errors After: " + numberOfErrorsAfter);
 
-                if (!windowRemoval) {
+                if (previousRequestHighWaterMark == -1) {
                     previousRequestHighWaterMark = this.requestCounts.get(this.requestCounts.size() - 1);
                 }
 
                 currentRequestCount = this.requestCounts.get(requestCounts.size() - 1);
+
                 logger.debug("previousRequestHighWaterMark: " + previousRequestHighWaterMark + " Current REQUEST Count: " + currentRequestCount);
             }
 
@@ -202,6 +179,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
             if (windowRequests == 0) {
                 windowRequests = currentRequestCount;
             }
+
             logger.debug("windowRequests: " + windowRequests);
 
             // Trip if the number of errors over the total of requests over the same period
@@ -211,6 +189,41 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
         }
         return true;
 	}
+
+    private boolean isExceptionIgnorable(Throwable cause) {
+        for(Class clazz : ignore) {
+            if (clazz.isInstance(cause)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Long removeErrorsPriorToCutoffTime(int numberOfErrorsBefore, long removeTimeBeforeMillis) {
+        Long prevHighWaterMark  = -1L;
+        boolean windowRemoval = false;
+        
+        // (could we speed this up by using binary search to find the entry point,
+        // then removing any items before that point?)
+        for (int j = numberOfErrorsBefore - 1; j >= 0; j--) {
+
+            final Long time = this.errorTimes.get(j);
+
+            logger.debug("J: " + j + " RemoveTimeBefore: " + removeTimeBeforeMillis + " EntryTime: " + time);
+
+            if (time < removeTimeBeforeMillis) {
+                if (!windowRemoval) {
+                    prevHighWaterMark = requestCounts.get(j);
+                    windowRemoval = true;
+                }
+
+                this.errorTimes.remove(j);
+                this.requestCounts.remove(j);
+            }
+        }
+
+        return prevHighWaterMark;
+    }
 
     /**
      * Returns the set of currently ignored {@link Throwable} classes.
