@@ -54,6 +54,13 @@ public enum Status {
     /** Everything is operating as expected. */
     UP(2,"GREEN"),
 
+    /**
+     * This status was introduced in a prior version of JRugged and so
+     * is retained for backwards compatibility, but is specific
+     * to {@link org.fishwife.jrugged.CircuitBreaker} states
+     * and should not be used.
+     */
+    @Deprecated
     BYPASS(3, "GREEN");
 
     private final int value;
