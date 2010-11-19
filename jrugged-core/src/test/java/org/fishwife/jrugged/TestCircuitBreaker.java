@@ -22,7 +22,12 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
@@ -32,6 +37,8 @@ import static org.junit.Assert.fail;
 public class TestCircuitBreaker {
     private CircuitBreaker impl;
     private Callable<Object> mockCallable;
+    private Runnable mockRunnable;
+
     Status theStatus;
 
     @SuppressWarnings("unchecked")
@@ -39,6 +46,81 @@ public class TestCircuitBreaker {
 	public void setUp() {
 		impl = new CircuitBreaker();
         mockCallable = createMock(Callable.class);
+        mockRunnable = createMock(Runnable.class);
+    }
+
+    @Test
+    public void testInvokeWithRunnableResultAndResultReturnsResult() throws Exception {
+        final Object result = new Object();
+
+        mockRunnable.run();
+        replay(mockRunnable);
+
+        Object theReturned = impl.invoke(mockRunnable, result);
+
+        verify(mockRunnable);
+        assertSame(result, theReturned);
+    }
+
+    @Test
+    public void testInvokeWithRunnableResultAndByPassReturnsResult() throws Exception {
+        final Object result = new Object();
+        impl.setByPassState(true);
+        
+        mockRunnable.run();
+        replay(mockRunnable);
+
+        Object theReturned = impl.invoke(mockRunnable, result);
+
+        verify(mockRunnable);
+        assertSame(result, theReturned);
+    }
+
+    @Test(expected=CircuitBreakerException.class)
+    public void testInvokeWithRunnableResultAndTripHardReturnsException() throws Exception {
+        final Object result = new Object();
+        impl.tripHard();
+
+        mockRunnable.run();
+        replay(mockRunnable);
+
+        impl.invoke(mockRunnable, result);
+
+        verify(mockRunnable);
+    }
+
+    @Test
+    public void testInvokeWithRunnableDoesNotError() throws Exception {
+        mockRunnable.run();
+        replay(mockRunnable);
+
+        impl.invoke(mockRunnable);
+
+        verify(mockRunnable);
+    }
+
+    @Test
+    public void testInvokeWithRunnableAndByPassDoesNotError() throws Exception {
+        impl.setByPassState(true);
+
+        mockRunnable.run();
+        replay(mockRunnable);
+
+        impl.invoke(mockRunnable);
+
+        verify(mockRunnable);
+    }
+
+    @Test(expected=CircuitBreakerException.class)
+    public void testInvokeWithRunnableAndTripHardReturnsException() throws Exception {
+        impl.tripHard();
+
+        mockRunnable.run();
+        replay(mockRunnable);
+
+        impl.invoke(mockRunnable);
+
+        verify(mockRunnable);
     }
 
     @Test
@@ -243,7 +325,7 @@ public class TestCircuitBreaker {
     @Test
     public void testStatusIsByPassWhenSet() {
         impl.setByPassState(true);
-        assertEquals(Status.BYPASS, impl.getStatus());
+        assertEquals(Status.DEGRADED, impl.getStatus());
     }
     
     @Test
@@ -252,7 +334,7 @@ public class TestCircuitBreaker {
         assertEquals(Status.DOWN, impl.getStatus());
 
         impl.setByPassState(true);
-        assertEquals(Status.BYPASS, impl.getStatus());
+        assertEquals(Status.DEGRADED, impl.getStatus());
 
         impl.setByPassState(false);
         assertEquals(Status.DOWN, impl.getStatus());
@@ -274,7 +356,7 @@ public class TestCircuitBreaker {
             fail("exception not expected when CircuitBreaker is bypassed.");
         }
         assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
-        assertEquals(Status.BYPASS, impl.getStatus());
+        assertEquals(Status.DEGRADED, impl.getStatus());
 
         impl.reset();
         impl.setByPassState(false);

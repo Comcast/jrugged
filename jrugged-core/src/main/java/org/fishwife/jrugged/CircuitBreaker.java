@@ -205,6 +205,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
             try {
                 r.run();
                 close();
+                return;
             } catch (Throwable cause) {
                 handleFailure(cause);
             }
@@ -334,7 +335,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 			&& (System.currentTimeMillis() - lastFailure.get() >= resetMillis.get());
 
         if (byPass) {
-            return Status.BYPASS;
+            return Status.DEGRADED;
         }
         
         switch(state) {
