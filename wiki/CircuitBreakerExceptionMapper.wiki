@@ -2,8 +2,7 @@
 
 = Introduction =
 
-Add your content here.
-
+CircuitBreakers include the ability to take the thrown CircuitBreakerException and turn it into another exception so that your application code need not know anything about CircuitBreakerException, but rather know about an exception of your choosing.  Below is the detail about a simple mapping of CircuitBreakerException into a basic application exception.
 
 = Details =
 
@@ -12,38 +11,75 @@ The only “gotcha” is:  The mapped exception must be either a RuntimeExceptio
 Here’s what it took...  
 Add the mapper declaration to the CircuitBreakerBean declaration:
 
-{{{<constructor-arg>
+{{{
+<constructor-arg>
      <bean class="net.applicaiton.device.service.AppCircuitBreakerExceptionMapper" />
-</constructor-arg>}}}
+</constructor-arg>
+}}}
 
 ... as in:
 
-{{{<bean id="appCircuitBreaker" class="org.fishwife.jrugged.spring.CircuitBreakerBean">
+{{{
+<bean id="appCircuitBreaker" class="org.fishwife.jrugged.spring.CircuitBreakerBean">
      <constructor-arg>
           <bean class="net.applicaiton.device.service.AppCircuitBreakerExceptionMapper" />
      </constructor-arg>
      <property name="limit" value="3"/>
      <property name="windowMillis" value="5000"/>
      <property name="resetMillis" value="20000"/>
-</bean>}}}
+</bean>
+}}}
 
-{{{//Implement a CircuitBreakerExceptionMapper
+{{{
 public class AppCircuitBreakerExceptionMapper implements CircuitBreakerExceptionMapper<AppCircuitBreakerException> {
+     @Override
+     public AppCircuitBreakerException map(CircuitBreaker breaker, CircuitBreakerException exception) {
+          return new AppCircuitBreakerException(exception.getCause());
+     }
+}
+}}}
 
-    @Override
-   public AppCircuitBreakerException map(CircuitBreaker breaker, CircuitBreakerException exception) {
-        return new AppCircuitBreakerException(exception.getCause());
-    }
-}}}}
-
-{{{/*
+{{{
+/*
   * Use a runtime exception child to differentiate between the intercepted exception and the  
   * “thrown by circuitbreaker” exception (rather than mapping to what originally tripped the circuit).   
   * This is most useful when more than one external system is circuit-broken and you want to 
   * know which one threw.  I’m not sure how to handle method-level granularity.
   */
-public class HossCircuitBreakerException extends RuntimeException {
-    public HossCircuitBreakerException(Throwable cause) {
+public class AppCircuitBreakerException extends RuntimeException {
+    public AppCircuitBreakerException(Throwable cause) {
         super(cause);
     }
-}}}}
+}
+}}}
+
+This example uses an existing, declared Exception (named ThingException) rather than a RuntimeException.  In this case, the throws declaration of the method must match the parameterized mapper declaration.
+
+This method:
+{{{
+public THing getThingFromId(String ID) throws ThingException {
+...
+}
+}}}
+
+Is mapped by:
+{{{
+<bean id="appCircuitBreaker" class="org.fishwife.jrugged.spring.CircuitBreakerBean">
+     <constructor-arg>
+          <bean class="net.comcast.cim.device.service.PlatformCircuitBreakerExceptionMapper" />
+     </constructor-arg>
+     <property name="limit" value="3"/>
+     <property name="windowMillis" value="5000"/>
+     <property name="resetMillis" value="20000"/>
+</bean>
+}}}
+
+Using this Mapper:
+{{{
+public class AppBreakerExceptionMapper implements CircuitBreakerExceptionMapper<ThingException> {
+     @Override
+     public ThingException map(CircuitBreaker breaker, CircuitBreakerException exception) {
+          return new ThingException(AppError.TP_CIRCUIT_BREAKER_TRIPPED, exception);
+     }
+}
+}}}
