@@ -2,14 +2,14 @@
 
 = Introduction =
 
-CircuitBreakers include the ability to take the thrown CircuitBreakerException and turn it into another exception so that your application code need not know anything about CircuitBreakerException, but rather know about an exception of your choosing.  Below is the detail about a simple mapping of CircuitBreakerException into a basic application exception.
+Circuitbreakers include the ability to take the thrown [http://jrugged.s3.amazonaws.com/jrugged-core-2.2.0/apidocs/org/fishwife/jrugged/CircuitBreakerException.html CircuitBreakerException] and turn it into another exception so that your application code need not know anything about [http://jrugged.s3.amazonaws.com/jrugged-core-2.2.0/apidocs/org/fishwife/jrugged/CircuitBreakerException.html CircuitBreakerException], but rather know about an exception of your choosing.  Below is the detail about a simple mapping of [http://jrugged.s3.amazonaws.com/jrugged-core-2.2.0/apidocs/org/fishwife/jrugged/CircuitBreakerException.html CircuitBreakerException] into a basic application exception.
 
 = Details =
 
-The only “gotcha” is:  The mapped exception must be either a RuntimeException (or child) or must be declared as thrown by the intercepted method.  Otherwise, Java will throw an UndeclaredThrowableException at runtime.
+The only “gotcha” is:  The mapped exception must be either a `RuntimeException` (or child) or must be declared as thrown by the intercepted method.  Otherwise, Java will throw an `UndeclaredThrowableException` at runtime.
 
 Here’s what it took...  
-Add the mapper declaration to the CircuitBreakerBean declaration:
+Add the mapper declaration to the `CircuitBreakerBean` declaration:
 
 {{{
 <constructor-arg>
