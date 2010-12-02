@@ -1,4 +1,4 @@
-#Examples for how to take a CircuitBreakerException and automatically turn it into an exception meaningful to the application you may be writing.
+#summary Examples for how to take a CircuitBreakerException and automatically turn it into an exception meaningful to the application you may be writing.
 
 = Introduction =
 
