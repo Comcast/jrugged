@@ -17,6 +17,7 @@
 package org.fishwife.jrugged;
 
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 /** The {@link PerformanceMonitor} is a convenience wrapper for
  *  gathering a slew of useful operational metrics about a service,
@@ -58,6 +59,28 @@ public class PerformanceMonitor implements ServiceWrapper {
     private MovingAverage totalRequestsPerSecondLastDay;
     private MovingAverage successRequestsPerSecondLastDay;
     private MovingAverage failureRequestsPerSecondLastDay;
+    
+    private SampledQuantile lifetimeSuccessLatencyQuantile =
+    	new SampledQuantile();
+    private SampledQuantile lifetimeFailureLatencyQuantile =
+		new SampledQuantile();
+    
+    private SampledQuantile successLatencyQuantileLastMinute =
+    	new SampledQuantile(1L, TimeUnit.MINUTES);
+    private SampledQuantile successLatencyQuantileLastHour =
+    	new SampledQuantile(1L, TimeUnit.HOURS);
+    private SampledQuantile successLatencyQuantileLastDay =
+    	new SampledQuantile(1L, TimeUnit.DAYS);
+
+    private SampledQuantile failureLatencyQuantileLastMinute =
+    	new SampledQuantile(1L, TimeUnit.MINUTES);
+    private SampledQuantile failureLatencyQuantileLastHour =
+    	new SampledQuantile(1L, TimeUnit.HOURS);
+    private SampledQuantile failureLatencyQuantileLastDay =
+    	new SampledQuantile(1L, TimeUnit.DAYS);
+    
+    private long lifetimeMaxSuccessMillis;
+    private long lifetimeMaxFailureMillis;
 
 	/** Default constructor. */
     public PerformanceMonitor() {
@@ -108,6 +131,13 @@ public class PerformanceMonitor implements ServiceWrapper {
 		averageSuccessLatencyLastMinute.update(successMillis);
 		averageSuccessLatencyLastHour.update(successMillis);
 		averageSuccessLatencyLastDay.update(successMillis);
+		lifetimeSuccessLatencyQuantile.addSample(successMillis);
+		successLatencyQuantileLastMinute.addSample(successMillis);
+		successLatencyQuantileLastHour.addSample(successMillis);
+		successLatencyQuantileLastDay.addSample(successMillis);
+		lifetimeMaxSuccessMillis =
+			(successMillis > lifetimeMaxSuccessMillis) ?
+					successMillis : lifetimeMaxSuccessMillis;
 		recordRequest();
 	}
 
@@ -116,6 +146,13 @@ public class PerformanceMonitor implements ServiceWrapper {
 		averageFailureLatencyLastMinute.update(failureMillis);
 		averageFailureLatencyLastHour.update(failureMillis);
 		averageFailureLatencyLastDay.update(failureMillis);
+		lifetimeFailureLatencyQuantile.addSample(failureMillis);
+		failureLatencyQuantileLastMinute.addSample(failureMillis);
+		failureLatencyQuantileLastHour.addSample(failureMillis);
+		failureLatencyQuantileLastDay.addSample(failureMillis);
+		lifetimeMaxFailureMillis =
+			(failureMillis > lifetimeMaxFailureMillis) ?
+					failureMillis : lifetimeMaxFailureMillis;
 		recordRequest();
 	}
 
@@ -378,4 +415,232 @@ public class PerformanceMonitor implements ServiceWrapper {
     public long getFailureCount() {
         return requestCounter.sample()[2];
     }
+
+    /** Returns the median latency seen by this {@link
+     * PerformanceMonitor} for successful requests.
+     * @return latency in milliseconds
+     */
+    public long getMedianPercentileSuccessLatencyLifetime() {
+    	return lifetimeSuccessLatencyQuantile.getPercentile(50);
+    }    
+
+    /** Returns the 95th-percentile latency seen by this
+     * {@link PerformanceMonitor} for successful requests.
+     * @return latency in milliseconds
+     */
+    public long get95thPercentileSuccessLatencyLifetime() {
+    	return lifetimeSuccessLatencyQuantile.getPercentile(95);
+    }
+
+    /** Returns the 99th-percentile latency seen by this
+     * {@link PerformanceMonitor} for successful requests.
+     * @return latency in milliseconds
+     */
+    public long get99thPercentileSuccessLatencyLifetime() {
+    	return lifetimeSuccessLatencyQuantile.getPercentile(99);
+    }
+
+    /** Returns the maximum latency seen by this
+     * {@link PerformanceMonitor} for successful requests.
+     * @return latency in milliseconds
+     */
+    public long getMaxSuccessLatencyLifetime() {
+    	return lifetimeMaxSuccessMillis;
+    }
+
+    /** Returns the median latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the
+     * last minute.
+     * @return latency in milliseconds
+     */
+    public long getMedianPercentileSuccessLatencyLastMinute() {
+    	return successLatencyQuantileLastMinute.getPercentile(50);
+    }    
+
+    /** Returns the 95th-percentile latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the last
+     * minute.
+     * @return latency in milliseconds
+     */
+    public long get95thPercentileSuccessLatencyLastMinute() {
+    	return successLatencyQuantileLastMinute.getPercentile(95);
+    }
+
+    /** Returns the 99th-percentile latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the last 
+     * minute.
+     * @return latency in milliseconds
+     */
+    public long get99thPercentileSuccessLatencyLastMinute() {
+    	return successLatencyQuantileLastMinute.getPercentile(99);
+    }
+
+    /** Returns the median latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the
+     * last hour.
+     * @return latency in milliseconds
+     */
+    public long getMedianPercentileSuccessfulLatencyLastHour() {
+    	return successLatencyQuantileLastHour.getPercentile(50);
+    }    
+
+    /** Returns the 95th-percentile latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the last
+     * hour.
+     * @return latency in milliseconds
+     */
+    public long get95thPercentileSuccessLatencyLastHour() {
+    	return successLatencyQuantileLastHour.getPercentile(95);
+    }
+
+    /** Returns the 99th-percentile latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the last 
+     * hour.
+     * @return latency in milliseconds
+     */
+    public long get99thPercentileSuccessLatencyLastHour() {
+    	return successLatencyQuantileLastHour.getPercentile(99);
+    }
+
+    /** Returns the median latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the
+     * last day.
+     * @return latency in milliseconds
+     */
+    public long getMedianPercentileSuccessLatencyLastDay() {
+    	return successLatencyQuantileLastDay.getPercentile(50);
+    }    
+
+    /** Returns the 95th-percentile latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the last
+     * day.
+     * @return latency in milliseconds
+     */
+    public long get95thPercentileSuccessLatencyLastDay() {
+    	return successLatencyQuantileLastDay.getPercentile(95);
+    }
+
+    /** Returns the 99th-percentile latency seen by this {@link
+     * PerformanceMonitor} for successful requests over the last 
+     * hour.
+     * @return latency in milliseconds
+     */
+    public long get99thPercentileSuccessLatencyLastDay() {
+    	return successLatencyQuantileLastDay.getPercentile(99);
+    }
+
+    
+    /** Returns the median latency seen by this {@link
+     * PerformanceMonitor} for failed requests.
+     * @return latency in milliseconds
+     */
+    public long getMedianPercentileFailureLatencyLifetime() {
+    	return lifetimeFailureLatencyQuantile.getPercentile(50);
+    }    
+
+    /** Returns the 95th-percentile latency seen by this {@link
+     * PerformanceMonitor} for failed requests.
+     * @return latency in milliseconds
+     */
+    public long get95thPercentileFailureLatencyLifetime() {
+    	return lifetimeFailureLatencyQuantile.getPercentile(95);
+    }
+
+    /** Returns the 99th-percentile latency seen by this {@link
+     * PerformanceMonitor} for failed requests.
+     * @return latency in milliseconds
+     */
+    public long get99thPercentileFailureLatencyLifetime() {
+    	return lifetimeFailureLatencyQuantile.getPercentile(99);
+    }
+
+    /** Returns the maximum latency seen by this {@link
+     * PerformanceMonitor} for failed requests.
+     * @return latency in milliseconds
+     */
+    public long getMaxFailureLatencyLifetime() {
+    	return lifetimeMaxFailureMillis;
+    }
+    
+    /** Returns the median latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the
+     * last minute.
+     * @return latency in milliseconds
+     */
+    public long getMedianPercentileFailureLatencyLastMinute() {
+    	return failureLatencyQuantileLastMinute.getPercentile(50);
+    }    
+
+    /** Returns the 95th-percentile latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the last
+     * minute.
+     * @return latency in milliseconds
+     */
+    public long get95thPercentileFailureLatencyLastMinute() {
+    	return failureLatencyQuantileLastMinute.getPercentile(95);
+    }
+
+    /** Returns the 99th-percentile latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the last 
+     * minute.
+     * @return latency in milliseconds
+     */
+    public long get99thPercentileFailureLatencyLastMinute() {
+    	return failureLatencyQuantileLastMinute.getPercentile(99);
+    }
+
+    /** Returns the median latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the
+     * last hour.
+     * @return latency in milliseconds
+     */
+    public long getMedianPercentileFailureLatencyLastHour() {
+    	return failureLatencyQuantileLastHour.getPercentile(50);
+    }    
+
+    /** Returns the 95th-percentile latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the last
+     * hour.
+     * @return latency in milliseconds
+     */
+    public long get95thPercentileFailureLatencyLastHour() {
+    	return failureLatencyQuantileLastHour.getPercentile(95);
+    }
+
+    /** Returns the 99th-percentile latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the last 
+     * hour.
+     * @return latency in milliseconds
+     */
+    public long get99thPercentileFailureLatencyLastHour() {
+    	return failureLatencyQuantileLastHour.getPercentile(99);
+    }
+
+    /** Returns the median latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the
+     * last day.
+     * @return latency in milliseconds
+     */
+    public long getMedianPercentileFailureLatencyLastDay() {
+    	return failureLatencyQuantileLastDay.getPercentile(50);
+    }    
+
+    /** Returns the 95th-percentile latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the last
+     * day.
+     * @return latency in milliseconds
+     */
+    public long get95thPercentileFailureLatencyLastDay() {
+    	return failureLatencyQuantileLastDay.getPercentile(95);
+    }
+
+    /** Returns the 99th-percentile latency seen by this {@link
+     * PerformanceMonitor} for failed requests over the last 
+     * hour.
+     * @return latency in milliseconds
+     */
+    public long get99thPercentileFailureLatencyLastDay() {
+    	return failureLatencyQuantileLastDay.getPercentile(99);
+    }
+
 }
