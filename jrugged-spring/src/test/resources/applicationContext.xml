@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:jrugged="http://www.fishwife.org/schema/jrugged"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.5.xsd
+http://www.fishwife.org/schema/jrugged http://www.fishwife.org/schema/jrugged/jrugged.xsd">
+
+	<bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+		<property name="locateExistingServerIfPossible" value="true" />
+	</bean>
+
+	<bean id="attributeSource"
+		class="org.springframework.jmx.export.metadata.AttributesJmxAttributeSource">
+		<property name="attributes">
+			<bean class="org.springframework.metadata.commons.CommonsAttributes" />
+		</property>
+	</bean>
+
+	<bean id="assembler"
+		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+		<property name="attributeSource" ref="attributeSource" />
+	</bean>
+
+	<!-- will pick up the ObjectName from the annotation -->
+	<bean id="namingStrategy"
+		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+		<property name="attributeSource" ref="attributeSource" />
+	</bean>
+
+	<jrugged:perfmon id="performanceMonitor" />
+	
+	<bean id="dummyService" class="org.fishwife.jrugged.spring.config.DummyService"
+		jrugged:methods="foo, bar" jrugged:perfmon="true"/>
+
+</beans>
