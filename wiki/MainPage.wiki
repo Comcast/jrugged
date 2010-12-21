@@ -12,3 +12,7 @@ Although there are several lower-level building block classes here available for
 Generally speaking, most of these classes implement a !ServiceWrapper interface to allow them to be applied around existing services using the [http://en.wikipedia.org/wiki/Decorator_pattern Decorator] design pattern. Those classes providing operational information, such as !PerformanceMonitor and Monitorable can be wrapped in classes that expose their data to JMX controls or on web-accessible health status pages as desired. 
 
 Check out our [Examples] page to get information on the library and how it works.
+
+= Hyperic Wiring =
+
+Check out our new contribution to the project, documentation and configuration files for Hyperic integration with JRugged JMX information located at our [HypericMonitoring] page.
