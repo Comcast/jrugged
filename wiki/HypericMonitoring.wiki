@@ -28,13 +28,13 @@ com.sun.management.jmxremote.authenticate={true|false}
 = Plugin Installation=
 To install the plugin, the file name must end with "-plugin.xml" and you need to place it in one of the directories in which Hyperic looks for plugins.  The server can hot-load plugins, while the agent must be restarted to pick up plugins.
 
-See this page for more information on where to place plugins:
+See this page for more information:
 [http://support.hyperic.com/display/hypcomm/Plugin+Install+Guide]
 
 = Plugin Configuration =
 From the Hyperic main page, go to _Resources->Browse_, and select the platform on which you installed the plugin.
 
-From the platform page, go to _Tools Menu->New Server_.  You should now be at the new server creation page.  Give your server a name and a an optional description, and select _Sun JVM 1.5_ as the server type.  Finally, for *Install Path* give the full path to the java executable.  Click _Ok_ to proceed.
+From the platform page, go to _Tools Menu->New Server_.  You should now be at the new server creation page.  Give your server a name and a an optional description, and select _Sun JVM 1.5_ as the server type.  Finally, for _Install Path_ give the full path to the java executable.  Click _Ok_ to proceed.
  
 You should now be at the main page for the server that you just created.  Go to _Tools Menu->Configure Server_.
 
