@@ -1,0 +1,55 @@
+#summary Simplified JRugged Spring Configuration allows you to add a jrugged namespace to your spring configuration greatly simplifying JRugged's use in your spring projects.
+
+= Introduction =
+
+Manually wrapping a bean with a Performance Monitor via Spring's XML can be very verbose. There is a @Monitorable annotation that can be added to the bean's class, but editing the source for a class to add monitoring may not be desirable or even possible, such as in the case of third-party classes.
+
+Spring XML supports custom namespaces that are backed by Java code that can manipulate the Spring context. The "jrugged" namespace (xmlns:jrugged="http://www.fishwife.org/schema/jrugged") can wrap a bean in a PerformanceMonitor by adding a pair of custom attributes to a bean definition.
+
+= Details =
+
+To add the jrugged namespace to a Spring XML file, you need add xmlns:jrugged="http://www.fishwife.org/schema/jrugged" to the root `<beans>` element, then add "http://www.fishwife.org/schema/jrugged http://www.fishwife.org/schema/jrugged/jrugged.xsd" to the xsi:schemaLocation attribute of the root `<beans>` element:
+
+{{{
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:jrugged="http://www.fishwife.org/schema/jrugged"
+	xsi:schemaLocation="
+http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+http://www.fishwife.org/schema/jrugged http://www.fishwife.org/schema/jrugged/jrugged.xsd"> 
+}}}
+
+To wrap a specific bean with a performance monitor, use the following new attributes:
+
+{{{
+<bean id="someService" class="com.company.SomeService" jrugged:methods="foo, bar" jrugged:perfmon="true"/>
+}}}
+
+The jrugged:methods attribute specifies which methods of the bean need to be wrapped with a performance monitor. The jrugged:perfmon attribute actually enables/disabled the performance monitor. The advantage of having this extra attribute is that you could use Spring's property substitution to globally enable/disable monitoring:
+
+{{{
+<bean id="someService" class="com.company.SomeService" jrugged:methods="foo, bar" jrugged:perfmon="${monitoring.enabled}"/>
+}}}
+== Design ==
+
+The classes to support the jrugged namespace are in the org.fishwife.jrugged.spring.config package. The central class is the JRuggedNamespaceHandler which maps the custom attributes to the classes that handle them:
+
+{{{
+jrugged:methods -> MonitorMethodInterceptorDefinitionDecorator
+jrugged:perfmon -> PerfomanceMonitorBeanDefinitionDecorator
+}}}
+
+There is also a jrugged:perfmon element that can be used to instantiate a standalone PerformanceMonitorBean. It's just a shortcut for `<bean id="whatever" class="org.jrugged.spring.PerformanceMonitorBean"/>`. It's handled by the PerformanceMonitorBeanDefinitionParser class.
+
+Behind the scenes, the Decorator classes create the necessary bean definitions (assume the bean being wrapped is named "myBean"):
+
+myBeanPerfomanceMonitor
+myBeanPerformanceMonitorInterceptor
+myBeanProxy (Note: This should probably be changed to myBeanPerformanceMonitorProxy to reduce the
+chance of a naming collision)
+
+The jrugged:methods attribute results in the creation of the PerformanceMonitor and Interceptor, while the jrugged:perfmon attribute creates the Proxy. Currently, setting jrugged:perfmon="false" still results in the creation of the PerformanceMonitor and Interceptor even though they are not used. In the future, the handlers should be improved to avoid creating the unnecessary beans.
+
+The interceptor that gets created is a SingleServiceWrapperInterceptor, which is similar to the ServiceWrapperInterceptor except that it uses a List of methods instead of a map, and only delegates to one ServiceWrapper.
+
+The attributes are defined in a jrugged.xsd file that is included in the jrugged-spring.jar. There are also two files META-INF/spring.schemas and META-INF/spring.handlers also included in the jar that are needed to make Spring aware of the namespace.
