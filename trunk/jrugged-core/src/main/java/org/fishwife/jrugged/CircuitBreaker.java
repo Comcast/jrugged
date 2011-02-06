@@ -58,6 +58,8 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public class CircuitBreaker implements Monitorable, ServiceWrapper {
 
+
+
     /**
      * Represents whether a {@link CircuitBreaker} is OPEN, HALF_CLOSED,
      *  or CLOSED.
@@ -73,7 +75,17 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 
 		/** A CLOSED breaker is operating normally and allowing
 			requests through. */
-		CLOSED
+		CLOSED;
+    }
+
+    private Throwable tripException = null;
+
+    /**
+     * Returns the last exception that caused the breaker to trip, NULL if never tripped.
+     * @return Throwable
+     */
+    public Throwable getTripException() {
+        return tripException;
     }
 
 	/** Current state of the breaker. */
@@ -500,6 +512,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	private void handleFailure(Throwable cause) throws Exception {
 		if (failureInterpreter == null ||
 			failureInterpreter.shouldTrip(cause)) {
+            this.tripException = cause;
 			trip();
 		}
 
