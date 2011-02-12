@@ -16,15 +16,13 @@
  */
 package org.fishwife.jrugged;
 
-import java.util.Arrays;
-
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import java.util.Arrays;
+import java.util.Collection;
+
+import static org.easymock.EasyMock.*;
 import static org.junit.Assert.assertEquals;
 
 public class TestRolledUpStatus {
@@ -119,6 +117,20 @@ public class TestRolledUpStatus {
         Status result = impl.getStatus();
 
         assertEquals(Status.DOWN, result);
+        verifyMocks();
+    }
+
+    @Test
+    public void onlyNonGreenSystemsAreReturned(){
+        expect(mockCritical.getStatus()).andReturn(Status.DOWN);
+        expect(mockNoncritical.getStatus()).andReturn(Status.UP);
+
+
+        replayMocks();
+
+        Collection<?extends Monitorable> nonGreen = impl.getNonGreenSystems();
+
+        assertEquals(1, nonGreen.size());
         verifyMocks();
     }
 }
