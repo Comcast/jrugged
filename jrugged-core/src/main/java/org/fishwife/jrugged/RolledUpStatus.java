@@ -17,6 +17,7 @@
 package org.fishwife.jrugged;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /** A {@link RolledUpStatus} provides for grouping subsystems together in
  *  a single system for status reporting purposes. Subsystems are divided
@@ -33,6 +34,8 @@ public class RolledUpStatus implements Monitorable {
     private Collection<? extends Monitorable> criticals;
     private Collection<? extends Monitorable> noncriticals;
 
+
+
     /** Initializes the {@link RolledUpStatus} with its component
      *  subsystems.
      *  @param criticals the set of {@link Monitorable} subsystems
@@ -43,24 +46,48 @@ public class RolledUpStatus implements Monitorable {
      */
     public RolledUpStatus(Collection<? extends Monitorable> criticals,
 			  Collection<? extends Monitorable> noncriticals) {
-	this.criticals = criticals;
-	this.noncriticals = noncriticals;
+	    this.criticals = criticals;
+	    this.noncriticals = noncriticals;
     }
 
     /** Returns the current {@link Status} of the system as a whole. */
     public Status getStatus() {
-	Status result = Status.UP;
-	for(Monitorable m : noncriticals) {
-	    if (!Status.UP.equals(m.getStatus())) {
-		result = Status.DEGRADED;
-	    }
-	}
-	for(Monitorable m : criticals) {
-	    Status subStatus = m.getStatus();
-	    if (subStatus.getValue() < result.getValue()) {
-		result = subStatus;
-	    }
-	}
-	return result;
+        Status result = Status.UP;
+        for(Monitorable m : noncriticals) {
+            if (statusIsNotUp(m)) {
+                result = Status.DEGRADED;
+            }
+        }
+        for(Monitorable m : criticals) {
+            Status subStatus = m.getStatus();
+            if (subStatus.getValue() < result.getValue()) {
+                result = subStatus;
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 
+     * @return List of Monitorables that have a status other than UP/Green
+     */
+    public Collection<? extends Monitorable> getNonGreenSystems() {
+        Collection<Monitorable> nonGreenSystems = new ArrayList<Monitorable>();
+
+        for(Monitorable m : noncriticals){
+            if(statusIsNotUp(m))
+                nonGreenSystems.add(m);
+        }
+
+        for(Monitorable m : criticals){
+            if(statusIsNotUp(m))
+                nonGreenSystems.add(m);
+        }
+
+        return nonGreenSystems;
+    }
+
+    private boolean statusIsNotUp(Monitorable m) {
+        return Status.UP != m.getStatus();
     }
 }
