@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<plugin>
+    <classpath>
+        <include name="pdk/lib/mx4j"/>
+    </classpath>
+
+    <service name="JRugged Circuits Monitor" server="Sun JVM" version="1.5">
+
+        <plugin type="autoinventory" />
+        <plugin type="measurement" class="org.hyperic.hq.product.jmx.MxMeasurementPlugin" />
+        <plugin type="control" class="org.hyperic.hq.product.jmx.MxControlPlugin"/>
+
+        <filter name="template" value="${OBJECT_NAME}:${alias}" />
+
+        <property name="OBJECT_NAME" value="org.fishwife.jrugged.spring:type=CircuitBreakerBean,name=*"/>
+       
+        <actions include="reset,setLimit,tripHard,trip,setByPassState,setResetMillis,setWindowMillis,getHealthCheck"/>
+
+        <metric name="Bypass State" template="${OBJECT_NAME}:ByPassState" category="Availability" units="none" collectionType="dynamic" />
+        <metric name="Last Trip Time" category="Utilization" units="ms" collectionType="dynamic" />
+        <metric name="Limit" category="Utilization" units="none" collectionType="dynamic" />
+        <metric name="Reset Millis" category="Utilization" units="ms" collectionType="dynamic" />
+        <metric name="Trip Count" category="Utilization" indicator="true" units="none" collectionType="dynamic" />	
+        <metric name="Window Millis" category="Utilization" units="ms" collectionType="dynamic" />
+
+    </service>
+</plugin>

@@ -32,218 +32,285 @@ public class PerformanceMonitorBean extends PerformanceMonitor {
         super();
     }
 
-	/** Returns the one-minute moving average of the latency of successful
-	 *  requests, measured in milliseconds.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getAverageSuccessLatencyLastMinute() {
 		return super.getAverageSuccessLatencyLastMinute();
     }
 
-	/** Returns the one-hour moving average of the latency of successful
-	 *  requests, measured in milliseconds.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getAverageSuccessLatencyLastHour() {
 		return super.getAverageSuccessLatencyLastHour();
     }
 
-	/** Returns the 24-hour moving average of the latency of successful
-	 *  requests, measured in milliseconds.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getAverageSuccessLatencyLastDay() {
 		return super.getAverageSuccessLatencyLastDay();
     }
 
-	/** Returns the one-minute moving average of the latency of failed
-	 *  requests, measured in milliseconds.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getAverageFailureLatencyLastMinute() {
 		return super.getAverageFailureLatencyLastMinute();
     }
 
-	/** Returns the one-hour moving average of the latency of failed
-	 *  requests, measured in milliseconds.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getAverageFailureLatencyLastHour() {
 		return super.getAverageFailureLatencyLastHour();
     }
 
-	/** Returns the 24-hour moving average of the latency of failed
-	 *  requests, measured in milliseconds.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getAverageFailureLatencyLastDay() {
 		return super.getAverageFailureLatencyLastDay();
     }
 
-	/** Returns the one-minute moving average rate of all requests (both
-	 *  successes and failures) measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getTotalRequestsPerSecondLastMinute() {
 		return super.getTotalRequestsPerSecondLastMinute();
     }
 
-	/** Returns the one-minute moving average rate of successful requests
-	 *  measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getSuccessRequestsPerSecondLastMinute() {
 		return super.getSuccessRequestsPerSecondLastMinute();
     }
 
-	/** Returns the one-minute moving average rate of failed requests
-	 *  measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getFailureRequestsPerSecondLastMinute() {
 		return super.getFailureRequestsPerSecondLastMinute();
     }
 
-	/** Returns the one-hour moving average rate of all requests (both
-	 *  successes and failures) measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getTotalRequestsPerSecondLastHour() {
 		return super.getTotalRequestsPerSecondLastHour();
     }
 
-	/** Returns the one-hour moving average rate of successful requests
-	 *  measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getSuccessRequestsPerSecondLastHour() {
 		return super.getSuccessRequestsPerSecondLastHour();
     }
 
-	/** Returns the one-hour moving average rate of failed requests
-	 *  measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getFailureRequestsPerSecondLastHour() {
 		return super.getFailureRequestsPerSecondLastHour();
     }
 
-	/** Returns the 24-hour moving average rate of all requests
-	 *  measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getTotalRequestsPerSecondLastDay() {
 		return super.getTotalRequestsPerSecondLastDay();
     }
 
-	/** Returns the 24-hour moving average rate of successful requests
-	 *  measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getSuccessRequestsPerSecondLastDay() {
 		return super.getSuccessRequestsPerSecondLastDay();
     }
 
-	/** Returns the 24-hour moving average rate of failed requests
-	 *  measured in requests per second.
-	 *  @return double
-	 */
     @ManagedAttribute
     @Override
     public double getFailureRequestsPerSecondLastDay() {
 		return super.getFailureRequestsPerSecondLastDay();
     }
 
-	/** Returns the average rate of requests measured in requests per
-	 *  second since this object was initialized.
-	 *  @return double
-	 */
 	@ManagedAttribute
     @Override
     public double getTotalRequestsPerSecondLifetime() {
 		return super.getTotalRequestsPerSecondLifetime();
     }
 
-    /**
-     * Returns the average rate of successful requests, measured in
-	 * requests per second since this object was initialized.
-     * @return double
-     */
     @ManagedAttribute
     @Override
     public double getSuccessRequestsPerSecondLifetime() {
         return super.getSuccessRequestsPerSecondLifetime();
     }
 
-    /**
-     * Returns the average rate of failed requests, measured in
-     *  requests per second since this object was initialized.
-     * @return double
-     */
     @ManagedAttribute
     @Override
     public double getFailureRequestsPerSecondLifetime() {
 		return super.getFailureRequestsPerSecondLifetime();
     }
 
-    /**
-     * Returns the total number of requests seen by this {@link
-     * PerformanceMonitor}.
-     * @return long
-     */
     @ManagedAttribute
     @Override
     public long getRequestCount() {
 		return super.getRequestCount();
     }
 
-    /**
-     * Returns the number of successful requests seen by this {@link
-     * PerformanceMonitor}.
-     * @return long
-     */
     @ManagedAttribute
     @Override
     public long getSuccessCount() {
 		return super.getSuccessCount();
     }
 
-    /**
-     * Returns the number of failed requests seen by this {@link
-     * PerformanceMonitor}.
-     * @return long
-     */
     @ManagedAttribute
     @Override
     public long getFailureCount() {
 		return super.getFailureCount();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long getMedianPercentileSuccessLatencyLifetime() {
+    	return super.getMedianPercentileSuccessLatencyLifetime();
+    }    
+
+    @ManagedAttribute
+    @Override
+    public long get95thPercentileSuccessLatencyLifetime() {
+    	return super.get95thPercentileSuccessLatencyLifetime();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long get99thPercentileSuccessLatencyLifetime() {
+    	return super.get99thPercentileSuccessLatencyLifetime();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long getMaxSuccessLatencyLifetime() {
+    	return super.getMaxSuccessLatencyLifetime();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long getMedianPercentileSuccessLatencyLastMinute() {
+    	return super.getMedianPercentileSuccessLatencyLastMinute();
+    }    
+
+    @ManagedAttribute
+    @Override
+    public long get95thPercentileSuccessLatencyLastMinute() {
+    	return super.get95thPercentileSuccessLatencyLastMinute();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long get99thPercentileSuccessLatencyLastMinute() {
+    	return super.get99thPercentileSuccessLatencyLastMinute();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long getMedianPercentileSuccessfulLatencyLastHour() {
+    	return super.getMedianPercentileSuccessfulLatencyLastHour();
+    }    
+
+    @ManagedAttribute
+    @Override
+    public long get95thPercentileSuccessLatencyLastHour() {
+    	return super.get95thPercentileSuccessLatencyLastHour();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long get99thPercentileSuccessLatencyLastHour() {
+    	return super.get99thPercentileSuccessLatencyLastHour();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long getMedianPercentileSuccessLatencyLastDay() {
+    	return super.getMedianPercentileSuccessLatencyLastDay();
+    }    
+
+    @ManagedAttribute
+    @Override
+    public long get95thPercentileSuccessLatencyLastDay() {
+    	return super.get95thPercentileSuccessLatencyLastDay();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long get99thPercentileSuccessLatencyLastDay() {
+    	return super.get99thPercentileSuccessLatencyLastDay();
+    }
+    
+    @ManagedAttribute
+    @Override
+    public long getMedianPercentileFailureLatencyLifetime() {
+    	return super.getMedianPercentileFailureLatencyLifetime();
+    }    
+
+    @ManagedAttribute
+    @Override
+    public long get95thPercentileFailureLatencyLifetime() {
+    	return super.get95thPercentileFailureLatencyLifetime();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long get99thPercentileFailureLatencyLifetime() {
+    	return super.get99thPercentileFailureLatencyLifetime();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long getMaxFailureLatencyLifetime() {
+    	return super.getMaxFailureLatencyLifetime();
+    }
+    
+    @ManagedAttribute
+    @Override
+    public long getMedianPercentileFailureLatencyLastMinute() {
+    	return super.getMedianPercentileFailureLatencyLastMinute();
+    }    
+
+    @ManagedAttribute
+    @Override
+    public long get95thPercentileFailureLatencyLastMinute() {
+    	return super.get95thPercentileFailureLatencyLastMinute();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long get99thPercentileFailureLatencyLastMinute() {
+    	return super.get99thPercentileFailureLatencyLastMinute();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long getMedianPercentileFailureLatencyLastHour() {
+    	return super.getMedianPercentileFailureLatencyLastHour();
+    }    
+
+    @ManagedAttribute
+    @Override
+    public long get95thPercentileFailureLatencyLastHour() {
+    	return super.get95thPercentileFailureLatencyLastHour();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long get99thPercentileFailureLatencyLastHour() {
+    	return super.get99thPercentileFailureLatencyLastHour();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long getMedianPercentileFailureLatencyLastDay() {
+    	return super.getMedianPercentileFailureLatencyLastDay();
+    }    
+
+    @ManagedAttribute
+    @Override
+    public long get95thPercentileFailureLatencyLastDay() {
+    	return super.get95thPercentileFailureLatencyLastDay();
+    }
+
+    @ManagedAttribute
+    @Override
+    public long get99thPercentileFailureLatencyLastDay() {
+    	return super.get99thPercentileFailureLatencyLastDay();
     }
 }
