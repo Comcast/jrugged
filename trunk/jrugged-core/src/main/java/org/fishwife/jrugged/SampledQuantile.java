@@ -178,10 +178,11 @@ public class SampledQuantile {
 		if (windowMillis == null) return;
 		long deadline = now - windowMillis;
 		long segmentSize = windowMillis / NUM_WINDOW_SEGMENTS;
-		while(windowSegments.peek().timestamp < deadline) {
+		while(windowSegments.size() > 0 && windowSegments.peek().timestamp < deadline) {
 			windowSegments.remove();
 		}
-		long mostRecentSegmentTimestamp = windowSegments.getLast().timestamp;
+		long mostRecentSegmentTimestamp = (windowSegments.size() > 0) ? 
+		    windowSegments.getLast().timestamp : 0L;
 		if (windowSegments.size() == 0 
 			|| now - mostRecentSegmentTimestamp > segmentSize) {
 			windowSegments.offer(new Sample(samplesSeen, now));
