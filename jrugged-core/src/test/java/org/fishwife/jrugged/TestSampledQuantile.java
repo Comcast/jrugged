@@ -200,4 +200,14 @@ public class TestSampledQuantile {
 		assertEquals(2L, impl.getPercentile(50, t2));
 		impl.addSample(3L, t2+1);
 	}
+	
+	@Test
+	public void windowedSamplingHandlesLongTimesBetweenSamples() {
+	    long t0 = System.currentTimeMillis();
+	    impl = new SampledQuantile(10, 60L, TimeUnit.SECONDS, t0);
+	    impl.addSample(1L, t0 + 1);
+	    long t1 = t0 + 90 * 1000L;
+	    impl.addSample(2L, t1);
+	    assertEquals(2L, impl.getPercentile(50, t1));
+	}
 }
