@@ -19,8 +19,7 @@ limitations under the License.
 	xmlns:jrugged="http://www.fishwife.org/schema/jrugged"
 	xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.5.xsd
-http://www.fishwife.org/schema/jrugged http://www.fishwife.org/schema/jrugged/jrugged.xsd">
+http://www.fishwife.org/schema/jrugged jrugged.xsd">
 
 	<bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
 		<property name="locateExistingServerIfPossible" value="true" />
