@@ -15,7 +15,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:jrugged="http://www.fishwife.org/schema/jrugged"
 	xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
@@ -47,5 +47,8 @@ http://www.fishwife.org/schema/jrugged jrugged.xsd">
 	
 	<bean id="dummyService" class="org.fishwife.jrugged.spring.config.DummyService"
 		jrugged:methods="foo, bar" jrugged:perfmon="true"/>
+		
+	<bean id="dummyService2" class="org.fishwife.jrugged.spring.config.DummyService"
+		jrugged:methods="foo" jrugged:perfmon="false"/>		
 
 </beans>

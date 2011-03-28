@@ -64,15 +64,19 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
     private List<String> buildMethodList(Node source) {
         Attr attribute = (Attr)source;
         String methods = attribute.getValue();   
+        return parseMethodList(methods);
+    }
+    
+    public List<String> parseMethodList(String methods) {
         
-        String[] methodArray = StringUtils.split(methods, ",");
+        String[] methodArray = StringUtils.delimitedListToStringArray(methods, ",");
         
         List<String> methodList = new ArrayList<String>();
         
         for (String methodName : methodArray) {
             methodList.add(methodName.trim());
         }
-        return methodList;
+        return methodList;        
     }
 
     private void registerPerformanceMonitor(String beanName,
