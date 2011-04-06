@@ -50,6 +50,8 @@ public class ServiceWrappedHttpClientDecorator extends AbstractHttpClientDecorat
             });
         } catch (IOException ioe) {
             throw(ioe);
+        } catch (RuntimeException re) {
+            throw(re);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

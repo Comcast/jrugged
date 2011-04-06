@@ -19,6 +19,8 @@ package org.fishwife.jrugged.httpclient;
 import static org.easymock.EasyMock.*;
 import static org.junit.Assert.*;
 
+import java.io.IOException;
+
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -75,12 +77,15 @@ public class TestFailureHandlingHttpClient {
     }
     
     @Test
-    public void returns504ForCircuitBreakerException() throws Exception {
+    public void throwsIOExceptionForCircuitBreakerException() throws Exception {
         expect(mockBackend.execute(host, req, ctx))
             .andThrow(new CircuitBreakerException());
         replay(mockBackend);    
-        HttpResponse result = impl.execute(host, req, ctx);
+        try {
+            impl.execute(host, req, ctx);
+            fail("should have thrown exception");
+        } catch (IOException expected) {
+        }
         verify(mockBackend);
-        assertEquals(HttpStatus.SC_GATEWAY_TIMEOUT, result.getStatusLine().getStatusCode());
     }
 }
