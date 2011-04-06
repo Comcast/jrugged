@@ -44,6 +44,13 @@ public class ServiceWrappedHttpClient extends AbstractHttpClientDecorator {
         this.client = new FailureHandlingHttpClient(client2); 
     }
 
+    public ServiceWrappedHttpClient(HttpClient backend, ServiceWrapper wrapper, ResponseFailureAssessor assessor) {
+        super(backend);
+        HttpClient client1 = new FailureExposingHttpClient(backend, assessor);
+        HttpClient client2 = new ServiceWrappedHttpClientDecorator(client1, wrapper);
+        this.client = new FailureHandlingHttpClient(client2); 
+    }
+
     public HttpResponse execute(HttpHost host, HttpRequest req, HttpContext ctx)
             throws IOException, ClientProtocolException {
         return client.execute(host, req, ctx);
