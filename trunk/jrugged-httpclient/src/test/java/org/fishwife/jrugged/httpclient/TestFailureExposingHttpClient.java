@@ -23,6 +23,7 @@ import java.io.IOException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.HttpVersion;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -102,6 +103,31 @@ public class TestFailureExposingHttpClient {
             } catch (UnsuccessfulResponseException expected) {
             }
         }
+    }
+    
+    @Test(expected=UnsuccessfulResponseException.class)
+    public void exposesFailureIfAssessorSaysTo() throws Exception {
+        resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK");
+        backend.setResponse(resp);
+        impl = new FailureExposingHttpClient(backend, new ResponseFailureAssessor() {
+            public boolean isFailure(HttpResponse response) {
+                return true;
+            }
+        });
+        impl.execute(host, req, ctx);
+    }
+    
+    @Test
+    public void doesNotExposeFailureIfAssessorSaysNotTo() throws Exception {
+        resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_INTERNAL_SERVER_ERROR, "Bork");
+        backend.setResponse(resp);
+        impl = new FailureExposingHttpClient(backend, new ResponseFailureAssessor() {
+            public boolean isFailure(HttpResponse response) {
+                return false;
+            }
+        });
+        HttpResponse result = impl.execute(host, req, ctx);
+        assertSame(result, resp);
     }
     
     private static class StubHttpClient extends AbstractHttpClientDecorator {

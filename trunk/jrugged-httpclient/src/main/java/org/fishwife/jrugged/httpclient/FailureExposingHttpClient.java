@@ -34,22 +34,25 @@ import org.apache.http.protocol.HttpContext;
  */
 public class FailureExposingHttpClient extends AbstractHttpClientDecorator {
 
+    private ResponseFailureAssessor assessor;
+    
     public FailureExposingHttpClient(HttpClient backend) {
         super(backend);
+        assessor = new DefaultResponseFailureAssessor();
+    }
+    
+    public FailureExposingHttpClient(HttpClient backend, ResponseFailureAssessor assessor) {
+        super(backend);
+        this.assessor = assessor;
     }
 
     public HttpResponse execute(HttpHost host, HttpRequest req, HttpContext ctx)
             throws IOException, ClientProtocolException {
         HttpResponse resp = backend.execute(host, req, ctx);
-        if (isFailedResponse(resp)) {
+        if (assessor.isFailure(resp)) {
             throw new UnsuccessfulResponseException(resp);
         }
         return resp;
     }
 
-    private boolean isFailedResponse(HttpResponse resp) {
-        int status = resp.getStatusLine().getStatusCode();
-        return (status >= 400 && status <= 499) || 
-                (status >= 500 && status <= 599);
-    }
 }
