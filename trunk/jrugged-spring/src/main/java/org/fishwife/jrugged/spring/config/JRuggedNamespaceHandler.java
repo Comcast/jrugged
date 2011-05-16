@@ -18,8 +18,19 @@ package org.fishwife.jrugged.spring.config;
 
 import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
 
+/**
+ * Handler class for the JRugged Spring namespace. This class registers
+ * custom parsers and decorators for the new perform element and the
+ * perfmon and methods attributes on bean elements.
+ * 
+ * This class is associated with the http://www.fishwife.org/schema/jrugged
+ * namespace via the META-INF/spring.handlers file.
+ */
 public class JRuggedNamespaceHandler extends NamespaceHandlerSupport {
     
+    /**
+     * Called by Spring to register any parsers and decorators.
+     */
     public void init() {
         registerBeanDefinitionParser("perfmon",
                         new PerformanceMonitorBeanDefinitionParser()); 

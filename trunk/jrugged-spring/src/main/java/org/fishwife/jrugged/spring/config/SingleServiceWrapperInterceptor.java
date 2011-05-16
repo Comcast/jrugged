@@ -66,6 +66,16 @@ public class SingleServiceWrapperInterceptor implements MethodInterceptor {
         }
     }
 
+    /**
+     * Checks if the method being invoked should be wrapped by a service.
+     * It looks the method name up in the methodList. If its in the list, then
+     * the method should be wrapped. If the list is null, then all methods
+     * are wrapped.
+     * 
+     * @param methodName The method being called
+     *
+     * @return boolean
+     */
     private boolean shouldWrapMethodCall(String methodName) {
         if (methodList == null) {
             return true; // Wrap all by default
@@ -79,17 +89,29 @@ public class SingleServiceWrapperInterceptor implements MethodInterceptor {
         return false;
     }
 
-    /** Specifies which methods will be wrapped with the ServiceWrapper.
-     *  @param methodList the methods!
+    /**
+     * Specifies which methods will be wrapped with the ServiceWrapper.
+     *
+     * @param methodList the methods I intend to wrap calls around
      */
     public void setMethods(List<String> methodList)  {
         this.methodList = methodList;
     }
     
+    /**
+     * Return the ServiceWrapper being used to wrap the methods.
+     *
+     * @return ServiceWrapper
+     */
     public ServiceWrapper getServiceWrapper() {
         return serviceWrapper;
     }
 
+    /**
+     * Set the ServiceWrapper to wrap the methods with.
+     *
+     * @param serviceWrapper The wrapper instance from Spring config.
+     */
     public void setServiceWrapper(ServiceWrapper serviceWrapper) {
         this.serviceWrapper = serviceWrapper;
     }
