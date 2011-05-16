@@ -29,10 +29,22 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Node;
 
-
+/**
+ * This class is invoked when Spring encounters the jrugged:methods attribute
+ * on a bean. It parses the attribute value with is a comma delimited list
+ * of method names to wrap with the PerformanceMonitor. It tells Spring to
+ * create a SingleServiceWrapperInterceptor named after the bean with
+ * "PerformanceMonitorInterceptor" appended to the name. It also defines
+ * a PerformanceMonitorBean named after the bean with "PerformanceMonitor"
+ * appended to it. The interceptor has a reference to the PerformanceMonitor.
+ */
 public class MonitorMethodInterceptorDefinitionDecorator implements
                 BeanDefinitionDecorator {
     
+    /**
+     * Method called by Spring when it encounters the custom jrugged:methods
+     * attribute. Registers the performance monitor and interceptor.
+     */
     public BeanDefinitionHolder decorate(Node source,
                                          BeanDefinitionHolder holder,
                                          ParserContext context) {
@@ -45,6 +57,15 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
         return holder;
     }
 
+    /**
+     * Register a new SingleServiceWrapperInterceptor for the bean being
+     * wrapped, associate it with the PerformanceMonitor and tell it which methods
+     * to intercept.
+     *
+     * @param source An Attribute node from the spring configuration
+     * @param beanName The name of the bean that this performance monitor is wrapped around
+     * @param registry The registry where all the spring beans are registered
+     */
     private void registerInterceptor(Node source,
                                      String beanName,
                                      BeanDefinitionRegistry registry) {
@@ -61,12 +82,28 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
         registry.registerBeanDefinition(interceptorName, initializer.getBeanDefinition());
     }
 
+    /**
+     * Parse the jrugged:methods attribute into a List of strings of method
+     * names
+     *
+     * @param source An Attribute node from the spring configuration
+     *
+     * @return List<String>
+     */
     private List<String> buildMethodList(Node source) {
         Attr attribute = (Attr)source;
         String methods = attribute.getValue();   
         return parseMethodList(methods);
     }
     
+    /**
+     * Parse a comma-delimited list of method names into a List of strings.
+     * Whitespace is ignored.
+     *
+     * @param methods the comma delimited list of methods from the spring configuration
+     *
+     * @return List<String>
+     */
     public List<String> parseMethodList(String methods) {
         
         String[] methodArray = StringUtils.delimitedListToStringArray(methods, ",");
@@ -79,6 +116,12 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
         return methodList;        
     }
 
+    /**
+     * Register a new PerformanceMonitor with Spring if it does not already exist.
+     * 
+     * @param beanName The name of the bean that this performance monitor is wrapped around
+     * @param registry The registry where all the spring beans are registered
+     */
     private void registerPerformanceMonitor(String beanName,
                                             BeanDefinitionRegistry registry) {
         
