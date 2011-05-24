@@ -75,7 +75,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 
 		/** A CLOSED breaker is operating normally and allowing
 			requests through. */
-		CLOSED;
+		CLOSED
     }
 
     private Throwable tripException = null;
@@ -265,6 +265,8 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      * its functionality allowing requests to be executed unmolested
      * until the <code>CircuitBreaker</code> is reset or the byPass
      * is manually set to false.
+     *
+     * @param b Set this breaker into bypass mode
      */
     public void setByPassState(boolean b) {
         byPass = b;

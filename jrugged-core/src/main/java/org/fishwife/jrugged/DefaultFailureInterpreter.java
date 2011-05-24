@@ -1,25 +1,23 @@
-/* Copyright 2009-2011 Comcast Interactive Media, LLC.
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+/* DefaultFailureInterpreter.java
+ * 
+ * Copyright 2009-2011 Comcast Interactive Media, LLC.
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.fishwife.jrugged;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -33,10 +31,8 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     private int limit = 0;
     private long windowMillis = 0;
 
-    // tracks times when exceptions occurred
-    private List<Long> errorTimes = Collections
-            .synchronizedList(new LinkedList<Long>());
-
+	private WindowedEventCounter counter;
+	
 	@SuppressWarnings("unchecked")
 	private static Class<? extends Throwable>[] defaultIgnore = 
 		new Class[0];
@@ -62,6 +58,7 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
 		setIgnore(defaultIgnore);
 		setLimit(limit);
 		setWindowMillis(windowMillis);
+		initCounter();
 	}
 
     /**
@@ -95,6 +92,7 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
 		setIgnore(ignore);
 		setLimit(limit);
 		setWindowMillis(windowMillis);
+		initCounter();
 	}
 
     private boolean hasWindowConditions() {
@@ -111,30 +109,32 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
 		// if Exception is of specified type, and window conditions exist,
 		// keep circuit open unless exception threshold has passed
 		if (hasWindowConditions()) {
-			errorTimes.add(System.currentTimeMillis());
+			counter.mark();
+			// Trip if the exception count has passed the limit
+			return (counter.tally() > limit);
+		}
+		
+		return true;
+	}
+	
+	private void initCounter() {
+		if (hasWindowConditions()) {
+			int capacity = limit + 1;
+			if (counter == null) {
+				this.counter = new WindowedEventCounter(capacity,windowMillis);
+			} else {
+				if (capacity != counter.getCapacity()) {
+					counter.setCapacity(capacity);
+				}
 
-			// calculates time for which we remove any errors before
-			final long removeTimesBeforeMillis = System.currentTimeMillis()
-				- windowMillis;
-			
-			// removes errors before cutoff 
-			// (could we speed this up by using binary search to find the entry point,
-			// then removing any items before that point?)
-			for (final Iterator<Long> i = this.errorTimes.iterator(); i.hasNext();) {
-				final Long time = i.next();
-				if (time < removeTimesBeforeMillis) {
-					i.remove();
-				} else {
-					// the list is sorted by time, if I didn't remove this item
-					// I won't be remove any after it either
-					break;
+				if (windowMillis != counter.getWindowMillis()) {
+					counter.setWindowMillis(windowMillis);
 				}
 			}
-			
-			// Trip if the exception count has passed the limit
-			return (errorTimes.size() > limit);
-		} 
-		return true;
+		} else {
+			// we're not under windowConditions, no counter needed
+			counter = null;
+		}
 	}
 
     /**
@@ -166,11 +166,13 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     /**
      * Specifies the number of tolerated failures within the
      * configured time window. If limit is set to <em>n</em> then the
-     * <em>(n+1)</em>th failure will trip the breaker.
+     * <em>(n+1)</em>th failure will trip the breaker.  Mutating the
+     * limit at runtime can reset previous failure counts.
      * @param limit <code>int</code>
      */
     public void setLimit(int limit) {
         this.limit=limit;
+        initCounter();
     }
 
     /**
@@ -188,5 +190,6 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
      */
     public void setWindowMillis(long windowMillis) {
         this.windowMillis=windowMillis;
+        initCounter();
     }
 }
