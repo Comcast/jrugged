@@ -79,8 +79,7 @@ public class RequestCounter implements ServiceWrapper {
      *    and the number of failed requests.
      */
     public synchronized long[] sample() {
-    	long[] out = { numRequests, numSuccesses, numFailures };
-	    return out;
+        return new long[]{numRequests, numSuccesses, numFailures};
     }
 
 }

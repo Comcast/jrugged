@@ -23,7 +23,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-/** The {@link SampledQuantile} provides a way to compute
+/**
+ * The {@link SampledQuantile} provides a way to compute
  * approximate quantile measurements across a set of samples
  * reported to an instance. By default, these samples are
  * taken across the instance's lifetime, but a window can be
@@ -50,32 +51,45 @@ public class SampledQuantile {
 
 	private LinkedList<Sample> windowSegments; 
 	
-	/** Creates a <code>SampleQuantile</code> that keeps a
+	/**
+     * Creates a <code>SampleQuantile</code> that keeps a
 	 * default number of samples across its lifetime. 
 	 */
 	public SampledQuantile() { 
 		this(DEFAULT_MAX_SAMPLES);
 	}
 
-	/** Creates a <code>SampleQuantile</code> that keeps a
-	 * given maximum number of samples across its lifetime. 
+	/**
+     * Creates a <code>SampleQuantile</code> that keeps a
+	 * given maximum number of samples across its lifetime.
+     *
+     * @param maxSamples the maximum number of samples to keep
 	 */
 	public SampledQuantile(int maxSamples) {
 		this.maxSamples = maxSamples;
 	}
 
-	/** Creates a <code>SampleQuantile</code> that keeps a
+	/**
+     * Creates a <code>SampleQuantile</code> that keeps a
 	 * default number of samples across the specified time
-	 * window. 
+	 * window.
+     *
+     * @param windowLength size of time window to hold onto samples
+     * @param units indication of what time units windowLength is specified in
 	 */	
 	public SampledQuantile(long windowLength, TimeUnit units) {
 		this(DEFAULT_MAX_SAMPLES, windowLength, units);
 	}
 
-	/** Creates a <code>SampleQuantile</code> that keeps a
+	/**
+     * Creates a <code>SampleQuantile</code> that keeps a
 	 * given maximum number of samples across the specified time
-	 * window. 
-	 */	
+	 * window.
+     *
+     * @param maxSamples the maximum number of samples to keep inside of windowLength
+     * @param windowLength size of time window to hold onto samples
+     * @param units indication of what time units windowLength is specified in
+	 */
 	public SampledQuantile(int maxSamples, long windowLength, TimeUnit units) {
 		this(maxSamples, windowLength, units, System.currentTimeMillis());
 	}
@@ -99,13 +113,19 @@ public class SampledQuantile {
 		}
 	}
 
-	/** Returns the median of the samples seen thus far. */
+	/**
+     * Returns the median of the samples seen thus far.
+     *
+     * @return long The median measurement
+     */
 	public long getMedian() {
 		return getPercentile(50);
 	}
 	
-	/** Returns the <code>i</code>th percentile of the samples seen
+	/**
+     * Returns the <code>i</code>th percentile of the samples seen
 	 * thus far. This is equivalent to <code>getQuantile(i,100)</code>.
+     *
 	 * @param i must be 0 < i < 100
 	 * @return i-th percentile
 	 * @throws EmptySampleSetException if no measurements have been
@@ -120,8 +140,10 @@ public class SampledQuantile {
 		return getQuantile(i, 100, now);
 	}
 
-	/** Returns the <code>k</code>th <code>q</code>-quantile of the samples
+	/**
+     * Returns the <code>k</code>th <code>q</code>-quantile of the samples
 	 * seen thus far.
+     *
 	 * @param q must be >= 2
 	 * @param k must be 0 < k < q
 	 * @return k-th q-quantile
@@ -158,16 +180,20 @@ public class SampledQuantile {
 		return validSamples;
 	}
 
-	/** Reports the number of samples currently held by this
+	/**
+     * Reports the number of samples currently held by this
 	 * <code>SampleQuantile</code>.
+     *
 	 * @return int
 	 */
 	public int getNumSamples() {
 		return samples.size();
 	}
 	
-	/** Reports a sample measurement to be included in the quantile
-	 * calculations. 
+	/**
+     * Reports a sample measurement to be included in the quantile
+	 * calculations.
+     *
 	 * @param l specific measurement
 	 */
 	public void addSample(long l) {
