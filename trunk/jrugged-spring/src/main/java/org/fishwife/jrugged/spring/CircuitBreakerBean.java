@@ -18,6 +18,7 @@ import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerExceptionMapper;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
@@ -27,8 +28,14 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * doesn't have to depend on spring-context.
  */
 @ManagedResource
-public class CircuitBreakerBean extends CircuitBreaker {
+public class CircuitBreakerBean extends CircuitBreaker implements InitializingBean {
 
+    private boolean disabledAtStart = false;
+    
+    public void afterPropertiesSet() throws Exception {
+        if (disabledAtStart) tripHard();
+    }
+    
 	/** Creates a {@link CircuitBreakerBean} with a {@link
 	 *  DefaultFailureInterpreter} and the default "tripped" exception
 	 *  behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}). */
@@ -201,4 +208,16 @@ public class CircuitBreakerBean extends CircuitBreaker {
     public void setWindowMillis(long windowMillis) {
         super.setWindowMillis(windowMillis);
     }
+
+    /**
+     * Specifies whether the associated CircuitBreaker should be tripped
+     * at startup time.
+     * @param b <code>true</code> if the CircuitBreaker should start
+     *   open (tripped); <code>false</code> if the CircuitBreaker should start
+     *   closed (not tripped).
+     */
+    public void setDisabled(boolean b) {
+        disabledAtStart = b;
+    }
+
 }
