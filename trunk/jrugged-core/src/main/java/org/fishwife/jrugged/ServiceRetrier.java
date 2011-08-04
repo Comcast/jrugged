@@ -23,7 +23,6 @@ import java.util.concurrent.Callable;
  * of tries is exceeded. A delay can be configured between calls and that delay
  * can be constant or configured to double between each call. 
  */
-
 public class ServiceRetrier implements ServiceWrapper {
     
     public static final int DEFAULT_MAX_TRIES = 10;

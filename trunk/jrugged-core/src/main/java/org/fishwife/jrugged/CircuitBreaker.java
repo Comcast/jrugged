@@ -57,9 +57,6 @@ import java.util.concurrent.atomic.AtomicLong;
  * </pre>
  */
 public class CircuitBreaker implements Monitorable, ServiceWrapper {
-
-
-
     /**
      * Represents whether a {@link CircuitBreaker} is OPEN, HALF_CLOSED,
      *  or CLOSED.

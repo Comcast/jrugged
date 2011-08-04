@@ -29,10 +29,12 @@ public class TestPerformanceMonitor {
         int expectedNumberOfFailures =
 			numberOfTimesToTryAMethodCall
 			/ numberOfAttemptsBeforeThrowingException;
+
         int expectedNumberOfSuccess = numberOfTimesToTryAMethodCall
 			- expectedNumberOfFailures;
 
         PerformanceMonitor perfMon = new PerformanceMonitor();
+
         final OccasionalExceptionPerformer performer =
 			new OccasionalExceptionPerformer(numberOfAttemptsBeforeThrowingException);
 
@@ -56,6 +58,39 @@ public class TestPerformanceMonitor {
         assertEquals(expectedNumberOfSuccess, perfMon.getSuccessCount());
     }
 
+    @Test
+    public void testRunnableWithResultReturnsResultOnSuccess() throws Exception {
+        PerformanceMonitor perfMon = new PerformanceMonitor();
+        Integer returnResult = 21;
+
+        Integer callResult = perfMon.invoke(new ConstantSuccessPerformer(5), returnResult);
+
+        assertEquals(returnResult, callResult);
+    }
+
+    @Test(expected=Exception.class)
+    public void testRunnableWithResultReturnsExceptionOnFailure() throws Exception {
+        PerformanceMonitor perfMon = new PerformanceMonitor();
+        Integer returnResult = 21;
+
+        perfMon.invoke(new OccasionalExceptionPerformer(1), returnResult);
+    }
+
+    public class ConstantSuccessPerformer implements Runnable {
+
+        private int _totalNumberOfTimesToLoop;
+
+        public  ConstantSuccessPerformer(int howManyTimesToLoop) {
+            _totalNumberOfTimesToLoop = howManyTimesToLoop;
+        }
+
+        public void run() {
+            for (long i = 0; i < _totalNumberOfTimesToLoop; i++) {
+
+            }
+        }
+    }
+
     public class OccasionalExceptionPerformer implements Runnable {
 
         private int _callsPerException;
@@ -67,8 +102,7 @@ public class TestPerformanceMonitor {
 
         public void run() {
             _loopCounter++;
-            if (_loopCounter % _callsPerException == 0)
-            {
+            if (_loopCounter % _callsPerException == 0) {
                 throw new IllegalStateException("Duh");
             }
         }

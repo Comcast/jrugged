@@ -28,8 +28,9 @@ import java.lang.annotation.Target;
 public @interface CircuitBreaker {
 
     /**
-     * Name of the circuit.  Each annotation with a shared name shares
+     * Name of the circuit.  Each annotation with a shared value shares
      * the same CircuitBreaker.
+     * @return the value
      */
     String name();
 
@@ -37,6 +38,7 @@ public @interface CircuitBreaker {
      * Exception types that the {@link
      * org.fishwife.jrugged.CircuitBreaker} will ignore (pass through
      * transparently without tripping).
+     * @return the Exception types.
      */
     Class<? extends Throwable>[] ignore() default {};
 
@@ -45,12 +47,14 @@ public @interface CircuitBreaker {
      * tolerances in milliseconds.  i.e. if <code>limit</code>
      * failures occur within <code>windowMillis</code> milliseconds,
      * the breaker will trip.
+     * @return the length of the measurement window.
      */
      long windowMillis() default -1;
 
     /**
      * Specifies the number of failures that must occur within a
      * configured time window in order to trip the circuit breaker.
+     * @return the number of failures.
      */
     int limit() default -1;
 
@@ -59,7 +63,7 @@ public @interface CircuitBreaker {
      * Amount of time in milliseconds after tripping after which the
      * {@link org.fishwife.jrugged.CircuitBreaker} is reset and will
 	 * allow a test request through.
+     * @return the amount of time in milliseconds.
      */
     long resetMillis() default -1;
-
 }

@@ -41,6 +41,15 @@ public class RequestCounter implements ServiceWrapper {
     	numFailures++;
     }
 
+    /** Wrap the given service call with the {@link RequestCounter}
+     *  to count the number of calls made.
+     *  @param c the {@link Callable} to attempt
+     *
+     *  @return whatever c would return on success
+     *
+	 *  @throws Exception if <code>c</code> throws one during
+	 *    execution
+     */
     public <T> T invoke(Callable<T> c) throws Exception {
         try {
             T result = c.call();
@@ -52,6 +61,13 @@ public class RequestCounter implements ServiceWrapper {
         }
     }
 
+    /** Wrap the given service call with the {@link RequestCounter}
+     *  to count the number of calls made.
+     *  @param r the {@link Runnable} to attempt
+     *
+	 *  @throws Exception if <code>c</code> throws one during
+	 *    execution
+     */
     public void invoke(Runnable r) throws Exception {
         try {
             r.run();
@@ -62,6 +78,16 @@ public class RequestCounter implements ServiceWrapper {
         }
     }
 
+    /** Wrap the given service call with the {@link RequestCounter}
+     *  to count the number of calls made.
+     *  @param r the {@link Runnable} to attempt
+     *  @param result what to return after <code>r</code> succeeds
+     *
+     *  @return result
+     *
+	 *  @throws Exception if <code>c</code> throws one during
+	 *    execution
+     */
     public <T> T invoke(Runnable r, T result) throws Exception {
         try {
             r.run();
@@ -73,8 +99,10 @@ public class RequestCounter implements ServiceWrapper {
         }
     }
 
-    /** Samples the current counts.
-     *  @return an array of three <code>longs</code>: the total
+    /**
+     * Samples the current counts.
+     *
+     * @return an array of three <code>longs</code>: the total
      *    number of requests, the number of successful requests,
      *    and the number of failed requests.
      */
