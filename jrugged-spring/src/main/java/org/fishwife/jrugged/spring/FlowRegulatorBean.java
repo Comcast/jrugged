@@ -26,12 +26,18 @@ public class FlowRegulatorBean extends ConstantFlowRegulator {
 
     @ManagedAttribute
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public void setRequestPerSecondThreshold(int i) {
         super.setRequestPerSecondThreshold(i);
     }
 
     @ManagedAttribute
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public int getRequestPerSecondThreshold() {
         return super.getRequestPerSecondThreshold();
     }

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.fishwife.jrugged.PerformanceMonitor;
+import org.fishwife.jrugged.PerformanceMonitorFactory;
 import org.fishwife.jrugged.aspects.PerformanceMonitorAspect;
 import org.fishwife.jrugged.examples.AspectResponseTweaker;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,8 +61,9 @@ public class AspectPerformanceMonitorExample {
     public ModelAndView viewPerformanceMonitor(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         final StringBuilder sb = new StringBuilder();
-        for (String monitorName : performanceAspect.getMonitors().keySet()) {
-            PerformanceMonitor m = performanceAspect.getMonitor(monitorName);
+        PerformanceMonitorFactory factory = performanceAspect.getPerformanceMonitorFactory();
+        for (String monitorName : factory.getPerformanceMonitorNames()) {
+            PerformanceMonitor m = factory.findPerformanceMonitor(monitorName);
             sb.append(String.format("[%s]", monitorName)).append("\n");
             // Go through all methods and invoke those with ManagedAttribute
             // marker annotations

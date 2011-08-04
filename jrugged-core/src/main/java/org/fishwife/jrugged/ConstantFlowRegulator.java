@@ -44,6 +44,18 @@ public class ConstantFlowRegulator implements ServiceWrapper {
         calculateDeltaWaitTime();
     }
 
+    /**
+     *  Wrap the given service call with the {@link ConstantFlowRegulator}
+     *  protection logic.
+     *  @param c the {@link Callable} to attempt
+     *
+     *  @return whatever c would return on success
+     *
+     *  @throws FlowRateExceededException if the total requests per second
+     *    through the flow regulator exceeds the configured value
+	 *  @throws Exception if <code>c</code> throws one during
+	 *    execution
+     */
     public <T> T invoke(Callable<T> c) throws Exception {
         if (canProceed()) {
             return c.call();
@@ -53,6 +65,15 @@ public class ConstantFlowRegulator implements ServiceWrapper {
         }
     }
 
+    /** Wrap the given service call with the {@link ConstantFlowRegulator}
+     *  protection logic.
+     *  @param r the {@link Runnable} to attempt
+     *
+     *  @throws FlowRateExceededException if the total requests per second
+     *    through the flow regulator exceeds the configured value
+	 *  @throws Exception if <code>c</code> throws one during
+	 *    execution
+     */
     public void invoke(Runnable r) throws Exception {
         if (canProceed()) {
             r.run();
@@ -62,6 +83,18 @@ public class ConstantFlowRegulator implements ServiceWrapper {
         }
     }
 
+    /** Wrap the given service call with the {@link ConstantFlowRegulator}
+     *  protection logic.
+     *  @param r the {@link Runnable} to attempt
+     *  @param result what to return after <code>r</code> succeeds
+     *
+     *  @return result
+     *
+     *  @throws FlowRateExceededException if the total requests per second
+     *    through the flow regulator exceeds the configured value
+	 *  @throws Exception if <code>c</code> throws one during
+	 *    execution
+     */
     public <T> T invoke(Runnable r, T result) throws Exception {
         if (canProceed()) {
             r.run();
@@ -90,11 +123,23 @@ public class ConstantFlowRegulator implements ServiceWrapper {
         return false;
     }
 
+    /**
+     * Configures number of requests per second to allow through this flow regulator
+     * onto a configured back end service.
+     *
+     * @param i the requests per second threshold for this flow regulator
+     */
     public void setRequestPerSecondThreshold(int i) {
         this.requestPerSecondThreshold = i;
         calculateDeltaWaitTime();
     }
 
+    /**
+     * Returns the currently configured number of requests per second to allow
+     * through this flow regulator onto a configured back end service.
+     *
+     * @return int the currently configured requests per second threshold
+     */
     public int getRequestPerSecondThreshold() {
         return requestPerSecondThreshold;
     }

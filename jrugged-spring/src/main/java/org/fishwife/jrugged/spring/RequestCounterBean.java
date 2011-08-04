@@ -26,6 +26,9 @@ public class RequestCounterBean extends RequestCounter {
 
     @ManagedOperation
     @Override
+    /**
+     * {@inheritDoc}
+     */
     public synchronized long[] sample() {
         return super.sample();
     }
