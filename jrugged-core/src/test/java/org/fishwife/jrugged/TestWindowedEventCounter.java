@@ -53,9 +53,8 @@ public final class TestWindowedEventCounter {
 	@Test
 	public void testConstructorThrowsExceptionOnBadCapacity() {
 		try {
-			@SuppressWarnings("unused")
-            WindowedEventCounter brokenCounter = new WindowedEventCounter(0, WINDOW_MILLIS);
-			fail("constructer should have thrown IllegalArgumentException");
+            new WindowedEventCounter(0, WINDOW_MILLIS);
+			fail("constructor should have thrown IllegalArgumentException");
 		} catch (IllegalArgumentException iae) {
 			// this is expected. ignore and let test pass.
 		}
@@ -64,9 +63,8 @@ public final class TestWindowedEventCounter {
 	@Test
 	public void testConstructorThrowsExceptionOnBadWindowMillis() {
 		try {
-			@SuppressWarnings("unused")
-            WindowedEventCounter brokenCounter = new WindowedEventCounter(CAPACITY, 0);
-			fail("constructer should have thrown IllegalArgumentException");
+            new WindowedEventCounter(CAPACITY, 0);
+			fail("constructor should have thrown IllegalArgumentException");
 		} catch (IllegalArgumentException iae) {
 			// this is expected. ignore and let test pass.
 		}
