@@ -26,7 +26,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertSame;
 
-public class CircuitBreakerFactoryTest {
+public class TestCircuitBreakerFactory {
 
     private CircuitBreakerFactory factory;
     private CircuitBreakerConfig config;

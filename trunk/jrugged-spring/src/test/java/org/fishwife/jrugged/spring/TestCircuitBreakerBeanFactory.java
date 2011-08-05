@@ -33,7 +33,7 @@ import static junit.framework.Assert.assertSame;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
 
-public class CircuitBreakerBeanFactoryTest {
+public class TestCircuitBreakerBeanFactory {
 
     private CircuitBreakerBeanFactory factory;
     private CircuitBreakerConfig config;

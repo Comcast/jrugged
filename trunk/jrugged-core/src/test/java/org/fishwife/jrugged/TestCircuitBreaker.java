@@ -25,7 +25,6 @@ import org.junit.Test;
 import static junit.framework.Assert.assertNull;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
@@ -376,8 +375,8 @@ public class TestCircuitBreaker {
         assertEquals(Status.DOWN, theStatus);
     }
 
-    @Test
-    public void circuitBreakerKeepsExceptionThatTrippedIt() throws Exception {
+    @Test(expected = Throwable.class)
+    public void circuitBreakerKeepsExceptionThatTrippedIt() throws Throwable {
 
         try {
             impl.invoke(new FailingCallable("broken"));
@@ -387,10 +386,11 @@ public class TestCircuitBreaker {
 
         Throwable tripException = impl.getTripException();
         assertEquals("broken", tripException.getMessage());
+        throw tripException;
     }
 
-    @Test
-    public void resetCircuitBreakerStillHasTripException() throws Exception {
+    @Test(expected = Throwable.class)
+    public void resetCircuitBreakerStillHasTripException() throws Throwable {
 
         try {
             impl.invoke(new FailingCallable("broken"));
@@ -401,6 +401,7 @@ public class TestCircuitBreaker {
 
         Throwable tripException = impl.getTripException();
         assertEquals("broken", tripException.getMessage());
+        throw tripException;
     }
 
     @Test
@@ -413,7 +414,7 @@ public class TestCircuitBreaker {
         assertNull(tripException);
     }
 
-    private class FailingCallable implements Callable {
+    private class FailingCallable implements Callable<Object> {
 
         private final String exceptionMessage;
 
