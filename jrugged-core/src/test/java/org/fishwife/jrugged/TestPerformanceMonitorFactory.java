@@ -25,7 +25,7 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertSame;
 
-public class PerformanceMonitorFactoryTest {
+public class TestPerformanceMonitorFactory {
 
     private PerformanceMonitorFactory factory;
 

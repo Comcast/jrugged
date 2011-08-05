@@ -29,7 +29,7 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
-public class CircuitBreakerAspectTest {
+public class TestCircuitBreakerAspect {
 
     private CircuitBreakerAspect aspect;
 

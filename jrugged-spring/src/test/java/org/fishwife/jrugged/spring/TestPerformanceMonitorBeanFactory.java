@@ -34,7 +34,7 @@ import static junit.framework.Assert.assertSame;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
 
-public class PerformanceMonitorBeanFactoryTest {
+public class TestPerformanceMonitorBeanFactory {
 
     private PerformanceMonitorBeanFactory factory;
 
