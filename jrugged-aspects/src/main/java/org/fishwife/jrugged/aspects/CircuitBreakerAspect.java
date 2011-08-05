@@ -46,9 +46,9 @@ public class CircuitBreakerAspect {
     }
 
     /**
-     * Sets the {@link CircuitBreakerFactory} to use when creating new
+     * Sets the {@link org.fishwife.jrugged.CircuitBreakerFactory} to use when creating new
      * {@link org.fishwife.jrugged.CircuitBreaker} instances.
-     * @param circuitBreakerFactory the {@link CircuitBreakerFactory} to
+     * @param circuitBreakerFactory the {@link org.fishwife.jrugged.CircuitBreakerFactory} to
      *   use.
      */
     public void setCircuitBreakerFactory(
@@ -57,9 +57,9 @@ public class CircuitBreakerAspect {
     }
 
     /**
-     * Get the {@link CircuitBreakerFactory} that is being used to create
+     * Get the {@link org.fishwife.jrugged.CircuitBreakerFactory} that is being used to create
      * new {@link org.fishwife.jrugged.CircuitBreaker} instances.
-     * @return the {@link CircuitBreakerFactory}.
+     * @return the {@link org.fishwife.jrugged.CircuitBreakerFactory}.
      */
     public CircuitBreakerFactory getCircuitBreakerFactory() {
         return circuitBreakerFactory;
@@ -69,7 +69,7 @@ public class CircuitBreakerAspect {
      * {@link org.fishwife.jrugged.CircuitBreaker}.
      * @param pjp a {@link ProceedingJoinPoint} representing an annotated
      * method call.
-     * @param circuitBreakerAnnotation the {@link CircuitBreaker} annotation
+     * @param circuitBreakerAnnotation the {@link org.fishwife.jrugged.CircuitBreaker} annotation
      * that wrapped the method.
      * @throws Throwable if the method invocation itself or the wrapping
      * {@link org.fishwife.jrugged.CircuitBreaker} throws one during execution.

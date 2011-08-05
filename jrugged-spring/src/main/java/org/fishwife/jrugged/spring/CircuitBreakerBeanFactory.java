@@ -17,6 +17,7 @@ package org.fishwife.jrugged.spring;
 import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerConfig;
 import org.fishwife.jrugged.CircuitBreakerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.MBeanExporter;
 
@@ -48,8 +49,8 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory {
      * exported as a JMX MBean.
      * If the CircuitBreaker already exists, then the existing instance is
      * returned.
-     * @param name the value for the {@link CircuitBreaker}
-     * @param config the CircuitBreakerConfig
+     * @param name the value for the {@link org.fishwife.jrugged.CircuitBreaker}
+     * @param config the {@link org.fishwife.jrugged.CircuitBreakerConfig}
      */
     public synchronized CircuitBreaker createCircuitBreaker(String name,
             CircuitBreakerConfig config) {
