@@ -179,7 +179,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     public <V> V invoke(Callable<V> c) throws Exception {
         if (!byPass) {
             if (!allowRequest()) {
-                throw mappedException(new CircuitBreakerException());
+                throw mapException(new CircuitBreakerException());
             }
 
             try {
@@ -208,7 +208,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     public void invoke(Runnable r) throws Exception {
         if (!byPass) {
             if (!allowRequest()) {
-                throw mappedException(new CircuitBreakerException());
+                throw mapException(new CircuitBreakerException());
             }
 
             try {
@@ -239,7 +239,7 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
     public <V> V invoke(Runnable r, V result) throws Exception {
         if (!byPass) {
             if (!allowRequest()) {
-                throw mappedException(new CircuitBreakerException());
+                throw mapException(new CircuitBreakerException());
             }
 
             try {
@@ -503,8 +503,10 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
         return this.exceptionMapper;
     }
 
-    private Exception mappedException(CircuitBreakerException cbe) {
-        if (exceptionMapper == null) return cbe;
+    private Exception mapException(CircuitBreakerException cbe) {
+        if (exceptionMapper == null)
+            return cbe;
+
         return exceptionMapper.map(this, cbe);
     }
 
