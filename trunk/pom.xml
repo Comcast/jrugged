@@ -14,7 +14,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.fishwife</groupId>
     <artifactId>jrugged</artifactId>
@@ -22,11 +24,12 @@
     <version>2.5.0-SNAPSHOT</version>
     <name>jrugged</name>
     <url>http://code.google.com/p/jrugged/</url>
-  <scm>
-    <connection>scm:svn:https://jrugged.googlecode.com/svn/</connection>
-    <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/</developerConnection>
-    <url>https://jrugged.googlecode.com/svn/tags/jrugged-2.1.0</url>
-  </scm>
+
+    <scm>
+        <connection>scm:svn:https://jrugged.googlecode.com/svn/</connection>
+        <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/</developerConnection>
+        <url>https://jrugged.googlecode.com/svn/tags/jrugged-2.4.0</url>
+    </scm>
 
     <dependencies>
         <dependency>
@@ -82,6 +85,7 @@
             </exclusions>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
@@ -110,12 +114,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
-		    <links>
-		      <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-		      <link>http://www.eclipse.org/aspectj//doc/next/runtime-api</link>
-			  <link>http://static.springsource.org/spring/docs/2.5.x/api</link>
-			  <link>http://aopalliance.sourceforge.net/doc/</link>
-		    </links>
+                    <links>
+                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                        <link>http://www.eclipse.org/aspectj/doc/next/runtime-api</link>
+                        <link>http://static.springsource.org/spring/docs/2.5.x/api</link>
+                        <link>http://aopalliance.sourceforge.net/doc/</link>
+                        <link>http://jrugged.s3.amazonaws.com/jrugged-core-2.3.0/apidocs</link>
+                    </links>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
                 <executions>
@@ -130,26 +135,15 @@
             </plugin>
         </plugins>
     </build>
+
     <modules>
         <module>jrugged-core</module>
         <module>jrugged-aspects</module>
         <module>jrugged-spring</module>
         <module>jrugged-httpclient</module>
         <!--module>jrugged-examples</module-->
-  </modules>
-    <distributionManagement>
-        <repository>
-            <id>cimrepo</id>
-            <name>CIM Maven Repository</name>
-            <url>http://repo.dev.cim.comcast.net/nexus/content/repositories/releases</url>
-        </repository>
-        <snapshotRepository>
-            <id>cimrepo</id>
-            <name>CIM Maven Repository</name>
-            <url>http://repo.dev.cim.comcast.net/nexus/content/repositories/snapshots</url>
-            <uniqueVersion>false</uniqueVersion>
-        </snapshotRepository>
-    </distributionManagement>
+    </modules>
+
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

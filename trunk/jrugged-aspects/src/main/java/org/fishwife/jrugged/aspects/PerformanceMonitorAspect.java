@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Callable;
 
 /**
- * Aspect that wraps methods annotated with {@link PerformanceMonitor} with a
+ * Aspect that wraps methods annotated with {@link org.fishwife.jrugged.PerformanceMonitor} with a
  * {@link org.fishwife.jrugged.PerformanceMonitor}.  The value given to the
  * PerformanceMonitor annotation serves as a key for a PerformanceMonitor
  * instance.  Thus it is possible to have a PerformanceMonitor per method.
@@ -45,9 +45,9 @@ public class PerformanceMonitorAspect {
     }
 
     /**
-     * Sets the {@link PerformanceMonitorFactory} to use when creating new
+     * Sets the {@link org.fishwife.jrugged.PerformanceMonitorFactory} to use when creating new
      * {@link org.fishwife.jrugged.PerformanceMonitor} instances.
-     * @param performanceMonitorFactory the {@link PerformanceMonitorFactory} to
+     * @param performanceMonitorFactory the {@link org.fishwife.jrugged.PerformanceMonitorFactory} to
      *   use.
      */
     public void setPerformanceMonitorFactory(
@@ -57,16 +57,16 @@ public class PerformanceMonitorAspect {
 
 
     /**
-     * Get the {@link PerformanceMonitorFactory} that is being used to create
+     * Get the {@link org.fishwife.jrugged.PerformanceMonitorFactory} that is being used to create
      * new {@link org.fishwife.jrugged.PerformanceMonitor} instances.
-     * @return the {@link PerformanceMonitorFactory}.
+     * @return the {@link org.fishwife.jrugged.PerformanceMonitorFactory}.
      */
     public PerformanceMonitorFactory getPerformanceMonitorFactory() {
         return performanceMonitorFactory;
     }
 
     /**
-     * Wraps a method annotated with the {@link PerformanceMonitor} annotation
+     * Wraps a method annotated with the {@link org.fishwife.jrugged.PerformanceMonitor} annotation
      * with a {@link org.fishwife.jrugged.PerformanceMonitor}.
      * 
      * @param pjp Represents the method that is being executed.
