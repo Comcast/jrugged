@@ -36,12 +36,21 @@ public class ConstantFlowRegulator implements ServiceWrapper {
      */
     private long lastRequestOccurance = 0;
 
+    ConstantFlowRegulatorExceptionMapper<? extends Exception> exceptionMapper;
+
     public ConstantFlowRegulator() {
     }
 
     public ConstantFlowRegulator(int requestsPerSecond) {
         requestPerSecondThreshold = requestsPerSecond;
         calculateDeltaWaitTime();
+    }
+
+    public ConstantFlowRegulator(int requestsPerSecond,
+                                 ConstantFlowRegulatorExceptionMapper<? extends Exception> mapper) {
+        requestPerSecondThreshold = requestsPerSecond;
+        calculateDeltaWaitTime();
+        exceptionMapper = mapper;
     }
 
     /**
@@ -61,7 +70,7 @@ public class ConstantFlowRegulator implements ServiceWrapper {
             return c.call();
         }
         else {
-            throw new FlowRateExceededException();
+            throw mapException(new FlowRateExceededException());
         }
     }
 
@@ -79,7 +88,7 @@ public class ConstantFlowRegulator implements ServiceWrapper {
             r.run();
         }
         else {
-            throw new FlowRateExceededException();
+            throw mapException(new FlowRateExceededException());
         }
     }
 
@@ -101,7 +110,7 @@ public class ConstantFlowRegulator implements ServiceWrapper {
             return result;
         }
         else {
-            throw new FlowRateExceededException();
+            throw mapException(new FlowRateExceededException());
         }
     }
 
@@ -144,10 +153,37 @@ public class ConstantFlowRegulator implements ServiceWrapper {
         return requestPerSecondThreshold;
     }
 
+    /**
+     * Get the helper that converts {@link FlowRateExceededException}s into
+	 * application-specific exceptions.
+     *
+     * @return {@link ConstantFlowRegulatorExceptionMapper} my converter object, or
+     *   <code>null</code> if one is not currently set.
+     */
+    public ConstantFlowRegulatorExceptionMapper<? extends Exception> getExceptionMapper(){
+        return this.exceptionMapper;
+    }
+
+    /**
+     * A helper that converts {@link FlowRateExceededException} into a known
+     * 'application' exception.
+     *
+     * @param mapper my converter object
+     */
+    public void setExceptionMapper(ConstantFlowRegulatorExceptionMapper<? extends Exception> mapper) {
+        this.exceptionMapper = mapper;
+    }
+    
     private void calculateDeltaWaitTime() {
         if (requestPerSecondThreshold > 0) {
             deltaWaitTimeMillis = 1000L / requestPerSecondThreshold;
         }
     }
 
+    private Exception mapException(FlowRateExceededException e) {
+        if (exceptionMapper == null)
+            return e;
+
+        return exceptionMapper.map(this, e);
+    }
 }
