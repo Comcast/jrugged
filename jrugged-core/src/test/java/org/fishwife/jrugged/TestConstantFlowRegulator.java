@@ -28,17 +28,18 @@ import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class TestConstantFlowRegulator {
     private ConstantFlowRegulator impl;
     private Callable<Object> mockCallable;
+    private Runnable mockRunnable;
 
     @SuppressWarnings("unchecked")
     @Before
 	public void setUp() {
 		impl = new ConstantFlowRegulator();
         mockCallable = createMock(Callable.class);
+        mockRunnable = createMock(Runnable.class);
     }
 
     @Test
@@ -65,8 +66,8 @@ public class TestConstantFlowRegulator {
         assertTrue(impl.canProceed());
     }
 
-    @Test
-    public void testThrowsExceptionWhenCanNotProceed() throws Exception {
+    @Test (expected=Exception.class)
+    public void testThrowsExceptionWhenCallableCanNotProceed() throws Exception {
         final Object obj = new Object();
 
         expect(mockCallable.call()).andReturn(obj);
@@ -85,14 +86,43 @@ public class TestConstantFlowRegulator {
             }
         }
 
-        try {
-            Object result = impl.invoke(mockCallable);
-            fail("This should have tripped the threshold already.");
-        }
-        catch (Exception e) {
-            //Ignore this as it is supposed to happen.
-        }
+        impl.invoke(mockCallable);
 
         verify(mockCallable);
     }
+
+    public class DomainException extends Exception 	{}
+
+    public class TestConstantFlowRegulatorExceptionMapper
+    		implements ConstantFlowRegulatorExceptionMapper<DomainException>  {
+    	public DomainException map(ConstantFlowRegulator flowRegulator, FlowRateExceededException e)  {
+    		return new DomainException();
+	    }
+    }
+
+    @Test (expected=DomainException.class)
+    public void testThrowsMappedExceptionWhenCanNotProceed() throws Exception {
+        impl.setRequestPerSecondThreshold(1);
+        impl.setExceptionMapper(new TestConstantFlowRegulatorExceptionMapper());
+        for (int i = 0; i < 5; i++) {
+            impl.invoke(mockCallable);
+        }
+    }
+
+    @Test (expected=Exception.class)
+    public void testThrowsExceptionWhenRunnableCanNotProceed() throws Exception {
+        impl.setRequestPerSecondThreshold(1);
+        for (int i = 0; i < 5; i++) {
+            impl.invoke(mockRunnable);
+        }
+    }
+
+    @Test (expected=DomainException.class)
+    public void testThrowsMappedExceptionWhenCanNotProceedViaConstructor() throws Exception {
+        ConstantFlowRegulator impl = new ConstantFlowRegulator(1, new TestConstantFlowRegulatorExceptionMapper());
+        for (int i = 0; i < 5; i++) {
+            impl.invoke(mockCallable);
+        }
+    }
+
 }
