@@ -28,6 +28,10 @@
 	<name>jrugged-spring</name>
 	<url>http://code.google.com/p/jrugged/</url>
 
+    <properties>
+        <spring.version>3.0.5.RELEASE</spring.version>
+    </properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.fishwife</groupId>
@@ -38,7 +42,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
-            <version>2.5.6</version>
+            <version>${spring.version}</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -50,7 +54,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>2.5.6</version>
+            <version>${spring.version}</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -62,7 +66,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>2.5.6</version>
+            <version>${spring.version}</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -74,7 +78,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>2.5.6</version>
+            <version>${spring.version}</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -100,7 +104,7 @@
         <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-test</artifactId>
-            <version>2.5.6</version>
+            <version>${spring.version}</version>
         	<scope>test</scope>
             <exclusions>
                 <exclusion>
@@ -148,7 +152,7 @@
         <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-webmvc</artifactId>
-        	<version>2.5.6</version>
+        	<version>${spring.version}</version>
         	<scope>compile</scope>
         </dependency>
 	</dependencies>

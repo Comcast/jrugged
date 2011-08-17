@@ -26,11 +26,7 @@ http://www.fishwife.org/schema/jrugged jrugged.xsd">
 	</bean>
 
 	<bean id="attributeSource"
-		class="org.springframework.jmx.export.metadata.AttributesJmxAttributeSource">
-		<property name="attributes">
-			<bean class="org.springframework.metadata.commons.CommonsAttributes" />
-		</property>
-	</bean>
+		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
 
 	<bean id="assembler"
 		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
