@@ -23,7 +23,8 @@ import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
-/** This is basically a {@link CircuitBreaker} that adds JMX
+/**
+ * This is basically a {@link CircuitBreaker} that adds JMX
  * annotations to some of the methods so that the core library
  * doesn't have to depend on spring-context.
  */
@@ -32,18 +33,25 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
 
     private boolean disabledAtStart = false;
     
+    /**
+     * {@inheritDoc}
+     */
     public void afterPropertiesSet() throws Exception {
         if (disabledAtStart) tripHard();
     }
     
-	/** Creates a {@link CircuitBreakerBean} with a {@link
+	/**
+     * Creates a {@link CircuitBreakerBean} with a {@link
 	 *  DefaultFailureInterpreter} and the default "tripped" exception
-	 *  behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}). */
+	 *  behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     */
     public CircuitBreakerBean() { super(); }
 
-	/** Creates a {@link CircuitBreakerBean} with the specified {@link
+	/**
+     * Creates a {@link CircuitBreakerBean} with the specified {@link
 	 *	FailureInterpreter} and the default "tripped" exception
 	 *	behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     *
 	 *  @param fi the <code>FailureInterpreter</code> to use when
 	 *    determining whether a specific failure ought to cause the 
 	 *    breaker to trip
@@ -52,25 +60,31 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
         super(fi);
     }
 
-	/** Creates a {@link CircuitBreaker} with a {@link
+	/**
+     * Creates a {@link CircuitBreaker} with a {@link
 	 *  DefaultFailureInterpreter} and using the supplied {@link
 	 *  CircuitBreakerExceptionMapper} when client calls are made
 	 *  while the breaker is tripped.
+     *
 	 *  @param mapper helper used to translate a {@link
-	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one */
+	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
+     */
     public CircuitBreakerBean(CircuitBreakerExceptionMapper<? extends Exception> mapper) {
         super(mapper);
     }
 
-	/** Creates a {@link CircuitBreaker} with the provided {@link
+	/**
+     * Creates a {@link CircuitBreaker} with the provided {@link
 	 *  FailureInterpreter} and using the provided {@link
 	 *  CircuitBreakerExceptionMapper} when client calls are made
 	 *  while the breaker is tripped.
+     *
 	 *  @param fi the <code>FailureInterpreter</code> to use when
 	 *    determining whether a specific failure ought to cause the 
 	 *    breaker to trip
 	 *  @param mapper helper used to translate a {@link
-	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one */
+	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
+     */
     public CircuitBreakerBean(FailureInterpreter fi,
     		CircuitBreakerExceptionMapper<? extends Exception> mapper) {
         super(fi, mapper);
@@ -153,6 +167,7 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
 
     /**
      * Returns the cooldown period in milliseconds.
+     *
      * @return long
      */
     @ManagedAttribute
@@ -173,12 +188,15 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
         super.setResetMillis(l);
     }
 
-	/** Returns a {@link String} representation of the breaker's
+	/**
+     * Returns a {@link String} representation of the breaker's
 	 * status; potentially useful for exposing to monitoring software.
+     *
 	 * @return <code>String</code> which is <code>"GREEN"</code> if
 	 *   the breaker is CLOSED; <code>"YELLOW"</code> if the breaker
 	 *   is HALF_CLOSED; and <code>"RED"</code> if the breaker is
-	 *   OPEN (tripped). */
+	 *   OPEN (tripped).
+     */
     @ManagedAttribute
     @Override
 	public String getHealthCheck() { return super.getHealthCheck(); }
@@ -187,7 +205,9 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
      * Specifies the failure tolerance limit for the {@link
      *  DefaultFailureInterpreter} that comes with a {@link
      *  CircuitBreaker} by default.
+     *
      *  @see DefaultFailureInterpreter
+     *
      *  @param limit the number of tolerated failures in a window
      */
     @ManagedAttribute
@@ -200,7 +220,9 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
      * Specifies the tolerance window in milliseconds for the {@link
      *  DefaultFailureInterpreter} that comes with a {@link
      *  CircuitBreaker} by default.
+     *
      *  @see DefaultFailureInterpreter
+     *
      *  @param windowMillis length of the window in milliseconds
      */
     @ManagedAttribute
@@ -212,6 +234,7 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     /**
      * Specifies whether the associated CircuitBreaker should be tripped
      * at startup time.
+     *
      * @param b <code>true</code> if the CircuitBreaker should start
      *   open (tripped); <code>false</code> if the CircuitBreaker should start
      *   closed (not tripped).
@@ -219,5 +242,4 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     public void setDisabled(boolean b) {
         disabledAtStart = b;
     }
-
 }
