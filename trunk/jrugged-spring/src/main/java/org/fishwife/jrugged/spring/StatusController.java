@@ -24,7 +24,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.fishwife.jrugged.Monitorable;
+import org.fishwife.jrugged.MonitoredService;
 import org.fishwife.jrugged.Status;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
@@ -56,15 +56,15 @@ public class StatusController implements Controller {
 		responseCodeMap.put(Status.UP, HttpServletResponse.SC_OK);
 	}
 	
-	private Monitorable monitorable;
+	private MonitoredService monitoredService;
 	
-	public StatusController(Monitorable monitorable) {
-		this.monitorable = monitorable;
+	public StatusController(MonitoredService monitoredService) {
+		this.monitoredService = monitoredService;
 	}
 
 	public ModelAndView handleRequest(HttpServletRequest req,
 			HttpServletResponse resp) throws Exception {
-		Status currentStatus = monitorable.getStatus();
+		Status currentStatus = monitoredService.getServiceStatus().getStatus();
 		setResponseCode(currentStatus, resp);
 		setAppropriateWarningHeaders(resp, currentStatus);
 		setCachingHeaders(resp);

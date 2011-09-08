@@ -142,7 +142,7 @@
         <module>jrugged-aspects</module>
         <module>jrugged-spring</module>
         <module>jrugged-httpclient</module>
-        <!--module>jrugged-examples</module-->
+        <module>jrugged-examples</module>
     </modules>
 
     <properties>

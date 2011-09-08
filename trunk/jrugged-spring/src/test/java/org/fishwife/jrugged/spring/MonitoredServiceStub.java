@@ -1,4 +1,4 @@
-/* Monitorable.java
+/* MonitorableStub.java
  * 
  * Copyright 2009-2011 Comcast Interactive Media, LLC.
  * 
@@ -14,15 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged;
+package org.fishwife.jrugged.spring;
 
-/** A system is {@link Monitorable} if it can report on its current
- *  {@link Status} when asked.
- */
-public interface Monitorable {
-    /** Returns the current {@link Status} of this subsystem.
-     * 
-     * @return Status
-     */
-    Status getStatus();
+import org.fishwife.jrugged.MonitoredService;
+import org.fishwife.jrugged.ServiceStatus;
+import org.fishwife.jrugged.Status;
+
+public class MonitoredServiceStub implements MonitoredService {
+
+    private static final String NAME = "ServiceStub";
+  private ServiceStatus status = new ServiceStatus(NAME, Status.UP);
+
+  public void setStatus(Status status) {
+        this.status = new ServiceStatus(NAME, status);
+  }
+
+  public ServiceStatus getServiceStatus() {
+    return status;
+  }
+
 }
