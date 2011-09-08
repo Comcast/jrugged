@@ -40,54 +40,75 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
         if (disabledAtStart) tripHard();
     }
     
-	/**
-     * Creates a {@link CircuitBreakerBean} with a {@link
-	 *  DefaultFailureInterpreter} and the default "tripped" exception
-	 *  behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+    /**
+     * Creates a {@link CircuitBreakerBean} with a
+     * {@link DefaultFailureInterpreter} and the default "tripped" exception
+     * behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
      */
     public CircuitBreakerBean() { super(); }
 
-	/**
-     * Creates a {@link CircuitBreakerBean} with the specified {@link
-	 *	FailureInterpreter} and the default "tripped" exception
-	 *	behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
-     *
-	 *  @param fi the <code>FailureInterpreter</code> to use when
-	 *    determining whether a specific failure ought to cause the 
-	 *    breaker to trip
-	 */
+    /**
+     * Creates a {@link CircuitBreakerBean} with a
+     * {@link DefaultFailureInterpreter} and the default "tripped" exception
+     * behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     *  @param name the name for the {@link CircuitBreakerBean}
+     */
+    public CircuitBreakerBean(String name) { super(name); }
+
+    /**
+     * Creates a {@link CircuitBreakerBean} with the specified
+     * {@link FailureInterpreter} and the default "tripped" exception
+     * behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     *  @param fi the <code>FailureInterpreter</code> to use when
+     *    determining whether a specific failure ought to cause the
+     *    breaker to trip
+     */
     public CircuitBreakerBean(FailureInterpreter fi) {
-        super(fi);
+      super(fi);
     }
 
-	/**
+    /**
+     * Creates a {@link CircuitBreakerBean} with the specified
+     * {@link FailureInterpreter} and the default "tripped" exception
+     * behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     *  @param name the name for the {@link CircuitBreakerBean}
+     *  @param fi the <code>FailureInterpreter</code> to use when
+     *    determining whether a specific failure ought to cause the
+     *    breaker to trip
+     */
+    public CircuitBreakerBean(String name, FailureInterpreter fi) {
+      super(name, fi);
+    }
+
+    /**
      * Creates a {@link CircuitBreaker} with a {@link
-	 *  DefaultFailureInterpreter} and using the supplied {@link
-	 *  CircuitBreakerExceptionMapper} when client calls are made
-	 *  while the breaker is tripped.
-     *
-	 *  @param mapper helper used to translate a {@link
-	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
+     *  DefaultFailureInterpreter} and using the supplied {@link
+     *  CircuitBreakerExceptionMapper} when client calls are made
+     *  while the breaker is tripped.
+     *  @param name the name for the {@link CircuitBreakerBean}
+     *  @param mapper helper used to translate a {@link
+     *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
      */
-    public CircuitBreakerBean(CircuitBreakerExceptionMapper<? extends Exception> mapper) {
-        super(mapper);
+    public CircuitBreakerBean(String name, CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+      super(name, mapper);
     }
 
-	/**
+    /**
      * Creates a {@link CircuitBreaker} with the provided {@link
-	 *  FailureInterpreter} and using the provided {@link
-	 *  CircuitBreakerExceptionMapper} when client calls are made
-	 *  while the breaker is tripped.
+     *  FailureInterpreter} and using the provided {@link
+     *  CircuitBreakerExceptionMapper} when client calls are made
+     *  while the breaker is tripped.
      *
-	 *  @param fi the <code>FailureInterpreter</code> to use when
-	 *    determining whether a specific failure ought to cause the 
-	 *    breaker to trip
-	 *  @param mapper helper used to translate a {@link
-	 *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
+     *  @param name the name for the {@link CircuitBreakerBean}
+     *  @param fi the <code>FailureInterpreter</code> to use when
+     *    determining whether a specific failure ought to cause the 
+     *    breaker to trip
+     *  @param mapper helper used to translate a {@link
+     *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
      */
-    public CircuitBreakerBean(FailureInterpreter fi,
+    public CircuitBreakerBean(String name, FailureInterpreter fi,
     		CircuitBreakerExceptionMapper<? extends Exception> mapper) {
-        super(fi, mapper);
+        super(name, fi, mapper);
     }
 
     /**

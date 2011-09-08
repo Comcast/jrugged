@@ -58,7 +58,7 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory {
         CircuitBreaker circuitBreaker = findCircuitBreaker(name);
 
         if (circuitBreaker == null) {
-            circuitBreaker = new CircuitBreakerBean();
+            circuitBreaker = new CircuitBreakerBean(name);
 
             configureCircuitBreaker(name, circuitBreaker, config);
 

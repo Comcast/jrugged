@@ -1,7 +1,5 @@
-/* MonitorableStub.java
- * 
- * Copyright 2009-2011 Comcast Interactive Media, LLC.
- * 
+/* Copyright 2009-2011 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -14,21 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.fishwife.jrugged.spring;
+package org.fishwife.jrugged;
 
-import org.fishwife.jrugged.Monitorable;
-import org.fishwife.jrugged.Status;
-
-public class MonitorableStub implements Monitorable {
-
-	private Status status = Status.UP;
-	
-	public void setStatus(Status status) {
-		this.status = status;
-	}
-	
-	public Status getStatus() {
-		return status;
-	}
-
+/**
+ * The MonitoredService interface allows a Service to report it's
+ * @link {ServiceStatus}.
+ */
+public interface MonitoredService {
+    ServiceStatus getServiceStatus();
 }
