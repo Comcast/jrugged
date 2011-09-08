@@ -14,16 +14,18 @@
  */
 package org.fishwife.jrugged.spring;
 
-import org.fishwife.jrugged.PerformanceMonitor;
-import org.fishwife.jrugged.PerformanceMonitorFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jmx.export.MBeanExporter;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.PostConstruct;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
-import java.util.ArrayList;
-import java.util.List;
+
+import org.fishwife.jrugged.PerformanceMonitor;
+import org.fishwife.jrugged.PerformanceMonitorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jmx.export.MBeanExporter;
 
 /**
  * Factory to create new {@link PerformanceMonitorBean} instances and keep track
@@ -37,11 +39,14 @@ public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory {
 
     private List<String> initialPerformanceMonitorList;
 
+    private String packageScanBase;
+    
     /**
      * Constructor.
      */
     public PerformanceMonitorBeanFactory() {
         initialPerformanceMonitorList = new ArrayList<String>();
+        packageScanBase = null;
     }
 
     /**
@@ -55,10 +60,29 @@ public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory {
     }
 
     /**
+     * If specified, PerformanceMonitorBeanFactory will scan all classes
+     * under packageScanBase for methods with the
+     * {@link org.fishwife.jrugged.aspects.PerformanceMonitor} annotation
+     * and initialize performance monitors for them.
+     *
+     * @param packageScanBase Where should the scan for annotations begin
+     */
+    public void setPackageScanBase(String packageScanBase) {
+        this.packageScanBase = packageScanBase;
+    }
+    
+    /**
      * Create the initial {@link PerformanceMonitorBean} instances.
      */
     @PostConstruct
     public void createInitialPerformanceMonitors() {
+        if (packageScanBase != null) {
+            AnnotatedMethodScanner methodScanner = new AnnotatedMethodScanner();
+            for (Method m : methodScanner.findAnnotatedMethods(packageScanBase, org.fishwife.jrugged.aspects.PerformanceMonitor.class)) {
+                org.fishwife.jrugged.aspects.PerformanceMonitor performanceMonitorAnnotation = m.getAnnotation(org.fishwife.jrugged.aspects.PerformanceMonitor.class);
+                initialPerformanceMonitorList.add(performanceMonitorAnnotation.value());
+            }
+        }
         for (String name: initialPerformanceMonitorList) {
             createPerformanceMonitor(name);
         }
