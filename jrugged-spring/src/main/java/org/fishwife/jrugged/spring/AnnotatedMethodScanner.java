@@ -39,14 +39,15 @@ public class AnnotatedMethodScanner {
     }
     
     /**
-     * Find all methods on classes under scanBase that are annotated with annotatedClass.
-     * @param scanBase
-     * @param annotatedClass
-     * @return Set<Method>
+     * Find all methods on classes under scanBase that are annotated with annotationClass.
+     *
+     * @param scanBase Package to scan recursively, in dot notation (ie: org.jrugged...)
+     * @param annotationClass Class of the annotation to search for
+     * @return Set<Method> The set of all @{java.lang.reflec.Method}s having the annotation
      */
-    public Set<Method> findAnnotatedMethods(String scanBase, Class<? extends Annotation> annotatedClass) {
-        Set<BeanDefinition> filteredComponents = findCandidateBeans(scanBase, annotatedClass);
-        return extractAnnotatedMethods(filteredComponents, annotatedClass);
+    public Set<Method> findAnnotatedMethods(String scanBase, Class<? extends Annotation> annotationClass) {
+        Set<BeanDefinition> filteredComponents = findCandidateBeans(scanBase, annotationClass);
+        return extractAnnotatedMethods(filteredComponents, annotationClass);
     }
     
     Set<Method> extractAnnotatedMethods(
