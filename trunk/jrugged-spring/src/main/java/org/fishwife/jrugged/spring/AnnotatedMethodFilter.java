@@ -42,6 +42,9 @@ public class AnnotatedMethodFilter implements TypeFilter {
         this.annotatedClass = annotatedClass;
     }
     
+    /**
+     * {@inheritDoc}
+     */
     public boolean match(MetadataReader metadataReader,
             MetadataReaderFactory metadataReaderFactory) throws IOException {
         AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
