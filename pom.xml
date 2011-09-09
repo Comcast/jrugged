@@ -84,6 +84,20 @@
         </dependency>
     </dependencies>
 
+    <distributionManagement>
+    <repository>
+    <id>cimrepo</id>
+    <name>CIM Nexus</name>
+    <url>Http://repo.dev.cim.comcast.net/nexus/content/repositories/releases</url>
+    </repository>
+
+    <snapshotRepository>
+        <id>cimrepo-snapshot</id>
+        <name>CIM Nexus</name>
+        <url>Http://repo.dev.cim.comcast.net/nexus/content/repositories/snapshots</url>
+    </snapshotRepository>
+    </distributionManagement>
+
     <build>
         <plugins>
             <plugin>
