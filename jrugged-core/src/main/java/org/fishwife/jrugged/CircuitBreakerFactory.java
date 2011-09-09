@@ -53,7 +53,7 @@ public class CircuitBreakerFactory {
         CircuitBreaker circuitBreaker = findCircuitBreaker(name);
 
         if (circuitBreaker == null) {
-            circuitBreaker = new CircuitBreaker();
+            circuitBreaker = new CircuitBreaker(name);
 
             configureCircuitBreaker(name, circuitBreaker, config);
             addCircuitBreakerToMap(name, circuitBreaker);

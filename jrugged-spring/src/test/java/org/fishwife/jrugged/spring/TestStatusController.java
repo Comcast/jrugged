@@ -27,28 +27,28 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 public class TestStatusController {
 
-	private MonitorableStub monitorable;
+	private MonitoredServiceStub monitoredService;
 	private StatusController impl;
 	private MockHttpServletRequest req;
 	private MockHttpServletResponse resp;
 
 	@Before
 	public void setUp() {
-		monitorable = new MonitorableStub();
-		impl = new StatusController(monitorable);
+		monitoredService = new MonitoredServiceStub();
+		impl = new StatusController(monitoredService);
 		req = new MockHttpServletRequest();
 		resp = new MockHttpServletResponse();
 	}
 	
 	private void assertResponseCodeIs(Status status, int code) throws Exception {
-		monitorable.setStatus(status);
+		monitoredService.setStatus(status);
 		impl.handleRequest(req, resp);
 		assertEquals(code, resp.getStatus());
 	}
 	
 	private void assertBodyForStatusIs(Status status, String bodyString)
 		throws Exception {
-		monitorable.setStatus(status);
+		monitoredService.setStatus(status);
 		impl.handleRequest(req, resp);
 		assertEquals(bodyString, resp.getContentAsString());
 		assertEquals("text/plain;charset=utf-8", resp.getHeader("Content-Type"));
@@ -77,7 +77,7 @@ public class TestStatusController {
 	
 	@Test
 	public void setsWarningHeaderIfDegraded() throws Exception {
-		monitorable.setStatus(Status.DEGRADED);
+		monitoredService.setStatus(Status.DEGRADED);
 		impl.handleRequest(req, resp);
 		boolean found = false;
 		for(Object val : resp.getHeaders("Warning")) {
