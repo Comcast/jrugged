@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-/** A {@link RolledUpMonitoredStatus} provides for grouping
+/**
+ * A {@link RolledUpMonitoredService} provides for grouping
  *  {@link MonitoredService} instances together into a single system for status
  *  reporting purposes. Subsystems are divided into <em>critical</em> and
  *  <em>noncritical</em> groups. The system as a whole will only report UP
@@ -57,7 +58,7 @@ public class RolledUpMonitoredService implements MonitoredService {
      * The {@link Status} is computed based on the status of the critical
      * and non-critical subsystems.  The {@link List} of reasons contains the
      * reasons reported for each system.
-     * @return the {@link} ServiceStatus.
+     * @return the {@link ServiceStatus}.
      */
     public ServiceStatus getServiceStatus() {
         List<String> reasons = new ArrayList<String>();
