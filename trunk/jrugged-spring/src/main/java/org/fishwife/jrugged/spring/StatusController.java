@@ -32,8 +32,8 @@ import org.springframework.web.servlet.mvc.Controller;
 /**
  * This is a convenient {@link Controller} that can be used to implement a
  * "heartbeat" URL in a web application. The <code>StatusController</code>
- * has a particular {@link Monitorable} associated with it (a common use
- * case would be to inject a {@link org.fishwife.jrugged.RolledUpStatus} for
+ * has a particular {@link MonitoredService} associated with it (a common use
+ * case would be to inject a {@link org.fishwife.jrugged.RolledUpMonitoredService} for
  * overall system health. The <code>StatusController</code> writes the
  * current status out in the response body and sets an appropriate HTTP
  * response code. This is useful in a load balancer setting where the load
