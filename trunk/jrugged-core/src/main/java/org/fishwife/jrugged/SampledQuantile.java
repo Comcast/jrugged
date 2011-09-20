@@ -108,10 +108,6 @@ public class SampledQuantile {
 		    case MILLISECONDS: windowMillis = windowLength; break;
 		    case SECONDS: windowMillis = windowLength * 1000; break;
             default: throw new IllegalArgumentException("Unknown TimeUnit specified");
-
-		    //case MINUTES: windowMillis = windowLength * 1000 * 60; break;
-		    //case HOURS: windowMillis = windowLength * 1000 * 3600; break;
-		    //case DAYS: windowMillis = windowLength * 1000 * 3600 * 24; break;
 		}
 	}
 
