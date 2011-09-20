@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<!-- 
+Copyright 2009-2011 Comcast Interactive Media, LLC.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+-->
+<plugin>
+    <classpath>
+        <include name="pdk/lib/mx4j"/>
+    </classpath>
+
+    <service name="JRugged Performance Monitor" server="Sun JVM" version="1.5">
+
+        <plugin type="autoinventory" />
+        <plugin type="measurement" class="org.hyperic.hq.product.jmx.MxMeasurementPlugin" />
+
+        <filter name="template" value="${OBJECT_NAME}:${alias}" />
+
+        <property name="OBJECT_NAME" value="org.fishwife.jrugged.spring:type=PerformanceMonitorBean,name=*"/>
+
+        <metric name="Average Failure Latency Last Day" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="ms"/>
+        <metric name="Average Failure Latency LastHour" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="ms"/>
+        <metric name="Average Failure Latency Last Minute" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="ms" />
+
+        <metric name="Average Success Latency Last Day" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="ms"/>
+        <metric name="Average Success Latency Last Hour" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="ms"/>
+        <metric name="Average Success Latency Last Minute" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="ms"/>
+
+        <metric name="Failure Count" indicator="true"  collectionType="dynamic" category="Utilization"/>
+        <metric name="Failure Requests Per Second Last Day" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="none"/>
+        <metric name="Failure Requests Per Second Last Hour" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="none"/>
+        <metric name="Failure Requests Per Second Last Minute" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="none"/>
+        <metric name="Failure Requests Per Second Lifetime" indicator="true" collectionType="dynamic" category="THROUGHPUT" units="none"/>
+
+        <metric name="Request Count" indicator="true"  collectionType="dynamic" category="Utilization" units="none"/>
+        <metric name="Success Count" indicator="true" collectionType="dynamic"  category="Utilization"/>
+        <metric name="Success Requests Per Second Last Day" indicator="true"  collectionType="dynamic" category="THROUGHPUT" units="none"/>
+        <metric name="Success Requests Per Second Last Hour" indicator="true" collectionType="dynamic"  category="THROUGHPUT" units="none"/>
+        <metric name="Success Requests Per Second Last Minute" indicator="true" collectionType="dynamic"  category="THROUGHPUT" units="none"/>
+        <metric name="Success Requests Per Second Lifetime" indicator="true" collectionType="dynamic"  category="THROUGHPUT" units="none"/>
+
+        <metric name="Total Requests Per Second Last Day" indicator="true"  collectionType="dynamic" category="THROUGHPUT" units="ms"/>
+        <metric name="Total Requests Per Second Last Hour" indicator="true"  collectionType="dynamic" category="THROUGHPUT" units="ms"/>
+        <metric name="Total Requests Per Second LastMinute" indicator="true" collectionType="dynamic"  category="THROUGHPUT" units="ms"/>
+        <metric name="Total Requests Per Second Lifetime" indicator="true" collectionType="dynamic"  category="THROUGHPUT" units="ms"/>
+    </service>
+</plugin>
