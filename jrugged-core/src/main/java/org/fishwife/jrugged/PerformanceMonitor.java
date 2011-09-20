@@ -19,15 +19,16 @@ package org.fishwife.jrugged;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-/** The {@link PerformanceMonitor} is a convenience wrapper for
- *  gathering a slew of useful operational metrics about a service,
- *  including moving averages for latency and request rate over
- *  various time windows (last minute, last hour, last day).
+/**
+ * The {@link PerformanceMonitor} is a convenience wrapper for
+ * gathering a slew of useful operational metrics about a service,
+ * including moving averages for latency and request rate over
+ * various time windows (last minute, last hour, last day).
  *
- *  The intended use is for a client to use the "Decorator" design
- *  pattern that decorates an existing service with this wrapper.
- *  Portions of this object can then be exposed via JMX, for example
- *  to allow for operational polling.
+ * The intended use is for a client to use the "Decorator" design
+ * pattern that decorates an existing service with this wrapper.
+ * Portions of this object can then be exposed via JMX, for example
+ * to allow for operational polling.
  */
 public class PerformanceMonitor implements ServiceWrapper {
 
@@ -66,18 +67,18 @@ public class PerformanceMonitor implements ServiceWrapper {
 		new SampledQuantile();
     
     private SampledQuantile successLatencyQuantileLastMinute =
-    	new SampledQuantile(1L, TimeUnit.MINUTES);
+    	new SampledQuantile(60L, TimeUnit.SECONDS);
     private SampledQuantile successLatencyQuantileLastHour =
-    	new SampledQuantile(1L, TimeUnit.HOURS);
+    	new SampledQuantile(3600L, TimeUnit.SECONDS);
     private SampledQuantile successLatencyQuantileLastDay =
-    	new SampledQuantile(1L, TimeUnit.DAYS);
+    	new SampledQuantile(86400L, TimeUnit.SECONDS);
 
     private SampledQuantile failureLatencyQuantileLastMinute =
-    	new SampledQuantile(1L, TimeUnit.MINUTES);
+    	new SampledQuantile(60L, TimeUnit.SECONDS);
     private SampledQuantile failureLatencyQuantileLastHour =
-    	new SampledQuantile(1L, TimeUnit.HOURS);
+    	new SampledQuantile(3600L, TimeUnit.SECONDS);
     private SampledQuantile failureLatencyQuantileLastDay =
-    	new SampledQuantile(1L, TimeUnit.DAYS);
+    	new SampledQuantile(86400L, TimeUnit.SECONDS);
     
     private long lifetimeMaxSuccessMillis;
     private long lifetimeMaxFailureMillis;
