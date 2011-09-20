@@ -19,14 +19,14 @@
     <groupId>org.fishwife</groupId>
     <artifactId>jrugged</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.1</version>
+    <version>3.0.2-SNAPSHOT</version>
     <name>jrugged</name>
     <url>http://code.google.com/p/jrugged/</url>
 
     <scm>
-        <connection>scm:svn:https://jrugged.googlecode.com/svn/tags/jrugged-3.0.1</connection>
-        <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/tags/jrugged-3.0.1</developerConnection>
-        <url>https://jrugged.googlecode.com/svn/tags/jrugged-3.0.1</url>
+        <connection>scm:svn:https://jrugged.googlecode.com/svn/</connection>
+        <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/</developerConnection>
+        <url>https://jrugged.googlecode.com/svn/tags/jrugged-2.4.0</url>
     </scm>
 
     <dependencies>
