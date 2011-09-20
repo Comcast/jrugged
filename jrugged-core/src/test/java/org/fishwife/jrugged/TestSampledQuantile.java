@@ -158,7 +158,7 @@ public class TestSampledQuantile {
 
 	@Test
 	public void ignoresSamplesOutsideOfSpecifiedMinuteWindow() {
-		impl = new SampledQuantile(1L, TimeUnit.MINUTES);
+		impl = new SampledQuantile(60L, TimeUnit.SECONDS);
 		long now = System.currentTimeMillis();
 		impl.addSample(7, now - 90 * 1000L);
 		impl.addSample(42, now);
@@ -167,7 +167,7 @@ public class TestSampledQuantile {
 
 	@Test
 	public void ignoresSamplesOutsideOfSpecifiedHourWindow() {
-		impl = new SampledQuantile(1L, TimeUnit.HOURS);
+		impl = new SampledQuantile(3600L, TimeUnit.SECONDS);
 		long now = System.currentTimeMillis();
 		impl.addSample(7, now - 5400 * 1000L);
 		impl.addSample(42, now);
@@ -176,7 +176,7 @@ public class TestSampledQuantile {
 
 	@Test
 	public void ignoresSamplesOutsideOfSpecifiedDayWindow() {
-		impl = new SampledQuantile(1L, TimeUnit.DAYS);
+		impl = new SampledQuantile(86400L, TimeUnit.SECONDS);
 		long now = System.currentTimeMillis();
 		impl.addSample(7, now - 2 * 24 * 3600 * 1000L);
 		impl.addSample(42, now);
