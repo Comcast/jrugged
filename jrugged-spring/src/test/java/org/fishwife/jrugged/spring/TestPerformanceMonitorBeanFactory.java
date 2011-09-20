@@ -135,4 +135,31 @@ public class TestPerformanceMonitorBeanFactory {
         factory.setMBeanExporter(mockMBeanExporter);
         factory.createPerformanceMonitor("=\"");
     }
+    
+
+    //---------
+    // The following tests depend on org.fishwife.jrugged.spring.testonly
+    
+    @Test
+    public void testFactorySeededWithPackageScanBaseFindsMonitors() {
+        factory.setPackageScanBase("org.fishwife.jrugged.spring.testonly");
+        factory.createInitialPerformanceMonitors();
+        
+        assertNotNull(factory.findPerformanceMonitor("monitorA"));
+        assertNotNull(factory.findPerformanceMonitor("monitorB"));
+    }
+    
+    // the idea here is that the monitors are created and no exceptions occur
+    @Test
+    public void testPackageScanStyleAndInitialMonitorStylePlayNice() {
+        List<String> initialPerformanceMonitors = new ArrayList<String>();
+        initialPerformanceMonitors.add("monitorA");
+        
+        factory.setPackageScanBase("org.fishwife.jrugged.spring.testonly");
+        factory.setInitialPerformanceMonitors(initialPerformanceMonitors);
+        factory.createInitialPerformanceMonitors();
+        
+        assertNotNull(factory.findPerformanceMonitor("monitorA"));
+        assertNotNull(factory.findPerformanceMonitor("monitorB"));
+    }
 }

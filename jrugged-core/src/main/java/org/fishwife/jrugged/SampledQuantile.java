@@ -29,7 +29,7 @@ import java.util.concurrent.TimeUnit;
  * reported to an instance. By default, these samples are
  * taken across the instance's lifetime, but a window can be
  * configured to keep samples across just across that trailing
- * timespan (for example, getting a quantile across the last
+ * time span (for example, getting a quantile across the last
  * minute). We use an algorithm that keeps a fixed maximum number
  * of samples that selects uniformly from all reported samples so
  * far (thus representing a statistically appropriate sampling
@@ -103,13 +103,11 @@ public class SampledQuantile {
 
 	private void setWindowMillis(long windowLength, TimeUnit units) {
 		switch(units) {
-		case NANOSECONDS: windowMillis = windowLength / 1000000; break;
-		case MICROSECONDS: windowMillis = windowLength / 1000; break;
-		case MILLISECONDS: windowMillis = windowLength; break;
-		case SECONDS: windowMillis = windowLength * 1000; break;
-		case MINUTES: windowMillis = windowLength * 1000 * 60; break;
-		case HOURS: windowMillis = windowLength * 1000 * 3600; break;
-		case DAYS: windowMillis = windowLength * 1000 * 3600 * 24; break;
+		    case NANOSECONDS: windowMillis = windowLength / 1000000; break;
+		    case MICROSECONDS: windowMillis = windowLength / 1000; break;
+		    case MILLISECONDS: windowMillis = windowLength; break;
+		    case SECONDS: windowMillis = windowLength * 1000; break;
+            default: throw new IllegalArgumentException("Unknown TimeUnit specified");
 		}
 	}
 

@@ -56,7 +56,7 @@ import java.util.concurrent.atomic.AtomicLong;
     }
  * </pre>
  */
-public class CircuitBreaker implements Monitorable, ServiceWrapper {
+public class CircuitBreaker implements MonitoredService, ServiceWrapper {
     /**
      * Represents whether a {@link CircuitBreaker} is OPEN, HALF_CLOSED,
      *  or CLOSED.
@@ -125,19 +125,48 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
      */
     protected boolean isAttemptLive = false;
 
+    /** The default name if none is provided. */
+    private static final String DEFAULT_NAME="CircuitBreaker";
+
+    /** The name for the CircuitBreaker. */
+    private String name = DEFAULT_NAME;
+
+    /** Creates a {@link CircuitBreaker} with a {@link
+     *  DefaultFailureInterpreter} and the default "tripped" exception
+     *  behavior (throwing a {@link CircuitBreakerException}). */
+    public CircuitBreaker() {
+    }
+
 	/** Creates a {@link CircuitBreaker} with a {@link
 	 *  DefaultFailureInterpreter} and the default "tripped" exception
-	 *  behavior (throwing a {@link CircuitBreakerException}). */
-    public CircuitBreaker() {}
+	 *  behavior (throwing a {@link CircuitBreakerException}).
+     *  @param name the name for the {@link CircuitBreaker}.
+     */
+    public CircuitBreaker(String name) {
+        this.name = name;
+    }
+
+    /** Creates a {@link CircuitBreaker} with the specified {@link
+     *	FailureInterpreter} and the default "tripped" exception
+     *	behavior (throwing a {@link CircuitBreakerException}).
+     *  @param fi the <code>FailureInterpreter</code> to use when
+     *    determining whether a specific failure ought to cause the
+     *    breaker to trip
+     */
+    public CircuitBreaker(FailureInterpreter fi) {
+        failureInterpreter = fi;
+    }
 
 	/** Creates a {@link CircuitBreaker} with the specified {@link
 	 *	FailureInterpreter} and the default "tripped" exception
 	 *	behavior (throwing a {@link CircuitBreakerException}).
+     *  @param name the name for the {@link CircuitBreaker}.
 	 *  @param fi the <code>FailureInterpreter</code> to use when
 	 *    determining whether a specific failure ought to cause the 
 	 *    breaker to trip
 	 */
-	public CircuitBreaker(FailureInterpreter fi) {
+	public CircuitBreaker(String name, FailureInterpreter fi) {
+        this.name = name;
 		failureInterpreter = fi;
 	}
 
@@ -145,9 +174,11 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 *  DefaultFailureInterpreter} and using the supplied {@link
 	 *  CircuitBreakerExceptionMapper} when client calls are made
 	 *  while the breaker is tripped.
+     *  @param name the name for the {@link CircuitBreaker}.
 	 *  @param mapper helper used to translate a {@link
 	 *    CircuitBreakerException} into an application-specific one */
-    public CircuitBreaker(CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+    public CircuitBreaker(String name, CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+        this.name = name;
         exceptionMapper = mapper;
     }
 
@@ -155,13 +186,16 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
 	 *  FailureInterpreter} and using the provided {@link
 	 *  CircuitBreakerExceptionMapper} when client calls are made
 	 *  while the breaker is tripped.
+     *  @param name the name for the {@link CircuitBreaker}.
 	 *  @param fi the <code>FailureInterpreter</code> to use when
 	 *    determining whether a specific failure ought to cause the 
 	 *    breaker to trip
 	 *  @param mapper helper used to translate a {@link
 	 *    CircuitBreakerException} into an application-specific one */
-    public CircuitBreaker(FailureInterpreter fi, 
+    public CircuitBreaker(String name,
+                          FailureInterpreter fi,
 						  CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+        this.name = name;
         failureInterpreter = fi;
         exceptionMapper = mapper;
     }
@@ -334,28 +368,43 @@ public class CircuitBreaker implements Monitorable, ServiceWrapper {
         notifyBreakerStateChange(getStatus());
     }
 
-    /** Returns the current {@link org.fishwife.jrugged.Status} of the
+    /**
+     * Returns the current {@link org.fishwife.jrugged.Status} of the
      *  {@link CircuitBreaker}.  In this case, it really refers to the
      *  status of the client service.  If the
      *  <code>CircuitBreaker</code> is CLOSED, we report that the
      *  client is UP; if it is HALF_CLOSED, we report that the client
      *  is DEGRADED; if it is OPEN, we report the client is DOWN.
+     *
+     *  @return Status the current status of the breaker
      */
     public Status getStatus() {
-		boolean canSendProbeRequest = !isHardTrip && lastFailure.get() > 0
-			&& (System.currentTimeMillis() - lastFailure.get() >= resetMillis.get());
+        return getServiceStatus().getStatus();
+    }
+
+    /**
+     * Get the current {@link org.fishwife.jrugged.ServiceStatus} of the
+     * {@link CircuitBreaker}, including the name,
+     * {@link org.fishwife.jrugged.Status}, and reason.
+     * @return the {@link org.fishwife.jrugged.ServiceStatus}.
+     */
+    public ServiceStatus getServiceStatus() {
+        boolean canSendProbeRequest = !isHardTrip && lastFailure.get() > 0
+            && (System.currentTimeMillis() - lastFailure.get() >= resetMillis.get());
 
         if (byPass) {
-            return Status.DEGRADED;
+            return new ServiceStatus(name, Status.DEGRADED, "Bypassed");
         }
-        
+
         switch(state) {
-		    case OPEN:
-			    return (canSendProbeRequest ? Status.DEGRADED : Status.DOWN);
-		    case HALF_CLOSED: return Status.DEGRADED;
-		    case CLOSED:
-		    default:
-			    return Status.UP;
+            case OPEN:
+                return (canSendProbeRequest ?
+                        new ServiceStatus(name, Status.DEGRADED, "Send Probe Request")
+                        : new ServiceStatus(name, Status.DOWN, "Open"));
+            case HALF_CLOSED: return new ServiceStatus(name, Status.DEGRADED, "Half Closed");
+            case CLOSED:
+            default:
+                return new ServiceStatus(name, Status.UP);
         }
     }
 

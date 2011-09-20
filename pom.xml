@@ -14,21 +14,19 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.fishwife</groupId>
     <artifactId>jrugged</artifactId>
     <packaging>pom</packaging>
-    <version>2.5.0-SNAPSHOT</version>
+    <version>3.0.1</version>
     <name>jrugged</name>
     <url>http://code.google.com/p/jrugged/</url>
 
     <scm>
-        <connection>scm:svn:https://jrugged.googlecode.com/svn/</connection>
-        <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/</developerConnection>
-        <url>https://jrugged.googlecode.com/svn/tags/jrugged-2.4.0</url>
+        <connection>scm:svn:https://jrugged.googlecode.com/svn/tags/jrugged-3.0.1</connection>
+        <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/tags/jrugged-3.0.1</developerConnection>
+        <url>https://jrugged.googlecode.com/svn/tags/jrugged-3.0.1</url>
     </scm>
 
     <dependencies>
@@ -115,8 +113,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <configuration>
                     <links>
-                        <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
-                        <link>http://download.oracle.com/javaee/5/api/</link>
+                        <link>http://download.oracle.com/javase/1.5.0/docs/api/</link>
                         <link>http://www.eclipse.org/aspectj/doc/next/runtime-api</link>
                         <link>http://static.springsource.org/spring/docs/3.0.5.RELEASE/api/</link>
                         <link>http://aopalliance.sourceforge.net/doc/</link>
@@ -142,7 +139,7 @@
         <module>jrugged-aspects</module>
         <module>jrugged-spring</module>
         <module>jrugged-httpclient</module>
-        <!--module>jrugged-examples</module-->
+        <module>jrugged-examples</module>
     </modules>
 
     <properties>
