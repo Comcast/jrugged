@@ -100,7 +100,7 @@ public class WindowedEventCounter {
 
 		synchronized (queue) {
 			// drain out any expired timestamps but don't drain past empty
-			while (!queue.isEmpty() && queue.peekFirst() < removeTimesBeforeMillis) {
+			while (!queue.isEmpty() && queue.peek() < removeTimesBeforeMillis) {
 				queue.removeFirst();
 			}
 			return queue.size();
