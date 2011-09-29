@@ -18,6 +18,8 @@ package org.fishwife.jrugged.clocks;
 
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.fishwife.jrugged.interval.DiscreteInterval;
+
 /** This class captures the &quot;most accurate system timer&quot;
  * available via {@link System#nanoTime}, but also attempts to determine
  * the actual granularity of the timer (which might be greater than 1ns)
@@ -96,15 +98,23 @@ class HardwareClock {
         return maxGranularity;
     }
     
-    /** Returns the current measurement error of the hardware clock,
-     * measured in picoseconds. By definition, this is taken to be
-     * half of the measured granularity.
-     * @return measurement error in picoseconds
+    /** Get an estimate of the current hardware clock reading, 
+     * represented as a range of times. The +/- error should be half
+     * of the measurement increment, which is the clock granularity
+     * in our case. Thus, this effectively returns the hardware clock
+     * reading +/- (half granularity), with conservative rounding.
+     * @return <code>DiscreteInterval</code> representing the range of values the
+     *   current hardware clock time might fall within, represented in
+     *   nanoseconds.
      */
-    public long getMeasurementErrorPicoSeconds() {
-        return getGranularity() * 1000L / 2;
+    public DiscreteInterval getNanoTime() {
+        long granularity = getGranularity();
+        long err = granularity / 2;
+        if (granularity % 2 == 1) err += 1;
+        long now = env.nanoTime();
+        return new DiscreteInterval(now - err, now + err);
     }
-
+    
     /** Interface capturing various static methods that are dependencies
      * of this class; this allows us to switch them out for testing and
      * generally keep us loosely coupled from underlying platform API.
@@ -129,4 +139,5 @@ class HardwareClock {
             return System.currentTimeMillis();
         }
     }
+
 }

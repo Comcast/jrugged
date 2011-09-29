@@ -92,4 +92,119 @@ public class TestDiscreteInterval {
         assertTrue(i1.getMin() >= out.getMin() && i1.getMin() <= out.getMax());
         assertTrue(i1.getMax() >= out.getMin() && i1.getMax() <= out.getMax());
     }
+    
+    @Test
+    public void doesNotContainNonOverlappingInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(1,3);
+        assertFalse(i1.contains(new DiscreteInterval(5,6)));
+    }
+    
+    @Test
+    public void doesNotContainPartiallyHigherInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(1,3);
+        assertFalse(i1.contains(new DiscreteInterval(2,4)));
+    }
+
+    @Test
+    public void doesNotContainPartiallyLowerInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(1,3);
+        assertFalse(i1.contains(new DiscreteInterval(0,2)));
+    }
+
+    @Test
+    public void containsFullySurroundedInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        assertTrue(i1.contains(new DiscreteInterval(3,4)));
+    }
+
+    @Test
+    public void containsIntervalWithMatchingMinimum() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        assertTrue(i1.contains(new DiscreteInterval(1,4)));
+    }
+
+    @Test
+    public void containsIntervalWithMatchingMaximum() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        assertTrue(i1.contains(new DiscreteInterval(3,6)));
+    }
+
+    @Test
+    public void containsItself() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        assertTrue(i1.contains(i1));
+    }
+
+    @Test
+    public void greaterThanLowerNonOverlappingInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(5,6);
+        assertTrue(i1.greaterThan(new DiscreteInterval(1,2)));
+    }
+    
+    @Test
+    public void notGreaterThanLowerOverlappingInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.greaterThan(new DiscreteInterval(1,4)));
+    }
+
+    @Test
+    public void notGreaterThanMyself() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.greaterThan(i1));
+    }
+
+    @Test
+    public void notGreaterThanContainedInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.greaterThan(new DiscreteInterval(4,5)));
+    }
+
+    @Test
+    public void notGreaterThanOverlappingPartiallyHigherInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.greaterThan(new DiscreteInterval(4,8)));
+    }
+
+    @Test
+    public void notGreaterThanNonOverlappingHigherInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.greaterThan(new DiscreteInterval(7,8)));
+    }
+
+    @Test
+    public void notLowerThanLowerNonOverlappingInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(5,6);
+        assertFalse(i1.lessThan(new DiscreteInterval(1,2)));
+    }
+    
+    @Test
+    public void notLowerThanLowerPartiallyOverlappingInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.lessThan(new DiscreteInterval(1,4)));
+    }
+
+    @Test
+    public void notLowerThanFullyContainedInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.lessThan(new DiscreteInterval(4,5)));
+    }
+
+    @Test
+    public void notLowerThanMyself() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.lessThan(i1));
+    }
+
+    @Test
+    public void notLowerThanPartiallyHigherInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertFalse(i1.lessThan(new DiscreteInterval(4,7)));
+    }
+
+    @Test
+    public void lowerThanFullyHigherInterval() {
+        DiscreteInterval i1 = new DiscreteInterval(3,6);
+        assertTrue(i1.lessThan(new DiscreteInterval(7,8)));
+    }
+
 }
