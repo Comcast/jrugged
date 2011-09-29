@@ -105,31 +105,6 @@ public class DiscreteInterval {
         return new DiscreteInterval(newMin, newMax);
     }
 
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + (int) (max ^ (max >>> 32));
-        result = prime * result + (int) (min ^ (min >>> 32));
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        DiscreteInterval other = (DiscreteInterval) obj;
-        if (max != other.max)
-            return false;
-        if (min != other.min)
-            return false;
-        return true;
-    }
-    
     /** Determines whether the given interval is completely
      * contained by this one.
      */
@@ -149,6 +124,18 @@ public class DiscreteInterval {
         return min > other.max;
     }
 
+    /** Determines whether this interval is greater than or
+     * equal to the given one. In other words, all of the
+     * possible values represented by this interval are pairwise 
+     * greater than or equal to all the possible values
+     * represented by the argument.
+     * @param other interval for comparison
+     * @return boolean
+     */
+    public boolean greaterThanEqual(DiscreteInterval other) {
+        return min >= other.max;
+    }
+    
     /** Determines whether this interval is strictly less
      * than the given one. In other words, all of the possible
      * values represented by this interval are strictly 
@@ -161,9 +148,46 @@ public class DiscreteInterval {
         return max < other.min;
     }
 
+    /** Determines whether this interval is less than or
+     * equal to the given one. In other words, all of the possible
+     * values represented by this interval are pairwise 
+     * less than or equal to all the possible values
+     * represented by the argument.
+     * @param other interval for comparison
+     * @return boolean
+     */
+    public boolean lessThanEqual(DiscreteInterval other) {
+        return max <= other.min;
+    }
+
     @Override
     public String toString() {
         return "[" + min + "," + max + "]";
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (max ^ (max >>> 32));
+        result = prime * result + (int) (min ^ (min >>> 32));
+        return result;
+    }
     
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DiscreteInterval other = (DiscreteInterval) obj;
+        if (max != other.max)
+            return false;
+        if (min != other.min)
+            return false;
+        return true;
+    }
 }
+
