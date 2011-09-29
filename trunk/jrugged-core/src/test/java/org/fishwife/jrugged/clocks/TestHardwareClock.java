@@ -23,6 +23,7 @@ import java.util.Random;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.fishwife.jrugged.interval.DiscreteInterval;
 
 
 public class TestHardwareClock {
@@ -71,6 +72,34 @@ public class TestHardwareClock {
         expect(mockEnv.nanoTime()).andReturn(10L);
         replay(mockEnv);
         assertEquals(6L, impl.sampleGranularity());
+        verify(mockEnv);
+    }
+    
+    @Test
+    public void canRetrieveClockReadingInterval() {
+        impl = new HardwareClock();
+        assertTrue(impl.getNanoTime() instanceof DiscreteInterval);
+    }
+    
+    @Test
+    public void errorIsHalfOfGranularityForEvenGranularity() {
+        impl = new HardwareClock(mockEnv) {
+            public long getGranularity() { return 6L; }
+        };
+        expect(mockEnv.nanoTime()).andReturn(10L);
+        replay(mockEnv);
+        assertEquals(new DiscreteInterval(7L,13L), impl.getNanoTime());
+        verify(mockEnv);
+    }
+    
+    @Test
+    public void errorRoundsProperlyForOddGranularity() {
+        impl = new HardwareClock(mockEnv) {
+            public long getGranularity() { return 5L; }
+        };
+        expect(mockEnv.nanoTime()).andReturn(10L);
+        replay(mockEnv);
+        assertEquals(new DiscreteInterval(7L,13L), impl.getNanoTime());
         verify(mockEnv);
     }
     

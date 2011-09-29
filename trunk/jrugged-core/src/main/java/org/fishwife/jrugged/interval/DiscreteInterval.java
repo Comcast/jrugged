@@ -1,6 +1,6 @@
 package org.fishwife.jrugged.interval;
 
-class DiscreteInterval {
+public class DiscreteInterval {
 
     private long min;
     private long max;
@@ -63,6 +63,48 @@ class DiscreteInterval {
             if (terms[i] > newMax) newMax = terms[i];
         }
         return new DiscreteInterval(newMin, newMax);
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + (int) (max ^ (max >>> 32));
+        result = prime * result + (int) (min ^ (min >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DiscreteInterval other = (DiscreteInterval) obj;
+        if (max != other.max)
+            return false;
+        if (min != other.min)
+            return false;
+        return true;
+    }
+    
+    @Override
+    public String toString() {
+        return "[" + min + "," + max + "]";
+    }
+
+    public boolean contains(DiscreteInterval other) {
+        return (min <= other.getMin() && max >= other.getMax());
+    }
+
+    public boolean greaterThan(DiscreteInterval other) {
+        return min > other.max;
+    }
+
+    public boolean lessThan(DiscreteInterval other) {
+        return max < other.min;
     }
 
 }
