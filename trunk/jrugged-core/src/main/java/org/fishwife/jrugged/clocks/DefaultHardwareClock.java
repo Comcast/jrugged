@@ -25,7 +25,7 @@ import org.fishwife.jrugged.interval.DiscreteInterval;
  * the actual granularity of the timer (which might be greater than 1ns)
  * and present the measurement error inherent in taking clock measurements.
  */
-class HardwareClock {
+class DefaultHardwareClock {
 
     private static long DEFAULT_PERIOD_MILLIS = 100 * 1000L;
     private long periodMillis = DEFAULT_PERIOD_MILLIS;
@@ -44,7 +44,7 @@ class HardwareClock {
     private Env env;
     
     /** Default constructor. */
-    public HardwareClock() {
+    public DefaultHardwareClock() {
         this(new DefaultEnv(), DEFAULT_NUM_SAMPLES, DEFAULT_PERIOD_MILLIS);
     }
     
@@ -53,7 +53,7 @@ class HardwareClock {
      * for testing.
      * @param env
      */
-    public HardwareClock(Env env) {
+    public DefaultHardwareClock(Env env) {
         this(env, DEFAULT_NUM_SAMPLES, DEFAULT_PERIOD_MILLIS);
     }
     
@@ -65,7 +65,7 @@ class HardwareClock {
      * @param periodMillis how often to sample the clock granularity, in milliseconds
      *   (default is 100,000, or once every 100 seconds)
      */
-    public HardwareClock(Env env, int numSamples, long periodMillis) {
+    public DefaultHardwareClock(Env env, int numSamples, long periodMillis) {
         this.env = env;
         samples = new long[numSamples];
         this.periodMillis = periodMillis;

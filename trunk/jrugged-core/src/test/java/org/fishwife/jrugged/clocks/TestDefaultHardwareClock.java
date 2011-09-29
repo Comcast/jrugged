@@ -26,17 +26,17 @@ import org.junit.Test;
 import org.fishwife.jrugged.interval.DiscreteInterval;
 
 
-public class TestHardwareClock {
+public class TestDefaultHardwareClock {
 
-    private HardwareClock.Env mockEnv;
-    private HardwareClock impl;
+    private DefaultHardwareClock.Env mockEnv;
+    private DefaultHardwareClock impl;
     private Random random;
     
     @Before
     public void setUp() {
         random = new Random();
-        mockEnv = createMock(HardwareClock.Env.class);
-        impl = new HardwareClock(mockEnv);
+        mockEnv = createMock(DefaultHardwareClock.Env.class);
+        impl = new DefaultHardwareClock(mockEnv);
     }
     
     @Test
@@ -89,13 +89,13 @@ public class TestHardwareClock {
     
     @Test
     public void canRetrieveClockReadingInterval() {
-        impl = new HardwareClock();
+        impl = new DefaultHardwareClock();
         assertTrue(impl.getNanoTime() instanceof DiscreteInterval);
     }
     
     @Test
     public void errorIsHalfOfGranularityForEvenGranularity() {
-        impl = new HardwareClock(mockEnv) {
+        impl = new DefaultHardwareClock(mockEnv) {
             public long getGranularity() { return 6L; }
         };
         expect(mockEnv.nanoTime()).andReturn(10L).anyTimes();
@@ -106,7 +106,7 @@ public class TestHardwareClock {
     
     @Test
     public void errorRoundsProperlyForOddGranularity() {
-        impl = new HardwareClock(mockEnv) {
+        impl = new DefaultHardwareClock(mockEnv) {
             public long getGranularity() { return 5L; }
         };
         expect(mockEnv.nanoTime()).andReturn(10L).anyTimes();
@@ -117,7 +117,7 @@ public class TestHardwareClock {
     
     @Test
     public void canTakeMultipleReadings() {
-        impl = new HardwareClock();
+        impl = new DefaultHardwareClock();
         assertNotNull(impl.getNanoTime());
         assertNotNull(impl.getNanoTime());
     }
