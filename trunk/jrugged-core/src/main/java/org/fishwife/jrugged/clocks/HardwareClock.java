@@ -32,7 +32,8 @@ class HardwareClock {
     private static int DEFAULT_NUM_SAMPLES = 100;
     
     /** I sure hope we can count on the clock ticking at least once a
-     * year. */
+     * year. Normalize clock readings so that the returned intervals
+     * land in reasonable positive ranges. */
     private static long MIN_CLOCK_TIME = 1000000000L * 3600 * 24 * 365;
     
     private AtomicLong lastSampleTime = new AtomicLong(0L);
@@ -123,7 +124,7 @@ class HardwareClock {
     private long getOffset() {
         if (offset != null) return offset;
         long now = env.nanoTime();
-        offset = (now < MIN_CLOCK_TIME) ? (MIN_CLOCK_TIME - now) : 0L;
+        offset = (now < MIN_CLOCK_TIME) ? (MIN_CLOCK_TIME - now) : (now - MIN_CLOCK_TIME);
         return offset;
     }
 
