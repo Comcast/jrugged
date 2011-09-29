@@ -115,4 +115,10 @@ public class TestHardwareClock {
         verify(mockEnv);
     }
     
+    @Test
+    public void canTakeMultipleReadings() {
+        impl = new HardwareClock();
+        assertNotNull(impl.getNanoTime());
+        assertNotNull(impl.getNanoTime());
+    }
 }

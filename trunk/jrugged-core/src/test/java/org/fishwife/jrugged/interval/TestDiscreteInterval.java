@@ -154,5 +154,71 @@ public class TestDiscreteInterval {
         DiscreteInterval i1 = new DiscreteInterval(1,6);
         assertTrue(i1.contains(i1));
     }
+    
+    @Test
+    public void canGenerateStringRep() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        assertEquals("[1,6]", i1.toString());
+    }
+
+    @Test
+    public void intervalsWithSameBoundsAreEqual() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        DiscreteInterval i2 = new DiscreteInterval(1,6);
+        assertEquals(i1, i2);
+    }
+    
+    @Test
+    public void intervalsWithDifferentBoundsAreNotEqual() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        DiscreteInterval i2 = new DiscreteInterval(2,3);
+        assertFalse(i1.equals(i2));
+    }
+
+    @Test
+    public void intervalsWithDifferentMinimumsAreNotEqual() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        DiscreteInterval i2 = new DiscreteInterval(2,6);
+        assertFalse(i1.equals(i2));
+    }
+
+    @Test
+    public void intervalsWithDifferentMaximumsAreNotEqual() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        DiscreteInterval i2 = new DiscreteInterval(1,5);
+        assertFalse(i1.equals(i2));
+    }
+    
+    @Test
+    public void intervalIsEqualToItself() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        assertTrue(i1.equals(i1));
+    }
+
+    @Test
+    public void intervalIsNotEqualToNull() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        assertFalse(i1.equals(null));
+    }
+
+    @Test
+    public void intervalIsNotEqualToNonIntervals() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        assertFalse(i1.equals(new Object()));
+    }
+
+    @Test
+    public void hashCodesOfEqualIntervalsAreEqual() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        DiscreteInterval i2 = new DiscreteInterval(1,6);
+        assertEquals(i1.hashCode(), i2.hashCode());
+    }
+    
+    @Test
+    public void hashCodesOfUnequalIntervalsAreEqual() {
+        DiscreteInterval i1 = new DiscreteInterval(1,6);
+        DiscreteInterval i2 = new DiscreteInterval(2,3);
+        assertFalse(i1.hashCode() == i2.hashCode());
+    }
 
 }
