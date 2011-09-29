@@ -13,20 +13,16 @@ public class DiscreteInterval {
     final private long max;
 
     /** Creates an interval spanning a range between the two provided
-     * value arguments, inclusive. No requirements placed on relative
-     * ordering of the two arguments. This represents the closed 
-     * interval [min(v1,v2), max(v1,v2)].
-     * @param v1 first value
-     * @param v2 second value
+     * value arguments, inclusive. Order matters for the arguments due
+     * to wraparound overflow of longs; the range is defined as all the
+     * values crossed by starting at 'min' and then incrementing until
+     * 'max' is reached. Thus, this is the closed interval [min, max].
+     * @param min minimum value of range
+     * @param max maximum value of range
      */
-    public DiscreteInterval(long v1, long v2) {
-        if (v1 > v2) {
-            this.min = v2;
-            this.max = v1;
-        } else {
-            this.min = v1;
-            this.max = v2;
-        }
+    public DiscreteInterval(long min, long max) {
+        this.min = min;
+        this.max = max;
     }
 
     /** Returns the minimum value included in the interval. */
@@ -37,6 +33,13 @@ public class DiscreteInterval {
     /** Returns the maximum value included in the interval. */
     public long getMax() {
         return max;
+    }
+    
+    /** Returns the number of discrete values covered by this
+     * range.
+     */
+    public long size() {
+        return max - min + 1;
     }
 
     /** Returns an interval representing the addition of the
@@ -65,99 +68,11 @@ public class DiscreteInterval {
         return new DiscreteInterval(this.min - other.max, this.max - other.min);
     }
 
-    /** Returns an interval representing the multiplication of the
-     * given interval with this one.
-     * @param other interval to multiply by this one
-     * @return product
-     */
-    public DiscreteInterval times(DiscreteInterval other) {
-        long terms[] = { min * other.min,
-                min * other.max,
-                max * other.min,
-                max * other.max
-        };
-        long newMin = terms[0];
-        long newMax = terms[0];
-        for(int i=1; i<terms.length; i++) {
-            if (terms[i] < newMin) newMin = terms[i];
-            if (terms[i] > newMax) newMax = terms[i];
-        }
-        return new DiscreteInterval(newMin, newMax);
-    }
-
-    /** Returns an interval representing the division of this
-     * interval by the given one
-     * @param other interval to divide this one by
-     * @return quotient
-     */
-    public DiscreteInterval dividedBy(DiscreteInterval other) {
-        long terms[] = { min / other.min,
-                min / other.max,
-                max / other.min,
-                max / other.max
-        };
-        long newMin = terms[0];
-        long newMax = terms[0];
-        for(int i=1; i<terms.length; i++) {
-            if (terms[i] < newMin) newMin = terms[i];
-            if (terms[i] > newMax) newMax = terms[i];
-        }
-        return new DiscreteInterval(newMin, newMax);
-    }
-
     /** Determines whether the given interval is completely
      * contained by this one.
      */
     public boolean contains(DiscreteInterval other) {
         return (min <= other.getMin() && max >= other.getMax());
-    }
-
-    /** Determines whether this interval is strictly greater
-     * than the given one. In other words, all of the possible
-     * values represented by this interval are strictly 
-     * greater than all the possible values represented by
-     * the argument.
-     * @param other interval for comparison
-     * @return boolean
-     */
-    public boolean greaterThan(DiscreteInterval other) {
-        return min > other.max;
-    }
-
-    /** Determines whether this interval is greater than or
-     * equal to the given one. In other words, all of the
-     * possible values represented by this interval are pairwise 
-     * greater than or equal to all the possible values
-     * represented by the argument.
-     * @param other interval for comparison
-     * @return boolean
-     */
-    public boolean greaterThanEqual(DiscreteInterval other) {
-        return min >= other.max;
-    }
-    
-    /** Determines whether this interval is strictly less
-     * than the given one. In other words, all of the possible
-     * values represented by this interval are strictly 
-     * less than all the possible values represented by
-     * the argument.
-     * @param other interval for comparison
-     * @return boolean
-     */
-    public boolean lessThan(DiscreteInterval other) {
-        return max < other.min;
-    }
-
-    /** Determines whether this interval is less than or
-     * equal to the given one. In other words, all of the possible
-     * values represented by this interval are pairwise 
-     * less than or equal to all the possible values
-     * represented by the argument.
-     * @param other interval for comparison
-     * @return boolean
-     */
-    public boolean lessThanEqual(DiscreteInterval other) {
-        return max <= other.min;
     }
 
     @Override
