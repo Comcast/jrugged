@@ -31,10 +31,15 @@ class HardwareClock {
     private long periodMillis = DEFAULT_PERIOD_MILLIS;
     private static int DEFAULT_NUM_SAMPLES = 100;
     
+    /** I sure hope we can count on the clock ticking at least once a
+     * year. */
+    private static long MIN_CLOCK_TIME = 1000000000L * 3600 * 24 * 365;
+    
     private AtomicLong lastSampleTime = new AtomicLong(0L);
     private int sampleIndex = 0;
     private long maxGranularity;
     private long[] samples;
+    private Long offset;
     private Env env;
     
     /** Default constructor. */
@@ -111,10 +116,17 @@ class HardwareClock {
         long granularity = getGranularity();
         long err = granularity / 2;
         if (granularity % 2 == 1) err += 1;
-        long now = env.nanoTime();
+        long now = env.nanoTime() + getOffset();
         return new DiscreteInterval(now - err, now + err);
     }
     
+    private long getOffset() {
+        if (offset != null) return offset;
+        long now = env.nanoTime();
+        offset = (now < MIN_CLOCK_TIME) ? (MIN_CLOCK_TIME - now) : 0L;
+        return offset;
+    }
+
     /** Interface capturing various static methods that are dependencies
      * of this class; this allows us to switch them out for testing and
      * generally keep us loosely coupled from underlying platform API.

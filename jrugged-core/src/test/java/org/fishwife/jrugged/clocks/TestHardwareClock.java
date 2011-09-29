@@ -40,6 +40,18 @@ public class TestHardwareClock {
     }
     
     @Test
+    public void normalizesToPositiveReadings() {
+        expect(mockEnv.nanoTime()).andReturn(-100L);
+        expect(mockEnv.nanoTime()).andReturn(-90L).anyTimes();
+        expect(mockEnv.currentTimeMillis()).andReturn(0L).anyTimes();
+        replay(mockEnv);
+        DiscreteInterval out = impl.getNanoTime();
+        verify(mockEnv);
+        assertTrue(out.getMin() >= 0);
+        assertTrue(out.getMax() >= 0);
+    }
+    
+    @Test
     public void elapsedTimeWorksIfNoElapsedTime() {
        assertEquals(0L, impl.elapsedTime(1L, 1L)); 
     }
@@ -86,9 +98,9 @@ public class TestHardwareClock {
         impl = new HardwareClock(mockEnv) {
             public long getGranularity() { return 6L; }
         };
-        expect(mockEnv.nanoTime()).andReturn(10L);
+        expect(mockEnv.nanoTime()).andReturn(10L).anyTimes();
         replay(mockEnv);
-        assertEquals(new DiscreteInterval(7L,13L), impl.getNanoTime());
+        assertEquals(7L, impl.getNanoTime().size());
         verify(mockEnv);
     }
     
@@ -97,9 +109,9 @@ public class TestHardwareClock {
         impl = new HardwareClock(mockEnv) {
             public long getGranularity() { return 5L; }
         };
-        expect(mockEnv.nanoTime()).andReturn(10L);
+        expect(mockEnv.nanoTime()).andReturn(10L).anyTimes();
         replay(mockEnv);
-        assertEquals(new DiscreteInterval(7L,13L), impl.getNanoTime());
+        assertEquals(7L, impl.getNanoTime().size());
         verify(mockEnv);
     }
     
