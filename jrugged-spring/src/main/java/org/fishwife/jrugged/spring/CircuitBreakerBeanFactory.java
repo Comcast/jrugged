@@ -17,12 +17,14 @@ package org.fishwife.jrugged.spring;
 import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerConfig;
 import org.fishwife.jrugged.CircuitBreakerFactory;
-
+import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.MBeanExporter;
 
+import javax.annotation.PostConstruct;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
+import java.lang.reflect.Method;
 
 /**
  * Factory to create new {@link CircuitBreakerBean} instances and keep track of
@@ -31,8 +33,10 @@ import javax.management.ObjectName;
  */
 public class CircuitBreakerBeanFactory extends CircuitBreakerFactory {
 
-    @Autowired(required=false)
+    @Autowired(required = false)
     private MBeanExporter mBeanExporter;
+
+    private String packageScanBase;
 
     /**
      * Set the {@link MBeanExporter} to use to export {@link CircuitBreakerBean}
@@ -44,16 +48,45 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory {
     }
 
     /**
+     * If specified, CircuitBreakerBeanFactory will scan all classes
+     * under packageScanBase for methods with the
+     * {@link org.fishwife.jrugged.aspects.CircuitBreaker} annotation
+     * and initialize circuitbreakers for them.
+     *
+     * @param packageScanBase Where should the scan for annotations begin
+     */
+    public void setPackageScanBase(String packageScanBase) {
+        this.packageScanBase = packageScanBase;
+    }
+
+    /**
+     * If packageScanBase is defined will search packages for {@link org.fishwife.jrugged.aspects.CircuitBreaker}
+     * annotations and create circuitbreakers for them.
+     */
+    @PostConstruct()
+    public void buildAnnotatedCircuitBreakers() {
+        if (packageScanBase != null) {
+            AnnotatedMethodScanner methodScanner = new AnnotatedMethodScanner();
+            for (Method m : methodScanner.findAnnotatedMethods(packageScanBase, org.fishwife.jrugged.aspects.CircuitBreaker.class)) {
+                org.fishwife.jrugged.aspects.CircuitBreaker circuitBreakerAnnotation = m.getAnnotation(org.fishwife.jrugged.aspects.CircuitBreaker.class);
+                DefaultFailureInterpreter dfi = new DefaultFailureInterpreter(circuitBreakerAnnotation.ignore(), circuitBreakerAnnotation.limit(), circuitBreakerAnnotation.windowMillis());
+                CircuitBreakerConfig config = new CircuitBreakerConfig(circuitBreakerAnnotation.resetMillis(), dfi);
+                createCircuitBreaker(circuitBreakerAnnotation.name(), config);
+            }
+        }
+
+    }
+
+    /**
      * Create a new {@link CircuitBreakerBean} and map it to the provided value.
      * If the {@link MBeanExporter} is set, then the CircuitBreakerBean will be
      * exported as a JMX MBean.
      * If the CircuitBreaker already exists, then the existing instance is
      * returned.
-     * @param name the value for the {@link org.fishwife.jrugged.CircuitBreaker}
+     * @param name   the value for the {@link org.fishwife.jrugged.CircuitBreaker}
      * @param config the {@link org.fishwife.jrugged.CircuitBreakerConfig}
      */
-    public synchronized CircuitBreaker createCircuitBreaker(String name,
-            CircuitBreakerConfig config) {
+    public synchronized CircuitBreaker createCircuitBreaker(String name, CircuitBreakerConfig config) {
 
         CircuitBreaker circuitBreaker = findCircuitBreaker(name);
 
@@ -66,13 +99,9 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory {
                 ObjectName objectName;
 
                 try {
-                    objectName = new ObjectName(
-                            "org.fishwife.jrugged.spring:type=CircuitBreakerBean," +
-                                    "value=" + name);
-                }
-                catch (MalformedObjectNameException e) {
-                    throw new IllegalArgumentException("Invalid MBean Name " +
-                            name, e);
+                    objectName = new ObjectName("org.fishwife.jrugged.spring:type=CircuitBreakerBean," + "value=" + name);
+                } catch (MalformedObjectNameException e) {
+                    throw new IllegalArgumentException("Invalid MBean Name " + name, e);
 
                 }
 
@@ -91,10 +120,10 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory {
      * @return the found {@link CircuitBreakerBean}, or null if it is not found.
      */
     public CircuitBreakerBean findCircuitBreakerBean(String name) {
-        CircuitBreaker performanceMonitor = findCircuitBreaker(name);
+        CircuitBreaker circuitBreaker = findCircuitBreaker(name);
 
-        if (performanceMonitor instanceof CircuitBreakerBean) {
-            return (CircuitBreakerBean)performanceMonitor;
+        if (circuitBreaker instanceof CircuitBreakerBean) {
+            return (CircuitBreakerBean) circuitBreaker;
         }
         return null;
     }

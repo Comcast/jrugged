@@ -86,25 +86,44 @@ public class TestCircuitBreakerBeanFactory {
         CircuitBreakerBean foundBreaker = factory.findCircuitBreakerBean(breakerName);
         assertNull(foundBreaker);
     }
+
     @Test
     public void testBreakerWithoutMBeanExporter() {
         factory.setMBeanExporter(null);
-        CircuitBreaker createdBreaker =
-                factory.createCircuitBreaker("testCreateWithoutMBeanExporter", config);
+        CircuitBreaker createdBreaker = factory.createCircuitBreaker("testCreateWithoutMBeanExporter", config);
         assertNotNull(createdBreaker);
     }
 
     @Test
     public void testBreakerWithMBeanExporter() {
         factory.setMBeanExporter(mockMBeanExporter);
-        CircuitBreaker createdBreaker =
-                factory.createCircuitBreaker("testCreateWithoutMBeanExporter", config);
+        CircuitBreaker createdBreaker = factory.createCircuitBreaker("testCreateWithoutMBeanExporter", config);
         assertNotNull(createdBreaker);
     }
 
-    @Test(expected=IllegalArgumentException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void testBreakerWithInvalidName() {
         factory.setMBeanExporter(mockMBeanExporter);
         factory.createCircuitBreaker("=\"", config);
     }
+
+    //---------
+    // The following tests depend on org.fishwife.jrugged.spring.testonly
+
+    @Test
+    public void testFactoryFindsCircuitBreakers() {
+        factory.setPackageScanBase("org.fishwife.jrugged.spring.testonly");
+        factory.buildAnnotatedCircuitBreakers();
+
+        assertNotNull(factory.findCircuitBreaker("breakerA"));
+        assertNotNull(factory.findCircuitBreaker("breakerB"));
+    }
+
+    @Test
+    public void testWhenPackageScanNotProvidedAnnotationsNotLoaded() {
+        factory.buildAnnotatedCircuitBreakers();
+        assertNull(factory.findCircuitBreaker("breakerA"));
+        assertNull(factory.findCircuitBreaker("breakerB"));
+    }
+
 }
