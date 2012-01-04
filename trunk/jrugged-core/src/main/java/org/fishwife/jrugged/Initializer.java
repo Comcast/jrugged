@@ -28,15 +28,26 @@ package org.fishwife.jrugged;
  * Sample usage:
  * <pre>
  * public class Service implements Initializable, Monitorable {
- * private Status status = Status.INIT;
- * public Service() {
- * new Initializer(this).initialize();
- * }
- * public void tryInit() throws Exception {
- * // attempt an initialization here ...
- * }
- * public void afterInit() { status = Status.UP; }
- * public Status getStatus() { return status; }
+ *
+ *    private volatile Status status = Status.INIT;
+ *
+ *    public Service() {
+ *       // Allow the service/object to construct completely to avoid
+ *       // potential memory, or incomplete object initializations
+ *       // then call serviceInitialize() on this object
+ *    }
+ *
+ *    public void serviceInitialize() {
+ *       new Initializer(this).initialize();
+ *    }
+ *
+ *    public void tryInit() throws Exception {
+ *       // attempt an initialization here ...
+ *    }
+ *
+ *    public void afterInit() { status = Status.UP; }
+ *
+ *    public Status getStatus() { return status; }
  * }
  *  </pre>
  */
