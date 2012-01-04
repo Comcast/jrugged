@@ -1,0 +1,100 @@
+{{{
+package org.fishwife.jrugged;
+
+import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
+
+/**
+ * The Initializer background thread and the main application thread share state (e.g. the reference to the Service
+ * instance). Changes to shared state made by one thread are not guaranteed to be visible in other threads unless there
+ * is a publication event. Examples of a publication event include:
+ *
+ * 1. The use of explicit locking.
+ * 2. Writing to and reading the same volatile reference.
+ * 3. Using a thread-safe container than guarantees safe publication between threads (e.g. BlockingQueue).
+ *
+ * This test demonstrates how state changes made by the Initializer background thread in afterInit() are not
+ * visible in the calling thread.
+ *
+ * afterInit() sets the status flag to Status.UP, which the calling thread requires to make progress
+ * the test freezes after two or three passes.
+ *
+ * On three different runs on my machine, this test prints:
+ *
+ * Run #1
+ * Set status to Status.UP on instance 0
+ * Set status to Status.UP on instance 1
+ *
+ * Run #2
+ * Set status to Status.UP on instance 0
+ *
+ * Run #3
+ * Set status to Status.UP on instance 0
+ * Set status to Status.UP on instance 1
+ * Set status to Status.UP on instance 2
+ * Set status to Status.UP on instance 3
+ *
+ * Implementing the fix in comment for the status instance field fixes the publication problem and allows all 100
+ * iterations to occur.
+ */
+public class TestInitializerThreadSafety2 {
+        @Test(timeout = 10000)
+        public void threadSafety() throws Exception {
+                for (int i = 0; i < 100; i++) {
+                        Service testable = new Service(i);
+
+                        while (Status.INIT == testable.status) { }
+
+                        for (int valIdx = 0; valIdx < testable.values.length; valIdx++ ) {
+                                assertEquals(Integer.toString(valIdx), valIdx, testable.values[valIdx]);
+                        }
+                }
+        }
+
+        private static class Service implements Initializable {
+
+                private final int id;
+
+                /**
+                 * Uncomment the volatile keyword to make the test pass. Per jsr133, "Writing to a volatile field has the same
+                 * memory effect as a monitor release, and reading from a volatile field has the same memory effect as a monitor
+                 * acquire."
+                 */
+                private /*volatile*/ Status status = Status.INIT;
+
+                private long[] values;
+
+                private Initializer initializer;
+
+                public Service(int _id) {
+                        id = _id;
+
+                        initializer = new Initializer(this);
+
+                        initializer.setRetryMillis(10);
+                        initializer.initialize();
+                }
+
+                @Override
+                public void tryInit() throws Exception {
+                        if (Math.random() < 0.5) {
+                                throw new RuntimeException("Not yet!");
+                        }
+
+                        values = new long[16384];
+
+                        for (int i = 0; i < values.length; i++) {
+                                values[i] = i;
+                        }
+                }
+
+                @Override
+                public void afterInit() {
+                        status = Status.UP;
+
+                        System.out.println("Set status to Status.UP on instance " + id);
+                }
+        }
+}
+}}}
