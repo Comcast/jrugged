@@ -21,7 +21,10 @@ import org.junit.Test;
  * Rather than starting threads in the constructor, the recommended practice is to create
  * a separate initialize() method that is invoked on an object _after_ it is fully constructed, meaning all the java
  * memory model guarantees are in place. The initialize() method can then delegate to Initializer . . . within certain
- * constraints as shown by the other test case.
+ * constraints as shown by InitializerThreadSafetyExample2.
+ *
+ * If you are willing to deal with the potential exceptions/nulls, it is possible to wait (as this example shows) 
+ * for the object construction to be complete.
  *
  * This test should print the following (or something similar):
  *
