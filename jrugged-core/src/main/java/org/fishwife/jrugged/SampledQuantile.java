@@ -22,6 +22,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * The {@link SampledQuantile} provides a way to compute
@@ -45,12 +46,13 @@ public class SampledQuantile {
 	
 	private List<Sample> samples = new ArrayList<Sample>();
 
-	private long samplesSeen = 0;
+	private AtomicLong samplesSeen = new AtomicLong(0L);
 	private int maxSamples = DEFAULT_MAX_SAMPLES;
 	private Long windowMillis;
 
 	private LinkedList<Sample> windowSegments; 
-	
+    Random rand = new Random();
+
 	/**
      * Creates a <code>SampleQuantile</code> that keeps a
 	 * default number of samples across its lifetime. 
@@ -98,7 +100,7 @@ public class SampledQuantile {
 		this.maxSamples = maxSamples;
 		setWindowMillis(windowLength, units);
 		windowSegments = new LinkedList<Sample>();
-		windowSegments.offer(new Sample(samplesSeen, now));		
+		windowSegments.offer(new Sample(samplesSeen.get(), now));
 	}
 
 	private void setWindowMillis(long windowLength, TimeUnit units) {
@@ -209,25 +211,24 @@ public class SampledQuantile {
 		    windowSegments.getLast().timestamp : 0L;
 		if (windowSegments.size() == 0 
 			|| now - mostRecentSegmentTimestamp > segmentSize) {
-			windowSegments.offer(new Sample(samplesSeen, now));
+			windowSegments.offer(new Sample(samplesSeen.get(), now));
 		}
 	}
 	
 	private long getEffectiveSamplesSeen() {
-		if (windowMillis == null) return samplesSeen;
-		return (samplesSeen - windowSegments.getFirst().data);
+		if (windowMillis == null) return samplesSeen.get();
+		return (samplesSeen.get() - windowSegments.getFirst().data);
 	}
 	
 	void addSample(long l, long now) {
-		samplesSeen++;
+		samplesSeen.getAndIncrement();
 		updateWindowSegments(now);
 		if (samples.size() < maxSamples) {
 			samples.add(new Sample(l, now));
 			return;
 		}
-		Random r = new Random();
-		if (r.nextDouble() < maxSamples * 1.0 / getEffectiveSamplesSeen()) {
-			int idx = r.nextInt(maxSamples);
+		if (rand.nextDouble() < maxSamples * 1.0 / getEffectiveSamplesSeen()) {
+			int idx = rand.nextInt(maxSamples);
 			samples.set(idx, new Sample(l, now));
 		}
 	}
