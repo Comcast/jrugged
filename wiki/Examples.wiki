@@ -4,6 +4,7 @@
 
 = Details =
 
+  * InitializerExample - How to use the jrugged core libraries Initializer to manage service startup
   * DecoratorExample - How the jrugged core library utilizes the decorator pattern to wrap itself around method calls that you are making, allowing for things like circuit breakers and performance monitors to be easily added to your code.
   * SpringInterceptorExample - How the jrugged-spring library can be used in conjunction with the jrugged-core library to easily wrap existing methods and services with jrugged functionality.
   * SpringNamespaceExample - Simplified JRugged Spring Configuration allows you to add a jrugged namespace to your spring configuration greatly simplifying JRugged's use in your spring projects.
