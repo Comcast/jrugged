@@ -1,3 +1,4 @@
+#summary An example of a potential gotcha when using the Initializer in jrugged.
 {{{
 package org.fishwife.jrugged;
 
