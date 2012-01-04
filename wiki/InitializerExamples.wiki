@@ -1,0 +1,15 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+Add your content here.
+
+
+= Details =
+
+  * InitializerThreadSafetyExample1 - Care should be taken to not start a thread within an object constructor (@see Java Concurrency In Practice). The Java memory model does not guarantee that the fields of an object will contain correct references until the constructor returns. But the Initializer _requires_ you to publish a reference to the Initializable _during_ object construction (before the constructor returns). This means Initializer's background thread can see the wrong references.  Rather than starting threads in the constructor, the recommended practice is to create a separate initialize() method that is invoked on an object _after_ it is fully constructed, meaning all the java memory model guarantees are in place. The initialize() method can then delegate to Initializer . . . within certain constraints as shown by the other test case.
+  * InitializerThreadSafetyExample2 - The Initializer background thread and the main application thread share state (e.g. the reference to the Service instance). Changes to shared state made by one thread are not guaranteed to be visible in other threads unless there is a publication event. Examples of a publication event include:
+  # The use of explicit locking.
+  # Writing to and reading the same volatile reference.
+  # Using a thread-safe container than guarantees safe publication between threads (e.g. {{{java.util.concurrent.BlockingQueue}}}).
+Users of the initializer and its interface should be aware of these issues when implementing to avoid errors in their system which may be difficult to detect.
