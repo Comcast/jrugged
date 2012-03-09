@@ -7,6 +7,8 @@ JRugged Spring library will make using JRugged to incorporate one or more circui
 
 The JRugged Spring library uses Spring Interceptors to allow methods to be wrapped in circuit breakers or performance monitors without having to change the original code at all.
 
+  * NOTE: By registering the {{{CircuitBeanInterceptor}}} in the {{{BeanNameAutoProxyCreator's}}} interceptorNames list *first*, it's {{{CircuitBreakerException's}}} will not be seen by the {{{PerformanceMonitor}}} and thus will not count toward the {{{PerformanceMonitor's}}} failure statistics. Depending on your use case this may or may not be desired.
+
 = Details =
 
 To use a circuit breaker you will first need to define one in the spring config:
