@@ -29,6 +29,9 @@ package org.fishwife.jrugged;
  * <pre>
  * public class Service implements Initializable, Monitorable {
  *
+ *    // This status flag is set in afterInit() by the background
+ *    // Initializer thread and must be volatile to ensure proper
+ *    // cross thread state change notification
  *    private volatile Status status = Status.INIT;
  *
  *    public Service() {
@@ -48,6 +51,15 @@ package org.fishwife.jrugged;
  *    public void afterInit() { status = Status.UP; }
  *
  *    public Status getStatus() { return status; }
+ *
+ *    public void aUsefulMethod(String arg1, int arg2) {
+ *       // Always make sure the service is ready for use.
+ *       if (status != Status.UP) {
+ *          throw new IllegalStateException("Not yet initialized");
+ *       }
+ *
+ *       ... // Do something interesting now.
+ *    }
  * }
  *  </pre>
  */
