@@ -43,7 +43,6 @@ public class PerformanceMonitor implements ServiceWrapper {
 
     private final RequestCounter requestCounter = new RequestCounter();
     private final FlowMeter flowMeter = new FlowMeter(requestCounter);
-    private final LatencyTracker latencyTracker = new LatencyTracker();
 
     private MovingAverage averageSuccessLatencyLastMinute;
     private MovingAverage averageSuccessLatencyLastHour;
@@ -127,7 +126,7 @@ public class PerformanceMonitor implements ServiceWrapper {
 		failureRequestsPerSecondLastDay.update(rates[2]);
 	}
 
-	private void recordSuccess() {
+	private void recordSuccess(LatencyTracker latencyTracker) {
 		long successMillis = latencyTracker.getLastSuccessMillis();
 		averageSuccessLatencyLastMinute.update(successMillis);
 		averageSuccessLatencyLastHour.update(successMillis);
@@ -142,7 +141,7 @@ public class PerformanceMonitor implements ServiceWrapper {
 		recordRequest();
 	}
 
-	private void recordFailure() {
+	private void recordFailure(LatencyTracker latencyTracker) {
 		long failureMillis = latencyTracker.getLastFailureMillis();
 		averageFailureLatencyLastMinute.update(failureMillis);
 		averageFailureLatencyLastHour.update(failureMillis);
@@ -158,16 +157,17 @@ public class PerformanceMonitor implements ServiceWrapper {
 	}
 
     public <T> T invoke(final Callable<T> c) throws Exception {
+        final LatencyTracker latencyTracker = new LatencyTracker();
 		try {
 			T result = requestCounter.invoke(new Callable<T>() {
 					public T call() throws Exception {
 						return latencyTracker.invoke(c);
 					}
 				});
-			recordSuccess();
+			recordSuccess(latencyTracker);
 			return result;
 		} catch (Exception e) {
-			recordFailure();
+			recordFailure(latencyTracker);
 			if (WRAP_MSG.equals(e.getMessage())) {
 				throw (Exception)e.getCause();
 			} else {
@@ -177,6 +177,7 @@ public class PerformanceMonitor implements ServiceWrapper {
     }
 
     public void invoke(final Runnable r) throws Exception {
+        final LatencyTracker latencyTracker = new LatencyTracker();
 		try {
 			requestCounter.invoke(new Runnable() {
                 public void run() {
@@ -187,9 +188,9 @@ public class PerformanceMonitor implements ServiceWrapper {
                     }
                 }
             });
-            recordSuccess();
+            recordSuccess(latencyTracker);
         } catch (RuntimeException re) {
-            recordFailure();
+            recordFailure(latencyTracker);
             if (WRAP_MSG.equals(re.getMessage())) {
                 throw (Exception)re.getCause();
             } else {
@@ -199,12 +200,13 @@ public class PerformanceMonitor implements ServiceWrapper {
     }
 
     public <T> T invoke(final Runnable r, T result) throws Exception {
+        final LatencyTracker latencyTracker = new LatencyTracker();
         try {
             this.invoke(r);
-            recordSuccess();
+            recordSuccess(latencyTracker);
             return result;
         } catch (RuntimeException re) {
-            recordFailure();
+            recordFailure(latencyTracker);
             if (WRAP_MSG.equals(re.getMessage())) {
                 throw (Exception)re.getCause();
             } else {
