@@ -58,6 +58,7 @@ public class TestPercentErrPerTimeFailureInterpreter {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDoesNotTripWhenExceptionIsIgnored() {
         PercentErrPerTimeFailureInterpreter pept = new PercentErrPerTimeFailureInterpreter();
         pept.setIgnore(new Class[] {MyRuntimeException.class});
