@@ -14,30 +14,38 @@
  */
 package org.fishwife.jrugged.spring;
 
+import java.lang.reflect.Method;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
 import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerConfig;
 import org.fishwife.jrugged.CircuitBreakerFactory;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.MBeanExporter;
-
-import javax.annotation.PostConstruct;
-import javax.management.MalformedObjectNameException;
-import javax.management.ObjectName;
-import java.lang.reflect.Method;
 
 /**
  * Factory to create new {@link CircuitBreakerBean} instances and keep track of
  * them. If a {@link MBeanExporter} is set, then the CircuitBreakerBean will be
  * automatically exported as a JMX MBean.
  */
-public class CircuitBreakerBeanFactory extends CircuitBreakerFactory {
+public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements InitializingBean {
 
     @Autowired(required = false)
     private MBeanExporter mBeanExporter;
 
     private String packageScanBase;
 
+    /**
+     * {@inheritDoc}
+     */
+    public void afterPropertiesSet() {
+        buildAnnotatedCircuitBreakers();
+    }
+    
     /**
      * Set the {@link MBeanExporter} to use to export {@link CircuitBreakerBean}
      * instances as JMX MBeans.
@@ -63,7 +71,6 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory {
      * If packageScanBase is defined will search packages for {@link org.fishwife.jrugged.aspects.CircuitBreaker}
      * annotations and create circuitbreakers for them.
      */
-    @PostConstruct()
     public void buildAnnotatedCircuitBreakers() {
         if (packageScanBase != null) {
             AnnotatedMethodScanner methodScanner = new AnnotatedMethodScanner();

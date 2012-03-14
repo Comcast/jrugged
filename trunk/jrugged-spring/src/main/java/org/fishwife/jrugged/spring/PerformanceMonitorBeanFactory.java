@@ -18,12 +18,12 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 
 import org.fishwife.jrugged.PerformanceMonitor;
 import org.fishwife.jrugged.PerformanceMonitorFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jmx.export.MBeanExporter;
 
@@ -32,7 +32,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * of the created instances. If the {@link MBeanExporter} is set, then the
  * PerformanceMonitorBean will be automatically exported as a JMX MBean.
  */
-public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory {
+public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory implements InitializingBean {
 
     @Autowired(required=false)
     private MBeanExporter mBeanExporter;
@@ -47,6 +47,13 @@ public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory {
     public PerformanceMonitorBeanFactory() {
         initialPerformanceMonitorList = new ArrayList<String>();
         packageScanBase = null;
+    }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public void afterPropertiesSet() {
+        createInitialPerformanceMonitors();
     }
 
     /**
@@ -74,7 +81,6 @@ public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory {
     /**
      * Create the initial {@link PerformanceMonitorBean} instances.
      */
-    @PostConstruct
     public void createInitialPerformanceMonitors() {
         if (packageScanBase != null) {
             AnnotatedMethodScanner methodScanner = new AnnotatedMethodScanner();
