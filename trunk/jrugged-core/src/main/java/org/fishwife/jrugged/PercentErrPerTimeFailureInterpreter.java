@@ -50,6 +50,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     /**
      * Default constructor. Any {@link Throwable} will cause the breaker to trip.
      */
+    @SuppressWarnings("unchecked")
     public PercentErrPerTimeFailureInterpreter() {
 		setIgnore(defaultIgnore);
         requestCounter = new RequestCounter();
@@ -69,6 +70,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      *   above that number during the window will cause the breaker to trip.
      * @param windowMillis length of the window in milliseconds
      */
+    @SuppressWarnings("unchecked")
 	public PercentErrPerTimeFailureInterpreter(RequestCounter rc,
                                                int percent, long windowMillis) {
 		setIgnore(defaultIgnore);
@@ -92,6 +94,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      *   above that number during the window will cause the breaker to trip.
      * @param windowMillis length of the window in milliseconds
      */
+    @SuppressWarnings("unchecked")
 	public PercentErrPerTimeFailureInterpreter(PerformanceMonitor p,
                                                int percent, long windowMillis) {
 		setIgnore(defaultIgnore);
