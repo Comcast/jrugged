@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-   Copyright 2009-2011 Comcast Interactive Media, LLC.
+   Copyright 2009-2012 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,14 +19,14 @@
     <groupId>org.fishwife</groupId>
     <artifactId>jrugged</artifactId>
     <packaging>pom</packaging>
-    <version>3.0.2-SNAPSHOT</version>
+    <version>3.0.3</version>
     <name>jrugged</name>
     <url>http://code.google.com/p/jrugged/</url>
 
     <scm>
-        <connection>scm:svn:https://jrugged.googlecode.com/svn/</connection>
-        <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/</developerConnection>
-        <url>https://jrugged.googlecode.com/svn/tags/jrugged-2.4.0</url>
+        <connection>scm:svn:https://jrugged.googlecode.com/svn/tags/jrugged-3.0.3</connection>
+        <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/tags/jrugged-3.0.3</developerConnection>
+        <url>https://jrugged.googlecode.com/svn/tags/jrugged-3.0.3</url>
     </scm>
 
     <dependencies>

@@ -1,6 +1,6 @@
 /* TestPercentErrPerTimeFailureInterpreter.java
  * 
- * Copyright 2009-2011 Comcast Interactive Media, LLC.
+ * Copyright 2009-2012 Comcast Interactive Media, LLC.
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,6 +58,7 @@ public class TestPercentErrPerTimeFailureInterpreter {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void testDoesNotTripWhenExceptionIsIgnored() {
         PercentErrPerTimeFailureInterpreter pept = new PercentErrPerTimeFailureInterpreter();
         pept.setIgnore(new Class[] {MyRuntimeException.class});

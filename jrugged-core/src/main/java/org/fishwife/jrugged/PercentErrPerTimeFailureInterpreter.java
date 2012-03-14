@@ -1,4 +1,4 @@
-/* Copyright 2009-2011 Comcast Interactive Media, LLC.
+/* Copyright 2009-2012 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     /**
      * Default constructor. Any {@link Throwable} will cause the breaker to trip.
      */
+    @SuppressWarnings("unchecked")
     public PercentErrPerTimeFailureInterpreter() {
 		setIgnore(defaultIgnore);
         requestCounter = new RequestCounter();
@@ -69,6 +70,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      *   above that number during the window will cause the breaker to trip.
      * @param windowMillis length of the window in milliseconds
      */
+    @SuppressWarnings("unchecked")
 	public PercentErrPerTimeFailureInterpreter(RequestCounter rc,
                                                int percent, long windowMillis) {
 		setIgnore(defaultIgnore);
@@ -92,6 +94,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      *   above that number during the window will cause the breaker to trip.
      * @param windowMillis length of the window in milliseconds
      */
+    @SuppressWarnings("unchecked")
 	public PercentErrPerTimeFailureInterpreter(PerformanceMonitor p,
                                                int percent, long windowMillis) {
 		setIgnore(defaultIgnore);
