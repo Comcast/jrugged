@@ -200,19 +200,8 @@ public class PerformanceMonitor implements ServiceWrapper {
     }
 
     public <T> T invoke(final Runnable r, T result) throws Exception {
-        final LatencyTracker latencyTracker = new LatencyTracker();
-        try {
-            this.invoke(r);
-            recordSuccess(latencyTracker);
-            return result;
-        } catch (RuntimeException re) {
-            recordFailure(latencyTracker);
-            if (WRAP_MSG.equals(re.getMessage())) {
-                throw (Exception)re.getCause();
-            } else {
-                throw re;
-            }
-        }
+        this.invoke(r);
+        return result;
     }
 
     /**
