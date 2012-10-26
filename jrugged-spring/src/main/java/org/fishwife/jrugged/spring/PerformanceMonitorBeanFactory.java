@@ -127,7 +127,7 @@ public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory imp
                 try {
                     objectName = new ObjectName(
                             "org.fishwife.jrugged.spring:type=" +
-                                    "PerformanceMonitorBean,value=" + name);
+                                    "PerformanceMonitorBean,name=" + name);
                 }
                 catch (MalformedObjectNameException e) {
                     throw new IllegalArgumentException(
