@@ -14,25 +14,27 @@
  */
 package org.fishwife.jrugged.spring;
 
-import org.easymock.EasyMock;
-import org.fishwife.jrugged.PerformanceMonitor;
-import org.junit.Before;
-import org.junit.Test;
-import org.springframework.jmx.export.MBeanExporter;
-import org.springframework.test.util.ReflectionTestUtils;
-
-import javax.management.ObjectName;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertNull;
 import static junit.framework.Assert.assertSame;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.replay;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+
+import org.easymock.EasyMock;
+import org.fishwife.jrugged.PerformanceMonitor;
+import org.junit.Before;
+import org.junit.Test;
+import org.springframework.jmx.export.MBeanExporter;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class TestPerformanceMonitorBeanFactory {
 
@@ -43,10 +45,6 @@ public class TestPerformanceMonitorBeanFactory {
     @Before
     public void setUp() {
         factory = new PerformanceMonitorBeanFactory();
-        mockMBeanExporter = createMock(MBeanExporter.class);
-        mockMBeanExporter.registerManagedResource(
-          EasyMock.<Object>anyObject(), EasyMock.<ObjectName>anyObject());
-        replay(mockMBeanExporter);
     }
 
     @Test
@@ -72,6 +70,20 @@ public class TestPerformanceMonitorBeanFactory {
         PerformanceMonitor createdMonitor =
           factory.createPerformanceMonitor("testCreate");
         assertNotNull(createdMonitor);
+    }
+
+    @Test
+    public void testCreatePerformanceMonitorObjectName() throws MalformedObjectNameException, NullPointerException {
+        mockMBeanExporter = createMock(MBeanExporter.class);
+        ObjectName objectName = new ObjectName(
+                            "org.fishwife.jrugged.spring:type=" +
+                                    "PerformanceMonitorBean,name=testCreate");
+        mockMBeanExporter.registerManagedResource(EasyMock.<Object>anyObject(), EasyMock.eq(objectName));
+        replay(mockMBeanExporter);
+        
+        factory.setMBeanExporter(mockMBeanExporter);
+        factory.createPerformanceMonitor("testCreate");
+        EasyMock.verify(mockMBeanExporter);
     }
 
     @Test
@@ -123,6 +135,11 @@ public class TestPerformanceMonitorBeanFactory {
 
     @Test
     public void testMonitorWithMBeanExporter() {
+        mockMBeanExporter = createMock(MBeanExporter.class);
+        mockMBeanExporter.registerManagedResource(
+          EasyMock.<Object>anyObject(), EasyMock.<ObjectName>anyObject());
+        replay(mockMBeanExporter);
+        
         factory.setMBeanExporter(mockMBeanExporter);
         PerformanceMonitor createdMonitor =
                 factory.createPerformanceMonitor(
@@ -132,6 +149,11 @@ public class TestPerformanceMonitorBeanFactory {
 
     @Test(expected=IllegalArgumentException.class)
     public void testMonitorWithInvalidName() {
+        mockMBeanExporter = createMock(MBeanExporter.class);
+        mockMBeanExporter.registerManagedResource(
+          EasyMock.<Object>anyObject(), EasyMock.<ObjectName>anyObject());
+        replay(mockMBeanExporter);
+
         factory.setMBeanExporter(mockMBeanExporter);
         factory.createPerformanceMonitor("=\"");
     }
