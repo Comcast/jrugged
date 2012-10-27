@@ -79,10 +79,30 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
 
     /**
      * Returns the last exception that caused the breaker to trip, NULL if never tripped.
+     *
      * @return Throwable
      */
     public Throwable getTripException() {
         return tripException;
+    }
+
+    /**
+     * Returns the last exception that caused the breaker to trip, empty <code>String </code>
+     * if never tripped.
+     *
+     * @return Throwable
+     */
+    public String getTripExceptionAsString() {
+        if (tripException == null) {
+            return "";
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for (StackTraceElement element : tripException.getStackTrace()) {
+            sb.append(element.toString());
+            sb.append("\n");
+        }
+        return sb.toString();
     }
 
 	/** Current state of the breaker. */

@@ -253,6 +253,19 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     }
 
     /**
+     * returns a {@link String} representation of the breaker's
+     * last known exception that caused it to OPEN (i.e. when the breaker
+     * opens, it will record the specific exception that caused it to open)
+     *
+     * @return <code>String</code> which is the full stack trace.
+     */
+    @ManagedAttribute
+    @Override
+    public String getTripExceptionAsString() {
+        return super.getTripExceptionAsString();
+    }
+
+    /**
      * Specifies whether the associated CircuitBreaker should be tripped
      * at startup time.
      *
