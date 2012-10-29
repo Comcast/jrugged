@@ -25,17 +25,18 @@ import org.fishwife.jrugged.CircuitBreakerFactory;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jmx.export.MBeanExportOperations;
 import org.springframework.jmx.export.MBeanExporter;
 
 /**
  * Factory to create new {@link CircuitBreakerBean} instances and keep track of
- * them. If a {@link MBeanExporter} is set, then the CircuitBreakerBean will be
+ * them. If a {@link MBeanExportOperations} is set, then the CircuitBreakerBean will be
  * automatically exported as a JMX MBean.
  */
 public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements InitializingBean {
 
     @Autowired(required = false)
-    private MBeanExporter mBeanExporter;
+    private MBeanExportOperations mBeanExportOperations;
 
     private String packageScanBase;
 
@@ -51,8 +52,18 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements 
      * instances as JMX MBeans.
      * @param mBeanExporter the {@link MBeanExporter} to set.
      */
+    @Deprecated
     public void setMBeanExporter(MBeanExporter mBeanExporter) {
-        this.mBeanExporter = mBeanExporter;
+        setMBeanExportOperations(mBeanExporter);
+    }
+
+    /**
+     * Set the {@link MBeanExportOperations} to use to export {@link CircuitBreakerBean}
+     * instances as JMX MBeans.
+     * @param mBeanExportOperations the {@link MBeanExportOperations} to set.
+     */
+    public void setMBeanExportOperations(MBeanExportOperations mBeanExportOperations) {
+        this.mBeanExportOperations = mBeanExportOperations;
     }
 
     /**
@@ -86,7 +97,7 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements 
 
     /**
      * Create a new {@link CircuitBreakerBean} and map it to the provided value.
-     * If the {@link MBeanExporter} is set, then the CircuitBreakerBean will be
+     * If the {@link MBeanExportOperations} is set, then the CircuitBreakerBean will be
      * exported as a JMX MBean.
      * If the CircuitBreaker already exists, then the existing instance is
      * returned.
@@ -102,7 +113,7 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements 
 
             configureCircuitBreaker(name, circuitBreaker, config);
 
-            if (mBeanExporter != null) {
+            if (mBeanExportOperations != null) {
                 ObjectName objectName;
 
                 try {
@@ -112,7 +123,7 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements 
 
                 }
 
-                mBeanExporter.registerManagedResource(circuitBreaker, objectName);
+                mBeanExportOperations.registerManagedResource(circuitBreaker, objectName);
             }
 
             addCircuitBreakerToMap(name, circuitBreaker);
