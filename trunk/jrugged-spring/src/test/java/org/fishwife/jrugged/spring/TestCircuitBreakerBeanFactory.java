@@ -23,6 +23,7 @@ import org.junit.Test;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -85,6 +86,20 @@ public class TestCircuitBreakerBeanFactory {
         // Try to find it.
         CircuitBreakerBean foundBreaker = factory.findCircuitBreakerBean(breakerName);
         assertNull(foundBreaker);
+    }
+
+    @Test
+    public void testCreatePerformanceMonitorObjectName() throws MalformedObjectNameException, NullPointerException {
+        mockMBeanExporter = createMock(MBeanExporter.class);
+        ObjectName objectName = new ObjectName(
+                            "org.fishwife.jrugged.spring:type=" +
+                                    "CircuitBreakerBean,name=testCreate");
+        mockMBeanExporter.registerManagedResource(EasyMock.<Object>anyObject(), EasyMock.eq(objectName));
+        replay(mockMBeanExporter);
+
+        factory.setMBeanExporter(mockMBeanExporter);
+        factory.createCircuitBreaker("testCreate", config);
+        EasyMock.verify(mockMBeanExporter);
     }
 
     @Test
