@@ -117,7 +117,7 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements 
                 ObjectName objectName;
 
                 try {
-                    objectName = new ObjectName("org.fishwife.jrugged.spring:type=CircuitBreakerBean," + "value=" + name);
+                    objectName = new ObjectName("org.fishwife.jrugged.spring:type=CircuitBreakerBean," + "name=" + name);
                 } catch (MalformedObjectNameException e) {
                     throw new IllegalArgumentException("Invalid MBean Name " + name, e);
 
