@@ -223,6 +223,19 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
 	public String getHealthCheck() { return super.getHealthCheck(); }
 
     /**
+     * Gets the failure tolerance limit for the {@link DefaultFailureInterpreter} that
+     * comes with a {@link CircuitBreaker} by default.
+     *
+     * @see DefaultFailureInterpreter
+     *
+     * @return the number of tolerated failures in a window
+     */
+    @ManagedAttribute
+    public int getLimit() {
+        return ((DefaultFailureInterpreter) super.getFailureInterpreter()).getLimit();
+    }
+
+    /**
      * Specifies the failure tolerance limit for the {@link
      *  DefaultFailureInterpreter} that comes with a {@link
      *  CircuitBreaker} by default.
@@ -235,6 +248,19 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     @Override
     public void setLimit(int limit) {
         ((DefaultFailureInterpreter) super.getFailureInterpreter()).setLimit(limit);
+    }
+
+    /**
+     * Gets the tolerance window in milliseconds for the {@link DefaultFailureInterpreter}
+     * that comes with a {@link CircuitBreaker} by default.
+     *
+     * @see DefaultFailureInterpreter
+     *
+     * @return length of the window in milliseconds
+     */
+    @ManagedAttribute
+    public long getWindowMillis() {
+        return ((DefaultFailureInterpreter) super.getFailureInterpreter()).getWindowMillis();
     }
 
     /**
