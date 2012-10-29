@@ -1,0 +1,59 @@
+#summary Using Hyperic to Monitor JRugged Components
+
+= Hyperic Monitoring =
+
+JRugged's JMX MBeans for PerformanceMonitors and CircuitBreakers can be monitored using the plugins located at
+[http://code.google.com/p/jrugged/source/browse/trunk/contrib/hyperic/]
+
+
+= MBean Names =
+
+If you have changed the values of the JRugged MBeans, you'll need to change this line of the plugins (using the PerformanceMonitor plugin as an example):
+{{{
+<property name="OBJECT_NAME" value="org.fishwife.jrugged.spring:type=PerformanceMonitorBean,name=*"/>
+}}}
+
+You will need to change the portion of the value before the colon to match the new name.
+
+
+= JVM JMX Configuration =
+To enable remote JMX, set these system properties in your JVM:
+{{{
+com.sun.management.jmxremote
+com.sun.management.jmxremote.port={port}
+com.sun.management.jmxremote.ssl={true|false}
+com.sun.management.jmxremote.authenticate={true|false}
+}}}
+
+= Plugin Installation=
+To install the plugin, the file name must end with "-plugin.xml" and you need to place it in one of the directories in which Hyperic looks for plugins.  The server can hot-load plugins, while the agent must be restarted to pick up plugins.
+
+See this page for more information:
+[http://support.hyperic.com/display/hypcomm/Plugin+Install+Guide]
+
+= Plugin Configuration =
+From the Hyperic main page, go to _Resources->Browse_, and select the platform on which you installed the plugin.
+
+From the platform page, go to _Tools Menu->New Server_.  You should now be at the new server creation page.  Give your server a name and a an optional description, and select _Sun JVM 1.5_ as the server type.  Finally, for _Install Path_ give the full path to the java executable.  Click _Ok_ to proceed.
+ 
+You should now be at the main page for the server that you just created.  Go to _Tools Menu->Configure Server_.
+
+Change jmx.url to the following:
+{{{
+service:jmx:rmi:///jndi/rmi://localhost:port/jmxrmi
+}}}
+where _port_ is the port you specified using _com.sun.management.jmxremote.port_.  Ensure that username and password are correct (or empty if you are strictly following these instructions) and click _Ok_.
+
+Configuration should now be complete, click on the _Monitors_ tab and you should see the JRugged Circuits and Performance Monitors listed under services.
+
+= Troubleshooting =
+
+If things are not working right, check the agent logs.  When the plugin is loaded, you should see something similar to the following:
+{{{
+2010-12-01 11:37:02,939 INFO  [Thread-0] [ProductPluginManager] Loading plugin: jrugged-perf-monitor-plugin.xml
+2010-12-01 11:37:02,967 INFO  [Thread-0] [ProductPluginManager] Loading plugin: jrugged-circuits-monitor-plugin.xml
+}}}
+
+Stack traces indicate an error, and an absense of any activity implies your plugin was misplaced and not loaded.
+
+If the JRugged services are not automatically picked up, it is likely due to misnaming.  Check that OBJECT_NAME is properly set.

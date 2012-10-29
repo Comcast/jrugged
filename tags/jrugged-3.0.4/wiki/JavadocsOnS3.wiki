@@ -1,0 +1,36 @@
+#summary How to get updated Javadocs hosted on S3.
+
+= Uploading Release Javadocs to S3 =
+
+1. Check out a tagged release.
+
+{{{
+$ svn checkout https://jrugged.googlecode.com/svn/tags/jrugged-2.3.0 jrugged-2.3.0 --username jonathan_moore@comcast.com
+$ cd jrugged-2.3.0
+}}}
+
+2. Build and install software artifacts locally.
+
+{{{
+$ mvn install
+}}}
+
+3. Generate Javadocs.
+
+{{{
+$ mvn javadoc:javadoc
+}}}
+
+4. For each module in jrugged-core, jrugged-aspects, jrugged-spring:
+{{{
+$ cd jrugged-core/target
+$ mkdir jrugged-core-2.3.0
+$ mv apidocs jrugged-core-2.3.0
+$ <upload jrugged-core-2.3.0 to the jrugged S3 bucket>
+}}}
+
+5. For the uploading step, I use the 's3put' command that comes with [http://code.google.com/p/boto/ boto], as in:
+
+{{{
+$ s3put -b jrugged -p `pwd` -g public-read jrugged-core-2.3.0
+}}}

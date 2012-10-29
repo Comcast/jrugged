@@ -1,0 +1,19 @@
+#summary How we number the releases for jrugged
+
+= Release Numbering Scheme =
+
+Releases consist of three parts: major.minor.patch.
+
+  * Major number gets incremented only if a large rewrite has occurred or if backwards-compatibility has been broken. Hopefully we don't have to do this very much!
+
+  * Minor number gets incremented when there is new functionality available, but backwards-compatibility is retained.
+
+  * Patch number only gets incremented for bugfixes against a previous release.
+
+Most of this can be understood from the point of view of a potential client/user. Let's say I'm already happily integrated with 1.2.3.
+
+I should expect to be able to fearlessly deploy any release numbered 1.2.Z if Z >= 3, and this should mainly just fix bugs or close security holes, with no other semantic differences.
+
+I ought to be able to deploy 1.Y.Z if Y > 2 as well with no code changes; interface compatibility should be retained, although there may be minor behavioral improvements and there may now be additional capabilities present.
+
+I likely won't be able to deploy X.Y.Z if X > 1 without essentially re-integrating.

@@ -1,0 +1,112 @@
+#summary An example of a potential gotcha when using the Initializer in jrugged.
+{{{
+package org.fishwife.jrugged;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
+import org.junit.Test;
+
+/**
+ * Starting a thread within an object constructor is an anti-pattern. See Java Concurrency In Practice. The Java memory
+ * model does not guarantee that the fields of an object will contain correct references until the constructor
+ * returns. But the Initializer _requires_ you to publish a reference to the Initializable _during_ object construction
+ * (before the constructor returns). This means Initializer's background thread can see the wrong references. Calling
+ * the initializer as the last method in the constructor will not help because:
+ *
+ * 1. The java memory model does not guarantee that an object's final fields are initialized until after the constructor
+ * completes.
+ *
+ * 2. A sub-class can perform may have more constructor logic after the initializer is invoked.
+ *
+ * Rather than starting threads in the constructor, the recommended practice is to create
+ * a separate initialize() method that is invoked on an object _after_ it is fully constructed, meaning all the java
+ * memory model guarantees are in place. The initialize() method can then delegate to Initializer . . . within certain
+ * constraints as shown by InitializerThreadSafetyExample2.
+ *
+ * If you are willing to deal with the potential exceptions/nulls, it is possible to wait (as this example shows) 
+ * for the object construction to be complete.
+ *
+ * This test should print the following (or something similar):
+ *
+ * Found null value for final field!
+ * Found null value for final field!
+ * Found null value for final field!
+ * Found null value for final field!
+ * Found null value for final field!
+ * Found null value for final field!
+ * Found null value for final field!
+ * Found null value for final field!
+ * Found null value for final field!
+ * Found null value for final field!
+ * Constructor finished so populating values
+ * Set status to Status.UP
+ */
+public class TestInitializerThreadSafety1 {
+        @Test(timeout = 1000)
+        public void threadSafety() throws Exception {
+                Service testable = new Service();
+
+                while (Status.INIT == testable.status) { }
+
+                for (int valIdx = 0; valIdx < testable.values.length; valIdx++ ) {
+                        assertEquals(Integer.toString(valIdx), valIdx, testable.values[valIdx]);
+                }
+        }
+
+        private static class Service implements Initializable {
+
+                private volatile Status status = Status.INIT;
+
+                /**
+                 * The java memory model guarantees final references are set only after the constructor completes. But Initializer
+                 * requires the "this" reference to escape _during_ object construction. This means the background thread is given a
+                 * reference to a partially constructed object.
+                 */
+                private final long[] values;
+
+                private Initializer initializer;
+
+                public Service() {
+
+                        initializer = new Initializer(this);
+
+                        initializer.setRetryMillis(10);
+                        initializer.initialize();
+
+                        try {
+                                Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                                fail("Should not happen");
+                        }
+
+                        values = new long[16834];
+                }
+
+                @Override
+                public void tryInit() throws Exception {
+                        if (null == values) {
+
+                                System.out.println("Found null value for final field!");
+
+                                throw new NullPointerException();
+
+                        } else {
+
+                                System.out.println("Constructor finished so populating values");
+
+                                for (int i = 0; i < values.length; i++) {
+                                        values[i] = i;
+                                }
+                        }
+                }
+
+                @Override
+                public void afterInit() {
+                        status = Status.UP;
+
+                        System.out.println("Set status to Status.UP");
+                }
+        }
+}
+}}}

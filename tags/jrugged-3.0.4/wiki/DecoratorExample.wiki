@@ -1,0 +1,57 @@
+#summary An example of circuit breakers and performance monitors using the decorator pattern.
+
+= Introduction =
+
+The tools that are included in the jrugged core library allow anyone to wrap a method call that they are making with a some interesting additional functionality.  The two pieces of additional functionality, circuit breakers and performance monitors, are shown in a code snippet below.  
+
+It should also be noted that it is possible to wrap a method call in more than one piece of additional functionality. This allows programmers to choose to use both a [http://jrugged.s3.amazonaws.com/jrugged-core-2.2.0/apidocs/org/fishwife/jrugged/CircuitBreaker.html CircuitBreaker] and a [http://jrugged.s3.amazonaws.com/jrugged-core-2.2.0/apidocs/org/fishwife/jrugged/PerformanceMonitor.html PerformanceMonitor] on the same method call.
+
+= Details =
+
+This is an example of wrapping a backend call in a circuit breaker.
+
+{{{
+public class MySystem {
+.........
+       //This is the method I want to decorate
+     public BackEndData processArgument(final String myArg) {
+          final BackEndService theBackend = backend;
+
+          try {
+               return cBreaker.invoke(new Callable< BackEndData >() {
+                    public BackEndData call() throws Exception {
+                         return theBackend.processArgument(myArg);
+                    }
+               });
+          } catch (RuntimeException re) {
+               throw re;
+          } catch (Exception e) {
+               throw new RuntimeException("wrapped", e);
+          }
+     }
+}
+}}}
+
+This is an example of wrapping a backend call in a performance monitor.  You should note that the performance monitor decoration looks nearly identical to the circuit breaker decoration.  
+
+{{{
+public class MySystem {
+.........
+     //This is the method I want to decorate
+     public BackEndData processArgument(final String myArg) {
+          final BackEndService theBackend = backend;
+
+          try {
+               return perfMonitor.invoke(new Callable< BackEndData >() {
+                    public BackEndData call() throws Exception {
+                          return theBackend.processArgument(myArg);
+                    }
+               });
+          } catch (RuntimeException re) {
+               throw re;
+          } catch (Exception e) {
+               throw new RuntimeException("wrapped", e);
+          }
+     }
+}
+}}}

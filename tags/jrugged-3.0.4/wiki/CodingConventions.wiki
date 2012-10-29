@@ -1,0 +1,18 @@
+#summary Coding conventions for the JRugged project
+
+= Basic Coding Conventions =
+
+  * Unix-style (\n) line endings
+  * Use tabs, not spaces for indentation
+  * Format for an 80-character-wide display
+  * Use curly braces for all if-then-else statements, except for a one-liner with no "else" clause. Both of these are ok:
+
+{{{
+  if (test) {
+    doThingOne();
+  } else {
+    doThingTwo();
+  }
+
+  if (test) return item;
+}}}

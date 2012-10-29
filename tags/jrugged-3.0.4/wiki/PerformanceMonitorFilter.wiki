@@ -1,0 +1,37 @@
+#summary This class is a standard Servlet filter that can be configured in web.xml to wrap all request handling in a org.fishwife.jrugged.PerformanceMonitor class.
+
+= Introduction =
+
+This class is a standard Servlet filter that can be configured in web.xml to wrap all request handling in a [http://jrugged.s3.amazonaws.com/jrugged-core-2.2.0/apidocs/org/fishwife/jrugged/PerformanceMonitor.html org.fishwife.jrugged.PerformanceMonitor] class.  In order to get useful access to the statistics, however, it is most convenient to make use of Spring's (`org.springframework.web.filter.DelegatingFilterProxy`) in web.xml and instantiate this filter within a Spring application context. This will allow the JMX annotations inherited from [http://jrugged.s3.amazonaws.com/jrugged-spring-2.2.0/apidocs/org/fishwife/jrugged/spring/PerformanceMonitorBean.html PerformanceMonitorBean] to take effect, with the result that you can get a high-level performance monitor wrapped around all of your application's request handling.
+
+= Details =
+
+Here is a sample configuration if you are using spring and are intersted to get JMX statistics :
+ 
+ Web.xml :-
+ {{{
+    <filter>
+        <filter-name>SystemMonitorFilterForVideo</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SystemMonitorFilterForVideo</filter-name>
+        <url-pattern>/video/*</url-pattern>
+    </filter-mapping>
+    
+    <filter>
+        <filter-name>SystemMonitorFilterForSports</filter-name>
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>SystemMonitorFilterForSports</filter-name>
+        <url-pattern>/sports/*</url-pattern>
+    </filter-mapping>
+}}}
+ Application-Context.xml :-
+{{{
+ <bean id="SystemMonitorFilterForVideo" class="org.fishwife.jrugged.spring.PerformanceMonitorFilter"/> 
+ <bean id="SystemMonitorFilterForSports" class="org.fishwife.jrugged.spring.PerformanceMonitorFilter"/> 
+}}}
+
+That's all. Fire up you application, make a few calls to the path being intercepted by the filters configured and use JConsole (or your favorite JMX tool) to get the statistics.

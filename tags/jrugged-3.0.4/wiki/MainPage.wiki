@@ -1,0 +1,18 @@
+#summary High-level overview of the project.
+
+= Overview =
+The `jrugged` library provides straightforward add-ons to existing code to make it more robust and easier to manage.
+
+Although there are several lower-level building block classes here available for custom solutions, most clients will find they can use just the following classes:
+  * !CircuitBreaker provides a way to wrap a service in a way that provides a bulkhead against system failure; when a remote service fails, further calls to the service are prevented for a period of time to allow the remote service to recover.
+  * Initializer provides a way to decouple service construction from initialization/startup and allows the latter to occur in the background, even retrying if initial attempts to initialize fail.
+  * !PerformanceMonitor provides a way to wrap a service and collect a series of useful statistics about its latency and throughput, even calculating moving averages across different time windows.
+  * Monitorable, Status, and !RolledUpStatus are related classes that provide a simple RED/YELLOW/GREEN encoding for service health, possibly useful for constructing operational dashboards.
+
+Generally speaking, most of these classes implement a !ServiceWrapper interface to allow them to be applied around existing services using the [http://en.wikipedia.org/wiki/Decorator_pattern Decorator] design pattern. Those classes providing operational information, such as !PerformanceMonitor and Monitorable can be wrapped in classes that expose their data to JMX controls or on web-accessible health status pages as desired. 
+
+Check out our [Examples] page to get information on the library and how it works.
+
+= Hyperic Wiring =
+
+Check out our new contribution to the project, documentation and configuration files for Hyperic integration with JRugged JMX information located at our [HypericMonitoring] page.

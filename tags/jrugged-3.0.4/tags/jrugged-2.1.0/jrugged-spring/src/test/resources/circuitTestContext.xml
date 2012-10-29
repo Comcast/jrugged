@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+   Copyright 2009-2010 Comcast Interactive Media, LLC.
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:util="http://www.springframework.org/schema/util"
+           xsi:schemaLocation="
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+    http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+    http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+
+    <util:properties id="testCircuitProperties">
+        <prop key="circuit.testCircuitBreaker.frequency">4</prop>
+        <prop key="circuit.testCircuitBreaker.period">5000</prop>
+        <prop key="circuit.testCircuitBreaker.reset">5000</prop>
+    </util:properties>
+
+    <bean id="testCircuitService" class="org.fishwife.jrugged.spring.CircuitService"/>
+
+    <!--==============================
+        CIRCUIT
+    ================================-->
+
+    <bean id="testCircuitBreakerInterceptor" class="org.fishwife.jrugged.spring.circuit.ExceptionCircuitInterceptor"
+          init-method="afterPropertiesSet"
+          p:properties-ref="testCircuitProperties">
+
+        <property name="ignore">
+            <list>
+                <value>org.fishwife.jrugged.spring.TestCircuitBreakerException</value>
+            </list>
+        </property>
+        <property name="methods">
+            <map>
+              <entry key="testCircuitOne" value="testCircuitBreaker"/>
+              <entry key="testCircuitTwo" value="testCircuitBreaker"/>
+            </map>
+        </property>
+    </bean>
+
+    <!--==============================
+        MONITOR
+    ================================-->
+
+    <bean id="testMonitorInterceptor" class="org.fishwife.jrugged.spring.monitor.PerformanceMonitorInterceptor"/>
+
+    <bean id="testMonitor" class="org.fishwife.jrugged.spring.TestMonitor" lazy-init="false"
+        p:monitorInterceptor-ref="testMonitorInterceptor"
+        p:delegatingMonitor-ref="delegatingPerformanceMonitor"/>
+
+    <bean id="delegatingPerformanceMonitor"
+        class="org.fishwife.jrugged.spring.monitor.DelegatingPerformanceMonitor" lazy-init="false"/>
+
+
+    <bean id="testCircuitMonitor" class="org.fishwife.jrugged.spring.TestCircuitMonitor"
+        p:monitorAspect-ref="testCircuitBreakerInterceptor"/>
+
+    <bean id="testCircuitServiceProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="testCircuitService"/>
+        <property name="interceptorNames">
+            <list>
+                <value>testCircuitBreakerInterceptor</value>
+                <value>testMonitorInterceptor</value>
+            </list>
+        </property>
+    </bean>
+
+
+    <!--==============================
+        JMX
+    ================================-->
+
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter" lazy-init="false"
+        p:assembler-ref="assembler"
+        p:namingStrategy-ref="namingStrategy"
+        p:autodetect="true"/>
+
+    <bean id="jmxAttributeSource"
+          class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+
+    <!-- will create management interface using annotation metadata -->
+    <bean id="assembler"
+          class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler"
+        p:attributeSource-ref="jmxAttributeSource"/>
+
+    <!-- will pick up the ObjectName from the annotation -->
+    <bean id="namingStrategy"
+          class="org.springframework.jmx.export.naming.MetadataNamingStrategy"
+        p:attributeSource-ref="jmxAttributeSource"/>
+
+</beans>
