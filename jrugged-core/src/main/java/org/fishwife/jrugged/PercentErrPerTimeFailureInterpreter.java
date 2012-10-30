@@ -14,9 +14,6 @@
  */
 package org.fishwife.jrugged;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -44,8 +41,6 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     private RequestCounter requestCounter;
 
 	private static Class[] defaultIgnore = { };
-
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     /**
      * Default constructor. Any {@link Throwable} will cause the breaker to trip.
@@ -167,15 +162,12 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
                 previousRequestHighWaterMark = removeErrorsPriorToCutoffTime(numberOfErrorsBefore, removeTimeBeforeMillis);
 
                 numberOfErrorsAfter = this.errorTimes.size();
-                logger.debug("#Errors Before: " + numberOfErrorsBefore + " #Errors After: " + numberOfErrorsAfter);
 
                 if (previousRequestHighWaterMark == -1) {
                     previousRequestHighWaterMark = this.requestCounts.get(this.requestCounts.size() - 1);
                 }
 
                 currentRequestCount = this.requestCounts.get(requestCounts.size() - 1);
-
-                logger.debug("previousRequestHighWaterMark: " + previousRequestHighWaterMark + " Current REQUEST Count: " + currentRequestCount);
             }
 
             long windowRequests = (currentRequestCount - previousRequestHighWaterMark);
@@ -183,11 +175,8 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
                 windowRequests = currentRequestCount;
             }
 
-            logger.debug("windowRequests: " + windowRequests);
-
             // Trip if the number of errors over the total of requests over the same period
             // is over the percentage limit.
-            logger.debug("Percent: " + ((double)numberOfErrorsAfter / (double)windowRequests) * 100d);
             return (((double)numberOfErrorsAfter / (double)windowRequests) * 100d >= percent);
         }
         return true;
@@ -211,8 +200,6 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
         for (int j = numberOfErrorsBefore - 1; j >= 0; j--) {
 
             final Long time = this.errorTimes.get(j);
-
-            logger.debug("J: " + j + " RemoveTimeBefore: " + removeTimeBeforeMillis + " EntryTime: " + time);
 
             if (time < removeTimeBeforeMillis) {
                 if (!windowRemoval) {
