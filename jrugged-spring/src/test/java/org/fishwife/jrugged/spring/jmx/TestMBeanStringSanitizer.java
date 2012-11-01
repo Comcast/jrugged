@@ -30,17 +30,10 @@ public class TestMBeanStringSanitizer {
     }
 
     @Test
-    public void testSanitizeObjectNameEncodesSlashes() {
-        String testString = "this/has/slashes";
-        String sanitizedString = sanitizer.sanitizeObjectName(testString);
-        assertEquals("this[slash]has[slash]slashes", sanitizedString);
-    }
-
-    @Test
-    public void testDesanitizeObjectNameRestoresSlashes() {
-        String testString = "this[slash]has[slash]slashes";
-        String desanitizedString = sanitizer.desanitizeObjectName(testString);
-        assertEquals("this/has/slashes", desanitizedString);
+    public void testUrlDecodeDecodesSlashes() {
+        String testString = "this%2Fhas%2Fslashes";
+        String sanitizedString = sanitizer.urlDecode(testString);
+        assertEquals("this/has/slashes", sanitizedString);
     }
 
     @Test

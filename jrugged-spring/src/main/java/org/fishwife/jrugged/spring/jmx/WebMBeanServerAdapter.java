@@ -36,7 +36,7 @@ public class WebMBeanServerAdapter {
 
     private MBeanServer mBeanServer;
 
-    private MBeanStringSanitizer sanitizer = new MBeanStringSanitizer();
+    private MBeanStringSanitizer sanitizer;
 
     /**
      * Constructor.
@@ -44,6 +44,7 @@ public class WebMBeanServerAdapter {
      */
     public WebMBeanServerAdapter(MBeanServer mBeanServer) {
         this.mBeanServer = mBeanServer;
+        sanitizer = createMBeanStringSanitizer();
     }
 
     /**
@@ -53,18 +54,22 @@ public class WebMBeanServerAdapter {
     public Set<String> getMBeanNames() {
         Set<String> nameSet = new TreeSet<String>();
         for (ObjectInstance instance : mBeanServer.queryMBeans(null, null)) {
-            nameSet.add(sanitizer.sanitizeObjectName(instance.getObjectName().getCanonicalName()));
+            nameSet.add(sanitizer.escapeValue(instance.getObjectName().getCanonicalName()));
         }
         return nameSet;
     }
 
     /**
      * Create a WebMBeanAdaptor for a specified MBean name.
-     * @param mBeanName the MBean name.
+     * @param mBeanName the MBean name (can be URL-encoded).
      * @return the created WebMBeanAdaptor.
      * @throws JMException Java Management Exception
      */
     public WebMBeanAdapter createWebMBeanAdapter(String mBeanName) throws JMException {
         return new WebMBeanAdapter(mBeanServer, mBeanName);
+    }
+
+    MBeanStringSanitizer createMBeanStringSanitizer() {
+        return new MBeanStringSanitizer();
     }
 }

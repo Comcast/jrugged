@@ -18,7 +18,6 @@ package org.fishwife.jrugged.spring.jmx;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
@@ -38,16 +37,24 @@ import static org.easymock.EasyMock.verify;
 public class TestWebMBeanServerAdapter {
 
     private MBeanServer mockMbeanServer;
-    private MBeanStringSanitizer mockSanitizer;
     private WebMBeanServerAdapter webMBeanServerAdapter;
+    private MBeanStringSanitizer mockSanitizer;
+
+    class MockWebMBeanServerAdapter extends WebMBeanServerAdapter {
+        public MockWebMBeanServerAdapter(MBeanServer mBeanServer) {
+            super(mBeanServer);
+        }
+        @Override
+        MBeanStringSanitizer createMBeanStringSanitizer() {
+            return mockSanitizer;
+        }
+    }
 
     @Before
     public void setUp() {
         mockMbeanServer = createMock(MBeanServer.class);
         mockSanitizer = createMock(MBeanStringSanitizer.class);
-        webMBeanServerAdapter = new WebMBeanServerAdapter(mockMbeanServer);
-        ReflectionTestUtils.setField(webMBeanServerAdapter, "mBeanServer", mockMbeanServer);
-        ReflectionTestUtils.setField(webMBeanServerAdapter, "sanitizer", mockSanitizer);
+        webMBeanServerAdapter = new MockWebMBeanServerAdapter(mockMbeanServer);
     }
 
     @Test
@@ -66,9 +73,8 @@ public class TestWebMBeanServerAdapter {
         objectInstanceList.add(object1);
         objectInstanceList.add(object2);
         expect(mockMbeanServer.queryMBeans(null, null)).andReturn(objectInstanceList);
-
-        expect(mockSanitizer.sanitizeObjectName(name1)).andReturn(name1);
-        expect(mockSanitizer.sanitizeObjectName(name2)).andReturn(name2);
+        expect(mockSanitizer.escapeValue(name1)).andReturn(name1);
+        expect(mockSanitizer.escapeValue(name2)).andReturn(name2);
 
         replay(mockMbeanServer, mockSanitizer, object1, object2);
 
@@ -77,9 +83,6 @@ public class TestWebMBeanServerAdapter {
         assertEquals(2, resultSet.size());
         assertTrue(resultSet.contains(name1));
         assertTrue(resultSet.contains(name2));
-        verify(mockMbeanServer);
-        verify(mockSanitizer);
-        verify(object1);
-        verify(object2);
+        verify(mockMbeanServer, mockSanitizer, object1, object2);
     }
 }

@@ -35,8 +35,8 @@ public class MBeanValueConverter {
     }
 
     /**
-     * Convert the {@link String} parameter value into it's native type.
-     *   The {@link String} 'null' is converted into a null value.
+     * Convert the {@link String} parameter value into its native type.
+     *   The {@link String} '<null>' is converted into a null value.
      *   Only types String, Boolean, Int, Long, Float, and Double are supported.
      * @param parameterName the parameter name to convert.
      * @param type the native type for the parameter.
@@ -49,8 +49,8 @@ public class MBeanValueConverter {
         String[] valueList = parameterMap.get(parameterName);
         if (valueList == null || valueList.length == 0) return null;
         String value = valueList[0];
-        if (value.equals("null")) return null;
-        if (type.equals("java.util.String")) return value;
+        if (value.equals("<null>")) return null;
+        if (type.equals("java.lang.String")) return value;
         if (type.equals("boolean")) return Boolean.parseBoolean(value);
         if (type.equals("int")) return Integer.parseInt(value);
         if (type.equals("long")) return Long.parseLong(value);

@@ -44,18 +44,19 @@ public class WebMBeanAdapter {
 
     private MBeanServer mBeanServer;
     private ObjectName objectName;
-    private MBeanStringSanitizer sanitizer = new MBeanStringSanitizer();
+    private MBeanStringSanitizer sanitizer;
     private MBeanInfo mBeanInfo;
 
     /**
      * Constructor.
      * @param mBeanServer the {@link MBeanServer}.
-     * @param mBeanName the Sanitized MBean name.
+     * @param mBeanName the MBean name (can be URL-encoded).
      * @throws JMException Java Management Exception
      */
     public WebMBeanAdapter(MBeanServer mBeanServer, String mBeanName)throws JMException {
         this.mBeanServer = mBeanServer;
-        objectName = createObjectName(mBeanName);
+        sanitizer = createMBeanStringSanitizer();
+        objectName = createObjectName(sanitizer.urlDecode(mBeanName));
         mBeanInfo = mBeanServer.getMBeanInfo(objectName);
     }
 
@@ -91,16 +92,17 @@ public class WebMBeanAdapter {
 
     /**
      * Get the Operation metadata for a single operation on an MBean by name.
-     * @param operationName the Operation name.
+     * @param operationName the Operation name (can be URL-encoded).
      * @return the {@link MBeanOperationInfo} for the operation.
      * @throws OperationNotFoundException Method was not found
      */
     public MBeanOperationInfo getOperationInfo(String operationName)
         throws OperationNotFoundException {
 
+        String decodedOperationName = sanitizer.urlDecode(operationName);
         Map<String, MBeanOperationInfo> operationMap = getOperationMetadata();
-        if (operationMap.containsKey(operationName)) {
-            return operationMap.get(operationName);
+        if (operationMap.containsKey(decodedOperationName)) {
+            return operationMap.get(decodedOperationName);
         }
         throw new OperationNotFoundException("Could not find operation " + operationName + " on MBean " +
                 objectName.getCanonicalName());
@@ -135,18 +137,19 @@ public class WebMBeanAdapter {
 
     /**
      * Get the value for a single attribute on an MBean by name.
-     * @param attributeName the attribute name.
+     * @param attributeName the attribute name (can be URL-encoded).
      * @return the value as a String.
      * @throws JMException Java Management Exception
      */
     public String getAttributeValue(String attributeName) throws JMException {
-        return sanitizer.escapeValue(mBeanServer.getAttribute(objectName, attributeName));
+        String decodedAttributeName = sanitizer.urlDecode(attributeName);
+        return sanitizer.escapeValue(mBeanServer.getAttribute(objectName, decodedAttributeName));
     }
 
     /**
      * Invoke an operation on an MBean by name.
      *   Note that only basic data types are supported for parameter values.
-     * @param operationName the operation name.
+     * @param operationName the operation name (can be URL-encoded).
      * @param parameterMap the {@link Map} of parameter names and value arrays.
      * @return the returned value from the operation.
      * @throws JMException Java Management Exception
@@ -156,6 +159,10 @@ public class WebMBeanAdapter {
         MBeanOperationInfo operationInfo = getOperationInfo(operationName);
         MBeanOperationInvoker invoker = createMBeanOperationInvoker(mBeanServer, objectName, operationInfo);
         return sanitizer.escapeValue(invoker.invokeOperation(parameterMap));
+    }
+
+    MBeanStringSanitizer createMBeanStringSanitizer() {
+        return new MBeanStringSanitizer();
     }
 
     ObjectName createObjectName(String name) throws MalformedObjectNameException {

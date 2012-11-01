@@ -18,28 +18,44 @@ package org.fishwife.jrugged.spring.jmx;
 
 import org.springframework.web.util.HtmlUtils;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+
 /**
- * The MBeanStringSanitizer is used to turn MBean object names and values into
- * web-friendly Strings.
+ * The MBeanStringSanitizer is used to turn MBean object, attribute, and operation names and values
+ * into web-friendly Strings.
  */
 public class MBeanStringSanitizer {
 
     /**
-     * Make an object name web-friendly.
-     * @param objectName the object name to sanitize.
-     * @return the sanitized name.
+     * Convert a URL Encoded name back to the original form.
+     * @param name the name to URL urlDecode.
+     * @return the name in original form.
      */
-    String sanitizeObjectName(String objectName) {
-        return objectName.replace("/", "[slash]");
+    String urlDecode(String name) {
+
+        try {
+            return URLDecoder.decode(name, "utf-8");
+        }
+        catch (UnsupportedEncodingException e) {
+            return name;
+        }
     }
 
     /**
-     * Convert a web-friendly object name back to the original form.
-     * @param objectName the object name to desanitize.
+     * Convert a URL Encoded name back to the original form.
+     * @param name the name to URL urlDecode.
+     * @param encoding the string encoding to be used (i.e. utf-8)
      * @return the name in original form.
      */
-    String desanitizeObjectName(String objectName) {
-        return objectName.replace("[slash]", "/");
+    String urlDecode(String name, String encoding) {
+
+        try {
+            return URLDecoder.decode(name, encoding);
+        }
+        catch (UnsupportedEncodingException e) {
+            return name;
+        }
     }
 
     /**
