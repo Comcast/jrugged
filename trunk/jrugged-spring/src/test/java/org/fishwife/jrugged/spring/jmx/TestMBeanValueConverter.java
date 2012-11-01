@@ -31,7 +31,7 @@ public class TestMBeanValueConverter {
     public void setUp() {
 
         Map<String, String[]> parameterMap = new HashMap<String, String[]>();
-        parameterMap.put("nullValue", new String[] { "null" });
+        parameterMap.put("nullString", new String[] { "<null>" });
         parameterMap.put("stringValue", new String[] { "some_string" });
         parameterMap.put("booleanValue", new String[] { "true" });
         parameterMap.put("intValue", new String[] { "123" });
@@ -42,13 +42,18 @@ public class TestMBeanValueConverter {
     }
 
     @Test
-    public void testNullValue() throws Exception {
-       assertEquals(null, converter.convertParameterValue("nullValue", ""));
+    public void testNonProvidedValue() throws Exception {
+       assertEquals(null, converter.convertParameterValue("not_in_the_map", ""));
+    }
+
+    @Test
+    public void testNullString() throws Exception {
+       assertEquals(null, converter.convertParameterValue("nullString", "any_type_will_do"));
     }
 
     @Test
     public void testStringValue() throws Exception {
-        assertEquals("some_string", converter.convertParameterValue("stringValue", "java.util.String"));
+        assertEquals("some_string", converter.convertParameterValue("stringValue", "java.lang.String"));
     }
 
     @Test

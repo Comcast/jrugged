@@ -55,9 +55,15 @@ public class TestWebMBeanAdapter {
         public MockWebMBeanAdapter(MBeanServer mBeanServer, String mBeanName) throws JMException {
             super(mBeanServer, mBeanName);
         }
+        @Override
+        MBeanStringSanitizer createMBeanStringSanitizer() {
+            return mockSanitizer;
+        }
+        @Override
         ObjectName createObjectName(String name) {
             return mockObjectName;
         }
+        @Override
         MBeanOperationInvoker createMBeanOperationInvoker(
                 MBeanServer mBeanServer, ObjectName objectName, MBeanOperationInfo operationInfo) {
             return mockMBeanOperationInvoker;
@@ -72,16 +78,16 @@ public class TestWebMBeanAdapter {
         mockObjectName = createMock(ObjectName.class);
         mockMBeanOperationInvoker = createMock(MBeanOperationInvoker.class);
 
-        expect(mockMBeanServer.getMBeanInfo(mockObjectName)).andReturn(mockMBeanInfo);
-        replay(mockMBeanServer);
         String beanName = "some_bean_name";
+
+        expect(mockSanitizer.urlDecode(beanName)).andReturn(beanName);
+        expect(mockMBeanServer.getMBeanInfo(mockObjectName)).andReturn(mockMBeanInfo);
+        replay(mockSanitizer, mockMBeanServer);
 
         webMBeanAdapter = new MockWebMBeanAdapter(mockMBeanServer, beanName);
 
-        verify(mockMBeanServer);
-        reset(mockMBeanServer);
-
-        ReflectionTestUtils.setField(webMBeanAdapter, "sanitizer", mockSanitizer);
+        verify(mockMBeanServer, mockSanitizer);
+        reset(mockMBeanServer, mockSanitizer);
     }
 
     @Test
@@ -156,6 +162,7 @@ public class TestWebMBeanAdapter {
         String operationName2 = "operation_name_2";
         MBeanOperationInfo mockOperation2 = createMock(MBeanOperationInfo.class);
 
+        expect(mockSanitizer.urlDecode(operationName2)).andReturn(operationName2);
         MBeanOperationInfo[] operationList = new MBeanOperationInfo[2];
         operationList[0] = mockOperation1;
         operationList[1] = mockOperation2;
@@ -176,13 +183,16 @@ public class TestWebMBeanAdapter {
 
     @Test(expected=OperationNotFoundException.class)
     public void testGetOperationInfoThrowsOperationNotFoundException() throws Exception {
-        MBeanOperationInfo[] operationList = new MBeanOperationInfo[0];
-        expect(mockMBeanInfo.getOperations()).andReturn(operationList);
+        String operationName = "nonexistent";
         expect(mockObjectName.getCanonicalName()).andReturn("some_name");
+
+        MBeanOperationInfo[] operationList = new MBeanOperationInfo[0];
+        expect(mockSanitizer.urlDecode(operationName)).andReturn(operationName);
+        expect(mockMBeanInfo.getOperations()).andReturn(operationList);
 
         replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo);
 
-        webMBeanAdapter.getOperationInfo("nonexistent");
+        webMBeanAdapter.getOperationInfo(operationName);
     }
 
     @Test
@@ -241,6 +251,7 @@ public class TestWebMBeanAdapter {
     @Test
     public void testGetAttributeValue() throws Exception {
         String attributeName = "attribute_name";
+        expect(mockSanitizer.urlDecode(attributeName)).andReturn(attributeName);
 
         Object value = new Object();
         String valueString = "some_string";
@@ -258,8 +269,9 @@ public class TestWebMBeanAdapter {
     @Test
     public void testInvokeOperation() throws Exception {
         String operationName = "operation_name";
-        MBeanOperationInfo mockOperation = createMock(MBeanOperationInfo.class);
+        expect(mockSanitizer.urlDecode(operationName)).andReturn(operationName);
 
+        MBeanOperationInfo mockOperation = createMock(MBeanOperationInfo.class);
         MBeanOperationInfo[] operationList = new MBeanOperationInfo[1];
         operationList[0] = mockOperation;
         expect(mockMBeanInfo.getOperations()).andReturn(operationList);
