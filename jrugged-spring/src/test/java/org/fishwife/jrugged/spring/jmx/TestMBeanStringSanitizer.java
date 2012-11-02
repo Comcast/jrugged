@@ -18,6 +18,9 @@ package org.fishwife.jrugged.spring.jmx;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import java.io.UnsupportedEncodingException;
+
 import static junit.framework.Assert.assertEquals;
 
 public class TestMBeanStringSanitizer {
@@ -30,10 +33,15 @@ public class TestMBeanStringSanitizer {
     }
 
     @Test
-    public void testUrlDecodeDecodesSlashes() {
+    public void testUrlDecodeDecodesSlashes() throws Exception {
         String testString = "this%2Fhas%2Fslashes";
-        String sanitizedString = sanitizer.urlDecode(testString);
+        String sanitizedString = sanitizer.urlDecode(testString, "UTF-8");
         assertEquals("this/has/slashes", sanitizedString);
+    }
+
+    @Test(expected= UnsupportedEncodingException.class)
+    public void testUrlDecodeThrowsUnsupportedEncodingException() throws Exception {
+        sanitizer.urlDecode("some_string_with_encoding_%2F", "unsupported_encoding");
     }
 
     @Test

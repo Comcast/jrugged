@@ -28,6 +28,7 @@ import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 import javax.management.ObjectName;
 import javax.management.ReflectionException;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.TreeMap;
@@ -45,18 +46,23 @@ public class WebMBeanAdapter {
     private MBeanServer mBeanServer;
     private ObjectName objectName;
     private MBeanStringSanitizer sanitizer;
+    private String encoding;
     private MBeanInfo mBeanInfo;
 
     /**
      * Constructor.
      * @param mBeanServer the {@link MBeanServer}.
      * @param mBeanName the MBean name (can be URL-encoded).
+     * @param encoding the string encoding to be used (i.e. UTF-8)
      * @throws JMException Java Management Exception
+     * @throws UnsupportedEncodingException if the encoding is not supported.
      */
-    public WebMBeanAdapter(MBeanServer mBeanServer, String mBeanName)throws JMException {
+    public WebMBeanAdapter(MBeanServer mBeanServer, String mBeanName, String encoding)
+            throws JMException, UnsupportedEncodingException {
         this.mBeanServer = mBeanServer;
+        this.encoding = encoding;
         sanitizer = createMBeanStringSanitizer();
-        objectName = createObjectName(sanitizer.urlDecode(mBeanName));
+        objectName = createObjectName(sanitizer.urlDecode(mBeanName, encoding));
         mBeanInfo = mBeanServer.getMBeanInfo(objectName);
     }
 
@@ -95,11 +101,12 @@ public class WebMBeanAdapter {
      * @param operationName the Operation name (can be URL-encoded).
      * @return the {@link MBeanOperationInfo} for the operation.
      * @throws OperationNotFoundException Method was not found
+     * @throws UnsupportedEncodingException if the encoding is not supported.
      */
     public MBeanOperationInfo getOperationInfo(String operationName)
-        throws OperationNotFoundException {
+        throws OperationNotFoundException, UnsupportedEncodingException {
 
-        String decodedOperationName = sanitizer.urlDecode(operationName);
+        String decodedOperationName = sanitizer.urlDecode(operationName, encoding);
         Map<String, MBeanOperationInfo> operationMap = getOperationMetadata();
         if (operationMap.containsKey(decodedOperationName)) {
             return operationMap.get(decodedOperationName);
@@ -140,9 +147,11 @@ public class WebMBeanAdapter {
      * @param attributeName the attribute name (can be URL-encoded).
      * @return the value as a String.
      * @throws JMException Java Management Exception
+     * @throws UnsupportedEncodingException if the encoding is not supported.
      */
-    public String getAttributeValue(String attributeName) throws JMException {
-        String decodedAttributeName = sanitizer.urlDecode(attributeName);
+    public String getAttributeValue(String attributeName)
+            throws JMException, UnsupportedEncodingException {
+        String decodedAttributeName = sanitizer.urlDecode(attributeName, encoding);
         return sanitizer.escapeValue(mBeanServer.getAttribute(objectName, decodedAttributeName));
     }
 
@@ -153,9 +162,10 @@ public class WebMBeanAdapter {
      * @param parameterMap the {@link Map} of parameter names and value arrays.
      * @return the returned value from the operation.
      * @throws JMException Java Management Exception
+     * @throws UnsupportedEncodingException if the encoding is not supported.
      */
     public String invokeOperation(String operationName, Map<String, String[]> parameterMap)
-        throws JMException {
+        throws JMException, UnsupportedEncodingException {
         MBeanOperationInfo operationInfo = getOperationInfo(operationName);
         MBeanOperationInvoker invoker = createMBeanOperationInvoker(mBeanServer, objectName, operationInfo);
         return sanitizer.escapeValue(invoker.invokeOperation(parameterMap));
