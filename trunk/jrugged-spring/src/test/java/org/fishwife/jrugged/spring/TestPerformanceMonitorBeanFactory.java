@@ -81,7 +81,7 @@ public class TestPerformanceMonitorBeanFactory {
         mockMBeanExporter.registerManagedResource(EasyMock.<Object>anyObject(), EasyMock.eq(objectName));
         replay(mockMBeanExporter);
         
-        factory.setMBeanExporter(mockMBeanExporter);
+        factory.setMBeanExportOperations(mockMBeanExporter);
         factory.createPerformanceMonitor("testCreate");
         EasyMock.verify(mockMBeanExporter);
     }
@@ -126,7 +126,7 @@ public class TestPerformanceMonitorBeanFactory {
     }
     @Test
     public void testMonitorWithoutMBeanExporter() {
-        factory.setMBeanExporter(null);
+        factory.setMBeanExportOperations(null);
         PerformanceMonitor createdMonitor =
                 factory.createPerformanceMonitor(
                   "testCreateWithoutMBeanExporter");
@@ -140,7 +140,7 @@ public class TestPerformanceMonitorBeanFactory {
           EasyMock.<Object>anyObject(), EasyMock.<ObjectName>anyObject());
         replay(mockMBeanExporter);
         
-        factory.setMBeanExporter(mockMBeanExporter);
+        factory.setMBeanExportOperations(mockMBeanExporter);
         PerformanceMonitor createdMonitor =
                 factory.createPerformanceMonitor(
                   "testCreateWithoutMBeanExporter");
@@ -154,7 +154,7 @@ public class TestPerformanceMonitorBeanFactory {
           EasyMock.<Object>anyObject(), EasyMock.<ObjectName>anyObject());
         replay(mockMBeanExporter);
 
-        factory.setMBeanExporter(mockMBeanExporter);
+        factory.setMBeanExportOperations(mockMBeanExporter);
         factory.createPerformanceMonitor("=\"");
     }
     

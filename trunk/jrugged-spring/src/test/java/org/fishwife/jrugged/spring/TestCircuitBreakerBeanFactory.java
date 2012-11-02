@@ -97,28 +97,28 @@ public class TestCircuitBreakerBeanFactory {
         mockMBeanExporter.registerManagedResource(EasyMock.<Object>anyObject(), EasyMock.eq(objectName));
         replay(mockMBeanExporter);
 
-        factory.setMBeanExporter(mockMBeanExporter);
+        factory.setMBeanExportOperations(mockMBeanExporter);
         factory.createCircuitBreaker("testCreate", config);
         EasyMock.verify(mockMBeanExporter);
     }
 
     @Test
     public void testBreakerWithoutMBeanExporter() {
-        factory.setMBeanExporter(null);
+        factory.setMBeanExportOperations(null);
         CircuitBreaker createdBreaker = factory.createCircuitBreaker("testCreateWithoutMBeanExporter", config);
         assertNotNull(createdBreaker);
     }
 
     @Test
     public void testBreakerWithMBeanExporter() {
-        factory.setMBeanExporter(mockMBeanExporter);
+        factory.setMBeanExportOperations(mockMBeanExporter);
         CircuitBreaker createdBreaker = factory.createCircuitBreaker("testCreateWithoutMBeanExporter", config);
         assertNotNull(createdBreaker);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testBreakerWithInvalidName() {
-        factory.setMBeanExporter(mockMBeanExporter);
+        factory.setMBeanExportOperations(mockMBeanExporter);
         factory.createCircuitBreaker("=\"", config);
     }
 

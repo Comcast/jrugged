@@ -30,32 +30,12 @@ public class MBeanStringSanitizer {
     /**
      * Convert a URL Encoded name back to the original form.
      * @param name the name to URL urlDecode.
+     * @param encoding the string encoding to be used (i.e. UTF-8)
      * @return the name in original form.
+     * @throws UnsupportedEncodingException if the encoding is not supported.
      */
-    String urlDecode(String name) {
-
-        try {
-            return URLDecoder.decode(name, "utf-8");
-        }
-        catch (UnsupportedEncodingException e) {
-            return name;
-        }
-    }
-
-    /**
-     * Convert a URL Encoded name back to the original form.
-     * @param name the name to URL urlDecode.
-     * @param encoding the string encoding to be used (i.e. utf-8)
-     * @return the name in original form.
-     */
-    String urlDecode(String name, String encoding) {
-
-        try {
-            return URLDecoder.decode(name, encoding);
-        }
-        catch (UnsupportedEncodingException e) {
-            return name;
-        }
+    String urlDecode(String name, String encoding) throws UnsupportedEncodingException {
+        return URLDecoder.decode(name, encoding);
     }
 
     /**

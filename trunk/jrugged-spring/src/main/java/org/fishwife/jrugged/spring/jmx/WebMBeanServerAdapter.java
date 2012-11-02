@@ -19,6 +19,7 @@ package org.fishwife.jrugged.spring.jmx;
 import javax.management.JMException;
 import javax.management.MBeanServer;
 import javax.management.ObjectInstance;
+import java.io.UnsupportedEncodingException;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -62,11 +63,14 @@ public class WebMBeanServerAdapter {
     /**
      * Create a WebMBeanAdaptor for a specified MBean name.
      * @param mBeanName the MBean name (can be URL-encoded).
+     * @param encoding the string encoding to be used (i.e. UTF-8)
      * @return the created WebMBeanAdaptor.
      * @throws JMException Java Management Exception
+     * @throws UnsupportedEncodingException if the encoding is not supported.
      */
-    public WebMBeanAdapter createWebMBeanAdapter(String mBeanName) throws JMException {
-        return new WebMBeanAdapter(mBeanServer, mBeanName);
+    public WebMBeanAdapter createWebMBeanAdapter(String mBeanName, String encoding)
+            throws JMException, UnsupportedEncodingException {
+        return new WebMBeanAdapter(mBeanServer, mBeanName, encoding);
     }
 
     MBeanStringSanitizer createMBeanStringSanitizer() {

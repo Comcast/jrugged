@@ -28,6 +28,7 @@ import javax.management.MBeanInfo;
 import javax.management.MBeanOperationInfo;
 import javax.management.MBeanServer;
 import javax.management.ObjectName;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,10 +51,12 @@ public class TestWebMBeanAdapter {
     private ObjectName mockObjectName;
     private MBeanInfo mockMBeanInfo;
     private MBeanOperationInvoker mockMBeanOperationInvoker;
+    private static final String ENCODING = "UTF-8";
 
     class MockWebMBeanAdapter extends WebMBeanAdapter {
-        public MockWebMBeanAdapter(MBeanServer mBeanServer, String mBeanName) throws JMException {
-            super(mBeanServer, mBeanName);
+        public MockWebMBeanAdapter(MBeanServer mBeanServer, String mBeanName)
+                throws JMException, UnsupportedEncodingException {
+            super(mBeanServer, mBeanName, ENCODING);
         }
         @Override
         MBeanStringSanitizer createMBeanStringSanitizer() {
@@ -80,7 +83,7 @@ public class TestWebMBeanAdapter {
 
         String beanName = "some_bean_name";
 
-        expect(mockSanitizer.urlDecode(beanName)).andReturn(beanName);
+        expect(mockSanitizer.urlDecode(beanName, ENCODING)).andReturn(beanName);
         expect(mockMBeanServer.getMBeanInfo(mockObjectName)).andReturn(mockMBeanInfo);
         replay(mockSanitizer, mockMBeanServer);
 
@@ -162,7 +165,7 @@ public class TestWebMBeanAdapter {
         String operationName2 = "operation_name_2";
         MBeanOperationInfo mockOperation2 = createMock(MBeanOperationInfo.class);
 
-        expect(mockSanitizer.urlDecode(operationName2)).andReturn(operationName2);
+        expect(mockSanitizer.urlDecode(operationName2, ENCODING)).andReturn(operationName2);
         MBeanOperationInfo[] operationList = new MBeanOperationInfo[2];
         operationList[0] = mockOperation1;
         operationList[1] = mockOperation2;
@@ -187,7 +190,7 @@ public class TestWebMBeanAdapter {
         expect(mockObjectName.getCanonicalName()).andReturn("some_name");
 
         MBeanOperationInfo[] operationList = new MBeanOperationInfo[0];
-        expect(mockSanitizer.urlDecode(operationName)).andReturn(operationName);
+        expect(mockSanitizer.urlDecode(operationName, ENCODING)).andReturn(operationName);
         expect(mockMBeanInfo.getOperations()).andReturn(operationList);
 
         replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo);
@@ -251,7 +254,7 @@ public class TestWebMBeanAdapter {
     @Test
     public void testGetAttributeValue() throws Exception {
         String attributeName = "attribute_name";
-        expect(mockSanitizer.urlDecode(attributeName)).andReturn(attributeName);
+        expect(mockSanitizer.urlDecode(attributeName, ENCODING)).andReturn(attributeName);
 
         Object value = new Object();
         String valueString = "some_string";
@@ -269,7 +272,7 @@ public class TestWebMBeanAdapter {
     @Test
     public void testInvokeOperation() throws Exception {
         String operationName = "operation_name";
-        expect(mockSanitizer.urlDecode(operationName)).andReturn(operationName);
+        expect(mockSanitizer.urlDecode(operationName, ENCODING)).andReturn(operationName);
 
         MBeanOperationInfo mockOperation = createMock(MBeanOperationInfo.class);
         MBeanOperationInfo[] operationList = new MBeanOperationInfo[1];
