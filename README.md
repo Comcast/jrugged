@@ -42,7 +42,7 @@ Getting started is easy, just check out our [Examples](https://github.com/Comcas
 
 ## Latest Stable Release
 
-- [jrugged-core-3.0.3.jar](http://jrugged.googlecode.com/files/jrugged-core-3.0.3.jar)
-- [jrugged-aspects-3.0.3.jar](http://jrugged.googlecode.com/files/jrugged-aspects-3.0.3.jar)
-- [jrugged-spring-3.0.3.jar](http://jrugged.googlecode.com/files/jrugged-spring-3.0.3.jar)
-- [jrugged-httpclient-3.0.3.jar](http://jrugged.googlecode.com/files/jrugged-httpclient-3.0.3.jar)
+- [jrugged-core-3.0.3.jar](https://github.com/downloads/Comcast/jrugged/jrugged-core-3.0.3.jar)
+- [jrugged-aspects-3.0.3.jar](https://github.com/downloads/Comcast/jrugged/jrugged-aspects-3.0.3.jar)
+- [jrugged-spring-3.0.3.jar](https://github.com/downloads/Comcast/jrugged/jrugged-spring-3.0.3.jar)
+- [jrugged-httpclient-3.0.3.jar](https://github.com/downloads/Comcast/jrugged/jrugged-httpclient-3.0.3.jar)
