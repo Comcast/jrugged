@@ -1,4 +1,4 @@
-# jrugged [![Build Status](https://travis-ci.org/trevmex/jrugged.png)](https://travis-ci.org/trevmex/jrugged)
+# jrugged [![Build Status](https://travis-ci.org/Comcast/jrugged.png)](https://travis-ci.org/Comcast/jrugged)
 
 A Java libary of robustness design patterns
 
