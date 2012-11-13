@@ -60,24 +60,16 @@ public class PerformanceMonitor implements ServiceWrapper {
     private MovingAverage successRequestsPerSecondLastDay;
     private MovingAverage failureRequestsPerSecondLastDay;
     
-    private SampledQuantile lifetimeSuccessLatencyQuantile =
-    	new SampledQuantile();
-    private SampledQuantile lifetimeFailureLatencyQuantile =
-		new SampledQuantile();
+    private SampledQuantile lifetimeSuccessLatencyQuantile = new SampledQuantile();
+    private SampledQuantile lifetimeFailureLatencyQuantile = new SampledQuantile();
     
-    private SampledQuantile successLatencyQuantileLastMinute =
-    	new SampledQuantile(60L, TimeUnit.SECONDS);
-    private SampledQuantile successLatencyQuantileLastHour =
-    	new SampledQuantile(3600L, TimeUnit.SECONDS);
-    private SampledQuantile successLatencyQuantileLastDay =
-    	new SampledQuantile(86400L, TimeUnit.SECONDS);
+    private SampledQuantile successLatencyQuantileLastMinute = new SampledQuantile(60L, TimeUnit.SECONDS);
+    private SampledQuantile successLatencyQuantileLastHour = new SampledQuantile(3600L, TimeUnit.SECONDS);
+    private SampledQuantile successLatencyQuantileLastDay = new SampledQuantile(86400L, TimeUnit.SECONDS);
 
-    private SampledQuantile failureLatencyQuantileLastMinute =
-    	new SampledQuantile(60L, TimeUnit.SECONDS);
-    private SampledQuantile failureLatencyQuantileLastHour =
-    	new SampledQuantile(3600L, TimeUnit.SECONDS);
-    private SampledQuantile failureLatencyQuantileLastDay =
-    	new SampledQuantile(86400L, TimeUnit.SECONDS);
+    private SampledQuantile failureLatencyQuantileLastMinute = new SampledQuantile(60L, TimeUnit.SECONDS);
+    private SampledQuantile failureLatencyQuantileLastHour = new SampledQuantile(3600L, TimeUnit.SECONDS);
+    private SampledQuantile failureLatencyQuantileLastDay = new SampledQuantile(86400L, TimeUnit.SECONDS);
     
     private long lifetimeMaxSuccessMillis;
     private long lifetimeMaxFailureMillis;
@@ -95,12 +87,9 @@ public class PerformanceMonitor implements ServiceWrapper {
 		averageFailureLatencyLastHour = new MovingAverage(ONE_HOUR_MILLIS);
 		averageFailureLatencyLastDay = new MovingAverage(ONE_DAY_MILLIS);
 
-		totalRequestsPerSecondLastMinute = 
-			new MovingAverage(ONE_MINUTE_MILLIS);
-		successRequestsPerSecondLastMinute = 
-			new MovingAverage(ONE_MINUTE_MILLIS);
-		failureRequestsPerSecondLastMinute = 
-			new MovingAverage(ONE_MINUTE_MILLIS);
+		totalRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
+		successRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
+		failureRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
 
 		totalRequestsPerSecondLastHour = new MovingAverage(ONE_HOUR_MILLIS);
 		successRequestsPerSecondLastHour = new MovingAverage(ONE_HOUR_MILLIS);

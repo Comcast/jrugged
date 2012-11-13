@@ -16,10 +16,12 @@
  */
 package org.fishwife.jrugged;
 
-/** This class implements an exponential moving average, using the
+/**
+ * This class implements an exponential moving average, using the
  *  algorithm described at <a href="http://en.wikipedia.org/wiki/Moving_average">http://en.wikipedia.org/wiki/Moving_average</a>. The average does not
  *  sample itself; it merely computes the new average when updated with
- *  a sample by an external mechanism. */
+ *  a sample by an external mechanism.
+ */
 public class MovingAverage {
     private long windowMillis;
     private long lastMillis;
@@ -51,6 +53,10 @@ public class MovingAverage {
 		lastMillis = now;
     }
 
-    /** Returns the last computed average value. */
+    /**
+     * Returns the last computed average value.
+     *
+     * @return double The calculated avg.
+     */
     public double getAverage() { return average; }
 }
