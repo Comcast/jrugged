@@ -24,9 +24,9 @@
     <url>https://github.com/Comcast/jrugged</url>
 
     <scm>
-        <connection>scm:git:git://github.com/Comcast/jrugged.git</connection>
-        <developerConnection>scm:git:git://github.com/Comcast/jrugged.git</developerConnection>
-        <url>git://github.com/Comcast/jrugged.git</url>
+        <connection>scm:git:https://github.com/Comcast/jrugged.git</connection>
+        <developerConnection>scm:git:https://github.com/Comcast/jrugged.git</developerConnection>
+        <url>https://github.com/Comcast/jrugged.git</url>
     </scm>
 
     <dependencies>
