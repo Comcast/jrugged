@@ -27,7 +27,7 @@
     <packaging>war</packaging>
     <version>3.0.6-SNAPSHOT</version>
     <name>jrugged-examples</name>
-    <url>http://code.google.com/p/jrugged</url>
+    <url>https://github.com/Comcast/jrugged</url>
 
     <prerequisites>
         <maven>2.0.6</maven>

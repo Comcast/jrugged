@@ -21,12 +21,12 @@
     <packaging>pom</packaging>
     <version>3.0.6-SNAPSHOT</version>
     <name>jrugged</name>
-    <url>http://code.google.com/p/jrugged/</url>
+    <url>https://github.com/Comcast/jrugged</url>
 
     <scm>
-        <connection>scm:svn:https://jrugged.googlecode.com/svn/</connection>
-        <developerConnection>scm:svn:https://jrugged.googlecode.com/svn/</developerConnection>
-        <url>https://jrugged.googlecode.com/svn/tags/jrugged-3.0.3</url>
+        <connection>scm:git:git://github.com/Comcast/jrugged.git</connection>
+        <developerConnection>scm:git:git://github.com/Comcast/jrugged.git</developerConnection>
+        <url>git://github.com/Comcast/jrugged.git</url>
     </scm>
 
     <dependencies>

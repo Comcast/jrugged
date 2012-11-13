@@ -26,7 +26,7 @@
 	<artifactId>jrugged-spring</artifactId>
 	<packaging>jar</packaging>
 	<name>jrugged-spring</name>
-	<url>http://code.google.com/p/jrugged/</url>
+	<url>https://github.com/Comcast/jrugged</url>
 
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>

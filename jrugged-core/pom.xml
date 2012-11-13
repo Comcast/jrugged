@@ -26,5 +26,5 @@
 	<artifactId>jrugged-core</artifactId>
 	<packaging>jar</packaging>
 	<name>jrugged-core</name>
-	<url>http://code.google.com/p/jrugged/</url>
+	<url>https://github.com/Comcast/jrugged</url>
 </project>
