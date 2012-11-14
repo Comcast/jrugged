@@ -127,9 +127,7 @@ public class SampledQuantile {
 	 * thus far. This is equivalent to <code>getQuantile(i,100)</code>.
      *
 	 * @param i must be 0 < i < 100
-	 * @return i-th percentile
-	 * @throws EmptySampleSetException if no measurements have been
-	 *   reported
+	 * @return i-th percentile, or 0 if there is no data
 	 * @throws QuantileOutOfBoundsException if i <= 0 or i >= 100
 	 */
 	public long getPercentile(int i) {
@@ -146,9 +144,7 @@ public class SampledQuantile {
      *
 	 * @param q must be >= 2
 	 * @param k must be 0 < k < q
-	 * @return k-th q-quantile
-	 * @throws EmptySampleSetException if no measurements have been
-	 *   reported
+	 * @return k-th q-quantile, or 0 if there is no data
 	 * @throws QuantileOutOfBoundsException if k <= 0 or k >= q
 	 */
 	public long getQuantile(int k, int q) {
@@ -158,7 +154,7 @@ public class SampledQuantile {
 	long getQuantile(int k, int q, long now) {
 		if (k <= 0 || k >= q) throw new QuantileOutOfBoundsException();
 		List<Sample> validSamples = getValidSamples(now);
-		if (validSamples.size() == 0) throw new EmptySampleSetException();
+		if (validSamples.size() == 0) return 0;
 		Collections.sort(validSamples);
 		double targetIndex = (validSamples.size() * k) / (q * 1.0);
 		if (validSamples.size() % 2 == 1) {
@@ -252,10 +248,6 @@ public class SampledQuantile {
 	}
 	
 	public static class QuantileOutOfBoundsException extends RuntimeException {
-		private static final long serialVersionUID = 1L;
-	}
-	
-	public static class EmptySampleSetException extends RuntimeException {
 		private static final long serialVersionUID = 1L;
 	}
 }

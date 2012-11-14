@@ -33,12 +33,8 @@ public class TestSampledQuantile {
 	}
 	
 	@Test
-	public void quantileWithNoSamplesShouldThrowException() {
-		try {
-			impl.getPercentile(50);
-			fail("should have thrown exception");
-		} catch (SampledQuantile.EmptySampleSetException expected) {
-		}
+	public void quantileWithNoSamplesShouldReturnZero() {
+		assertEquals(0, impl.getPercentile(50));
 	}
 
 	@Test
