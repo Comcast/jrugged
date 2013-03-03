@@ -79,7 +79,7 @@ public class TestRolledUpMonitoredService {
 
         assertEquals(ROLLEDUP_SERVICE_NAME, serviceStatus.getName());
         assertEquals(serviceStatus.getStatus(), Status.DEGRADED);
-        assertTrue(serviceStatus.getReasons().contains(SERVICE_1_REASON));
+        assertTrue(serviceStatus.getReasons().contains(SERVICE_1_NAME + ":" + SERVICE_1_REASON));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class TestRolledUpMonitoredService {
 
         assertEquals(ROLLEDUP_SERVICE_NAME, serviceStatus.getName());
         assertEquals(serviceStatus.getStatus(), Status.DEGRADED);
-        assertTrue(serviceStatus.getReasons().contains(SERVICE_2_REASON));
+        assertTrue(serviceStatus.getReasons().contains(SERVICE_2_NAME + ":" + SERVICE_2_REASON));
     }
 
     @Test
@@ -110,8 +110,8 @@ public class TestRolledUpMonitoredService {
 
         assertEquals(ROLLEDUP_SERVICE_NAME, serviceStatus.getName());
         assertEquals(serviceStatus.getStatus(), Status.DEGRADED);
-        assertTrue(serviceStatus.getReasons().contains(SERVICE_1_REASON));
-        assertTrue(serviceStatus.getReasons().contains(SERVICE_2_REASON));
+        assertTrue(serviceStatus.getReasons().contains(SERVICE_1_NAME + ":" + SERVICE_1_REASON));
+        assertTrue(serviceStatus.getReasons().contains(SERVICE_2_NAME + ":" + SERVICE_2_REASON));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class TestRolledUpMonitoredService {
 
         assertEquals(ROLLEDUP_SERVICE_NAME, serviceStatus.getName());
         assertEquals(serviceStatus.getStatus(), Status.DEGRADED);
-        assertTrue(serviceStatus.getReasons().contains(SERVICE_2_REASON));
+        assertTrue(serviceStatus.getReasons().contains(SERVICE_2_NAME + ":" + SERVICE_2_REASON));
     }
 
     @Test
