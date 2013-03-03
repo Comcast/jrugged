@@ -207,8 +207,10 @@ public class TestCircuitBreakerAspect {
 
     private static ProceedingJoinPoint createPjpMock(Signature mockSignature, int times) {
         ProceedingJoinPoint mockPjp = createMock(ProceedingJoinPoint.class);
-        expect(mockPjp.getTarget()).andReturn("Target").times(times);
-        expect(mockPjp.getSignature()).andReturn(mockSignature).times(times);
+        // XXX: the following two interactions are for logging, so they may happen
+        //      0 or n times, pending logging configuration
+        expect(mockPjp.getTarget()).andReturn("Target").times(0, times);
+        expect(mockPjp.getSignature()).andReturn(mockSignature).times(0, times);
         return mockPjp;
     }
 
