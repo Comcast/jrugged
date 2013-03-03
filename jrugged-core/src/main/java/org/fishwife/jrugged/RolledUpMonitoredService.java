@@ -70,7 +70,9 @@ public class RolledUpMonitoredService implements MonitoredService {
             Status status = serviceStatus.getStatus();
 
             if (statusIsNotUp(status)) {
-                reasons.addAll(serviceStatus.getReasons());
+                for (String reason : serviceStatus.getReasons()) {
+                    reasons.add(serviceStatus.getName() + ":" + reason);
+                }
             }
 
             if (status.getValue() < criticalStatus.getValue()) {
@@ -85,7 +87,9 @@ public class RolledUpMonitoredService implements MonitoredService {
             Status status = serviceStatus.getStatus();
 
             if (statusIsNotUp(status)) {
-                reasons.addAll(serviceStatus.getReasons());
+                for (String reason : serviceStatus.getReasons()) {
+                    reasons.add(serviceStatus.getName() + ":" + reason);
+                }
                 result = Status.DEGRADED;
             }
         }
