@@ -83,7 +83,7 @@
                         <link>http://www.eclipse.org/aspectj/doc/next/runtime-api</link>
                         <link>http://static.springsource.org/spring/docs/3.0.5.RELEASE/api/</link>
                         <link>http://aopalliance.sourceforge.net/doc/</link>
-                        <link>http://jrugged.s3.amazonaws.com/jrugged-core-3.0.3/apidocs</link>
+                        <link>http://jrugged.s3.amazonaws.com/jrugged-core-3.0.3/</link>
                     </links>
                     <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
