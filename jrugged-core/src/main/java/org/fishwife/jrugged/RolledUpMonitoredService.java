@@ -57,7 +57,10 @@ public class RolledUpMonitoredService implements MonitoredService {
      * name for the ServiceStatus is the name of this rolled up service.
      * The {@link Status} is computed based on the status of the critical
      * and non-critical subsystems.  The {@link List} of reasons contains the
-     * reasons reported for each system.
+     * reasons reported for each system. Each service returns the service
+     * name in addition to the reason that it has that status (which is
+     * reported by the service itself)
+     *
      * @return the {@link ServiceStatus}.
      */
     public ServiceStatus getServiceStatus() {
