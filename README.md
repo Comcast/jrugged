@@ -45,7 +45,7 @@ Getting started is easy, just check out our [Examples](https://github.com/Comcas
 - [jrugged-spring-3.1.0.jar](https://github.com/downloads/Comcast/jrugged/jrugged-spring-3.1.0.jar)
 - [jrugged-httpclient-3.1.0.jar](https://github.com/downloads/Comcast/jrugged/jrugged-httpclient-3.1.0.jar)
 
-## Latest Stable Release
+## Latest Java Doc
 - [Core 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-core-3.1.0/index.html)
 - [Aspects 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-aspects-3.1.0/index.html)
 - [Spring 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-spring-3.1.0/index.html)
