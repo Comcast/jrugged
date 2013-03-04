@@ -40,10 +40,10 @@ Getting started is easy, just check out our [Examples](https://github.com/Comcas
 
 ## Latest Stable Release
 
-- [jrugged-core-3.1.0.jar](https://github.com/downloads/Comcast/jrugged/jrugged-core-3.1.0.jar)
-- [jrugged-aspects-3.1.0.jar](https://github.com/downloads/Comcast/jrugged/jrugged-aspects-3.1.0.jar)
-- [jrugged-spring-3.1.0.jar](https://github.com/downloads/Comcast/jrugged/jrugged-spring-3.1.0.jar)
-- [jrugged-httpclient-3.1.0.jar](https://github.com/downloads/Comcast/jrugged/jrugged-httpclient-3.1.0.jar)
+- [jrugged-core-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-core-3.1.0.jar)
+- [jrugged-aspects-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-aspects-3.1.0.jar)
+- [jrugged-spring-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-spring-3.1.0.jar)
+- [jrugged-httpclient-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-httpclient-3.1.0.jar)
 
 ## Latest Java Doc
 - [Core 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-core-3.1.0/index.html)
