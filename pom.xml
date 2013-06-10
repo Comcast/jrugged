@@ -23,11 +23,43 @@
     <name>jrugged</name>
     <url>https://github.com/Comcast/jrugged</url>
 
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>7</version>
+    </parent>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
     <scm>
-        <connection>scm:git:https://github.com/Comcast/jrugged.git</connection>
-        <developerConnection>scm:git:https://github.com/Comcast/jrugged.git</developerConnection>
-        <url>https://github.com/Comcast/jrugged.git</url>
+        <connection>scm:git:git@github.com:Comcast/jrugged.git</connection>
+        <developerConnection>scm:git:git@github.com:Comcast/jrugged.git</developerConnection>
+        <url>git@github.com:Comcast/jrugged.git</url>
     </scm>
+
+    <developers>
+        <developer>
+            <id>jcampbell</id>
+            <name>Joe Campbell</name>
+            <email>joseph_campbell@comcast.com</email>
+        </developer>
+        <developer>
+            <id>weggert</id>
+            <name>Walter Eggert</name>
+            <email>walter_eggert@comcast.com</email>
+        </developer>
+        <developer>
+            <id>jmoore</id>
+            <name>Jon Moore</name>
+            <email>jonathan_moore@comcast.com</email>
+        </developer>
+    </developers>
 
     <dependencies>
         <dependency>
@@ -64,6 +96,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
                 <executions>
                     <execution>
                         <id>attach-sources</id>
@@ -77,6 +110,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9</version>
                 <configuration>
                     <links>
                         <link>http://download.oracle.com/javase/1.5.0/docs/api/</link>
@@ -99,6 +133,39 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>release-sign-artifacts</id>
+            <activation>
+                <property>
+                    <name>performRelease</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.1</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                                <configuration>
+                                    <keyname>JRUGGED</keyname>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
     <modules>
         <module>jrugged-core</module>
