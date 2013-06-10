@@ -10,6 +10,12 @@ Getting started is easy, just check out our [Examples](https://github.com/Comcas
 
 
 ## News
+- *3 March 2013*: Version 3.1.0 of the JRugged Library released!
+    - Modified performance monitor to return 0's instead of EmptySet Exception
+    - Removed a terribly linkage to log4j
+    - Changed the way statuses were reported to add the sevice currently reporting a given status
+    - Minor bug fixes from the 3.0.3 version
+
 - *14 March 2012*: Version 3.0.3 of the JRugged Library released!
     - Fixed issue #55: Use `InitalizingBean` extension rather than @Autowired
     - Fixed issue #54: Non-threadsafe usage of `LatencyTracker` in `PerformanceMonitor`
@@ -32,17 +38,15 @@ Getting started is easy, just check out our [Examples](https://github.com/Comcas
 
     Many thanks to walter\_eggert at comcast dot com, coby\_young at comcast dot com, raghushankar\_ramalingam at comcast dot com and michajlo\_matijkiw at comcast dot com (Mishu) who contributed to this next great release of the JRugged Library.
 
-- *01 April 2011*: Version 2.4.0 of the JRugged Library released!
-    - Fixed issue #30: 2.3.0 didn't compile from source cleanly
-    - Fixed issue #34: NPE in `SampledQuartile`
-    - Fixed issue #36: Method list had to have a comma in it to parse correctly
-    - Added support for monitoring performance of HTTP calls to multiple hosts
-    - Added a method for threading multiple service wrappers together in a chain
-
-
 ## Latest Stable Release
 
-- [jrugged-core-3.0.3.jar](https://github.com/downloads/Comcast/jrugged/jrugged-core-3.0.3.jar)
-- [jrugged-aspects-3.0.3.jar](https://github.com/downloads/Comcast/jrugged/jrugged-aspects-3.0.3.jar)
-- [jrugged-spring-3.0.3.jar](https://github.com/downloads/Comcast/jrugged/jrugged-spring-3.0.3.jar)
-- [jrugged-httpclient-3.0.3.jar](https://github.com/downloads/Comcast/jrugged/jrugged-httpclient-3.0.3.jar)
+- [jrugged-core-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-core-3.1.0.jar)
+- [jrugged-aspects-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-aspects-3.1.0.jar)
+- [jrugged-spring-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-spring-3.1.0.jar)
+- [jrugged-httpclient-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-httpclient-3.1.0.jar)
+
+## Latest Java Doc
+- [Core 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-core-3.1.0/index.html)
+- [Aspects 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-aspects-3.1.0/index.html)
+- [Spring 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-spring-3.1.0/index.html)
+- [HTTP Client 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-httpclient-3.1.0/index.html)
