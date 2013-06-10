@@ -17,20 +17,20 @@ limitations under the License.
   <parent>
     <groupId>org.fishwife</groupId>
     <artifactId>jrugged</artifactId>
-    <version>3.1.1-SNAPSHOT</version>
+    <version>3.1.1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.fishwife</groupId>
   <artifactId>jrugged-httpclient</artifactId>
-  <version>3.1.1-SNAPSHOT</version>
+  <version>3.1.1</version>
   <name>jrugged-httpclient</name>
   <description>Utilities for using JRugged and Apache HttpComponents HttpClient together</description>
   <dependencies>
   	<dependency>
   		<groupId>org.fishwife</groupId>
   		<artifactId>jrugged-core</artifactId>
-  		<version>3.1.1-SNAPSHOT</version>
+  		<version>3.1.1</version>
   		<scope>compile</scope>
   	</dependency>
   	<dependency>
