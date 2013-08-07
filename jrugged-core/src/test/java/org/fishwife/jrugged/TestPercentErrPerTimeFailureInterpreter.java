@@ -190,5 +190,49 @@ public class TestPercentErrPerTimeFailureInterpreter {
             assertFalse(pept.shouldTrip(e));
         }
     }
+
+    @Test
+    public void testDoesNotTripWhenRequestCountInWindowIsLessThanThreshold() throws Exception {
+        PercentErrPerTimeFailureInterpreter pept = new PercentErrPerTimeFailureInterpreter();
+        RequestCounter rc = new RequestCounter();
+        pept.setRequestCounter(rc);
+        pept.setPercent(51);
+        pept.setWindowMillis(250000);
+        pept.setRequestThreshold(8);
+
+        try {
+            rc.invoke(new DummyRunnable());
+            rc.invoke(new DummyRunnable());
+            rc.invoke(new DummyRunnable());
+        } catch (Exception e) {
+            pept.shouldTrip(e);
+        }
+
+        try {
+            rc.invoke(new DummyRunnableException());
+        } catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+
+        try {
+            rc.invoke(new DummyRunnableException());
+        } catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+
+        try {
+            rc.invoke(new DummyRunnableException());
+        } catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+
+        //seventh total request, fourth failure, pushes percentage to 57%, but should not trip because total number
+        //of requests is below threshold of 8
+        try {
+            rc.invoke(new DummyRunnableException());
+        } catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+    }
 }
 
