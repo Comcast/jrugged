@@ -30,6 +30,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     private Set<Class<? extends Throwable>> ignore = new HashSet<Class<? extends Throwable>>();
     private int percent = 0;
     private long windowMillis = 0;
+    private int requestThreshold = 0;
 
     // tracks times when exceptions occurred
     private List<Long> errorTimes = new LinkedList<Long>();
@@ -177,7 +178,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
 
             // Trip if the number of errors over the total of requests over the same period
             // is over the percentage limit.
-            return (((double)numberOfErrorsAfter / (double)windowRequests) * 100d >= percent);
+            return windowRequests >= requestThreshold && (((double) numberOfErrorsAfter / (double) windowRequests) * 100d >= percent);
         }
         return true;
 	}
@@ -275,5 +276,16 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      */
     public void setRequestCounter(RequestCounter rc) {
         requestCounter = rc;
+    }
+
+    /**
+     * Sets the threshold at which the number of requests in the current window must be above in order for the breaker
+     * to trip. This is intended to prevent the breaker from being opened if the first request into this interpreter is
+     * a failure.
+     *
+     * @param requestThreshold The threshold to set, defaults to 0
+     */
+    public void setRequestThreshold(int requestThreshold) {
+        this.requestThreshold = requestThreshold;
     }
 }
