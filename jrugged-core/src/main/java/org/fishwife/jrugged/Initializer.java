@@ -138,6 +138,10 @@ public class Initializer implements Runnable {
                 }
             }
         }
+
+        if(!initialized && (numAttempts >= maxRetries) && !cancelled) {
+            client.configuredRetriesMetOrExceededWithoutSuccess();
+        }
     }
 
     public boolean isInitialized() {

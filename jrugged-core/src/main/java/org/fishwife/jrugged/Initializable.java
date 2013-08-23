@@ -30,14 +30,23 @@ package org.fishwife.jrugged;
  */
 public interface Initializable {
 
-    /** Makes an initialization attempt. If an exception is thrown, assume
-     *  attempt failed.
+    /**
+     * Makes an initialization attempt. If an exception is thrown, assume
+     * attempt failed.
      */
     public void tryInit() throws Exception;
 
-    /** Called by the initializer after background initialization succeeds.
+    /**
+     * Called by the initializer after background initialization succeeds.
      *  Can be used to mark the client as "ready to serve" or "active", 
      *  etc.
      */
     public void afterInit();
+
+    /**
+     * In the event that I have attempted to initialize, but I fail having
+     * exceeded my max number of retries to succeed, I will get a callback
+     * into this method indicating I have met or Exceeded my attempts to start
+     */
+    public void configuredRetriesMetOrExceededWithoutSuccess();
 }

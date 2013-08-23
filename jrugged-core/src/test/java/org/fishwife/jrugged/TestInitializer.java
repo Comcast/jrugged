@@ -87,6 +87,25 @@ public class TestInitializer {
     }
 
     @Test
+    public void testExceededRetriesAndCallbackTriggeredSuccessfully() throws Exception {
+        mockClient.tryInit();
+        expectLastCall().andThrow(new RuntimeException()).times(2);
+
+        mockClient.configuredRetriesMetOrExceededWithoutSuccess();
+        replay(mockClient);
+
+        impl.setMaxRetries(2);
+        impl.setRetryMillis(1);
+        impl.initialize();
+        Thread.sleep(5);
+
+        assertFalse(impl.isInitialized());
+        assertFalse(impl.isCancelled());
+        assertEquals(2, impl.getNumAttempts());
+        verify(mockClient);
+    }
+
+    @Test
     public void testCancellation() throws Exception {
         mockClient.tryInit();
         expectLastCall().andThrow(new RuntimeException());
