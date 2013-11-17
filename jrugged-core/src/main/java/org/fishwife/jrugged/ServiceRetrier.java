@@ -31,42 +31,79 @@ public class ServiceRetrier implements ServiceWrapper {
     private int _delay = DEFAULT_DELAY;
     private int _maxTries = DEFAULT_MAX_TRIES;
     private boolean _doubleDelay = false;
+    private boolean _throwCauseException = false;
+    private Class<? extends Throwable>[] _retryOn = null;
     
     public ServiceRetrier(int delay, int maxTries) {
         setDelay(delay);
         setMaxTries(maxTries);
     }
-    
+
+    public ServiceRetrier(int delay, int maxTries,
+            boolean doubleDelay, boolean throwCauseException, Class<? extends Throwable>[] retryOn) {
+        setDelay(delay);
+        setMaxTries(maxTries);
+        setDoubleDelay(doubleDelay);
+        setThrowCauseException(throwCauseException);
+        setRetryOn(retryOn);
+    }
+
     public ServiceRetrier() {
     }
     
     public <V> V invoke(Callable<V> c) throws Exception {
 
         int tries = 0;
-        Throwable lastException = null;
         int delay = _delay;
 
-        while (tries < _maxTries) {
-            tries++;            
+        while (true) {
             try {
                 return c.call();
-            } catch (Throwable cause) {
-                lastException = cause;
-                
-                // Don't delay after max tries reached.
-                if (tries < _maxTries) {
-              
-                    Thread.sleep(delay);
-                    
-                    // Double the next delay if configured to do so.
-                    if (_doubleDelay) {
-                        delay = delay * 2;
+            } catch (Exception cause) {
+
+                // If this type of Exception should be retried...
+                if (shouldRetry(cause)) {
+                    tries++;
+
+                    // Don't delay after max tries reached.
+                    if (tries < _maxTries) {
+
+                        if (delay > 0) {
+                           sleep(delay);
+                        }
+
+                        // Double the next delay if configured to do so.
+                        if (_doubleDelay) {
+                            delay = delay * 2;
+                        }
+
+                        // Try again.
+                        continue;
                     }
+                }
+
+                if (_throwCauseException) {
+                    throw cause;
+                }
+                else {
+                    throw new Exception("Call failed " + tries + " times", cause);
                 }
             }
         }
-        throw new Exception("Call failed " + tries + " times", lastException);
-    } 
+    }
+
+    private boolean shouldRetry(Throwable cause) {
+        if (_retryOn == null || _retryOn.length == 0) {
+            return true;
+        }
+
+        for (Class<? extends Throwable> clazz : _retryOn) {
+            if (clazz.isInstance(cause)) {
+                return true;
+            }
+        }
+        return false;
+    }
     
     public void invoke(Runnable r) throws Exception {
         
@@ -111,5 +148,30 @@ public class ServiceRetrier implements ServiceWrapper {
     
     public void setDoubleDelay(boolean doubleDelay) {
         this._doubleDelay = doubleDelay;
+    }
+
+    public boolean isThrowCauseException() {
+        return _throwCauseException;
+    }
+
+    public void setThrowCauseException(boolean throwCauseException) {
+        this._throwCauseException = throwCauseException;
+    }
+
+    public Class<? extends Throwable>[] getRetryOn() {
+        return _retryOn;
+    }
+
+    public void setRetryOn(Class<? extends Throwable>[] retryOn) {
+        this._retryOn = retryOn;
+    }
+
+    protected void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        }
+        catch (InterruptedException e) {
+            // Nothing much to do here.
+        }
     }
 }

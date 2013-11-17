@@ -19,8 +19,6 @@ import org.aspectj.lang.Signature;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.IOException;
-
 import static junit.framework.Assert.assertEquals;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
@@ -29,26 +27,7 @@ import static org.easymock.EasyMock.verify;
 
 public class TestRetryableAspect {
 
-    class MockRetryableAspect extends RetryableAspect {
-
-        private int delayCallCount = 0;
-        private long capturedDelay;
-
-        protected void delay(long millis) {
-            delayCallCount++;
-            capturedDelay = millis;
-        }
-
-        public int getDelayCallCount() {
-            return delayCallCount;
-        }
-
-        public long getCapturedDelay() {
-            return capturedDelay;
-        }
-    }
-
-    private MockRetryableAspect aspect;
+    private RetryableAspect aspect;
 
     private Retryable mockAnnotation;
 
@@ -57,9 +36,17 @@ public class TestRetryableAspect {
 
     @Before
     public void setUp() {
-        aspect = new MockRetryableAspect();
+        aspect = new RetryableAspect();
 
         mockAnnotation = createMock(Retryable.class);
+        expect(mockAnnotation.maxTries()).andReturn(1).anyTimes();
+        expect(mockAnnotation.retryDelayMillis()).andReturn(0).anyTimes();
+        @SuppressWarnings("unchecked")
+        Class<Throwable>[] retryOn = new Class[0];
+        expect(mockAnnotation.retryOn()).andReturn(retryOn);
+        expect(mockAnnotation.doubleDelay()).andReturn(true);
+        expect(mockAnnotation.returnCauseException()).andReturn(true);
+        replay(mockAnnotation);
 
         mockSignature = createMock(Signature.class);
         expect(mockSignature.getName()).andReturn("Signature").anyTimes();
@@ -67,15 +54,8 @@ public class TestRetryableAspect {
     }
 
     @Test
-    public void testCall_WithNoRetries() throws Throwable {
-        expect(mockAnnotation.maxRetries()).andReturn(0).anyTimes();
-        expect(mockAnnotation.retryDelayMillis()).andReturn(0L).anyTimes();
-        @SuppressWarnings("unchecked")
-        Class<Throwable>[] retryOn = new Class[0];
-        expect(mockAnnotation.retryOn()).andReturn(retryOn);
-        replay(mockAnnotation);
-
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
+    public void testCall() throws Throwable {
+        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
         expect(mockPjp.proceed()).andReturn(null).times(1);
         replay(mockPjp);
 
@@ -84,109 +64,59 @@ public class TestRetryableAspect {
         verify(mockPjp);
         verify(mockAnnotation);
         verify(mockSignature);
-        assertEquals(0, aspect.getDelayCallCount());
     }
 
     @Test
-    public void testCall_WithRetries_WithNoExceptions() throws Throwable {
-        expect(mockAnnotation.maxRetries()).andReturn(2).anyTimes();
-        expect(mockAnnotation.retryDelayMillis()).andReturn(123L).anyTimes();
-        @SuppressWarnings("unchecked")
-        Class<Throwable>[] retryOn = new Class[0];
-        expect(mockAnnotation.retryOn()).andReturn(retryOn);
-        replay(mockAnnotation);
+    public void testCall_WithException() throws Throwable {
+        Exception exception = new Exception();
 
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
-        // Only called once since there are no exceptions.
-        expect(mockPjp.proceed()).andReturn(null).times(1);
+        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
+        expect(mockPjp.proceed()).andThrow(exception);
         replay(mockPjp);
 
-        aspect.call(mockPjp, mockAnnotation);
+        callCatchThrowable(mockPjp, exception);
 
         verify(mockPjp);
         verify(mockAnnotation);
         verify(mockSignature);
-        assertEquals(0, aspect.getDelayCallCount());
     }
 
     @Test
-    public void testCallWithRetries_WithExceptions() throws Throwable {
-        expect(mockAnnotation.maxRetries()).andReturn(2).anyTimes();
-        expect(mockAnnotation.retryDelayMillis()).andReturn(123L).anyTimes();
-        @SuppressWarnings("unchecked")
-        Class<Throwable>[] retryOn = new Class[0];
-        expect(mockAnnotation.retryOn()).andReturn(retryOn);
-        replay(mockAnnotation);
+    public void testCall_WithError() throws Throwable {
+        Error error = new Error();
 
-        Exception e = new Exception();
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 3);
-
-        // Called 3 times due to Exceptions.
-        expect(mockPjp.proceed()).andThrow(e).times(3);
+        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
+        expect(mockPjp.proceed()).andThrow(error);
         replay(mockPjp);
 
-        callCatchThrowable(mockPjp, e);
+        callCatchThrowable(mockPjp, error);
 
         verify(mockPjp);
         verify(mockAnnotation);
         verify(mockSignature);
-        assertEquals(2, aspect.getDelayCallCount());
-        assertEquals(123L, aspect.getCapturedDelay());
     }
 
     @Test
-    public void testCall_WithRetries_WithTwoExceptions_AndThenSuccess() throws Throwable {
-        expect(mockAnnotation.maxRetries()).andReturn(2).anyTimes();
-        expect(mockAnnotation.retryDelayMillis()).andReturn(123L).anyTimes();
-        @SuppressWarnings("unchecked")
-        Class<Throwable>[] retryOn = new Class[] { Exception.class };
-        expect(mockAnnotation.retryOn()).andReturn(retryOn);
-        replay(mockAnnotation);
+    public void testCall_WithThrowable() throws Throwable {
+        Throwable throwable = new Throwable();
 
-        Exception e = new Exception();
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 3);
-
-        // Called 3 times due to Exceptions.
-        expect(mockPjp.proceed()).andThrow(e).andThrow(e).andReturn(null);
+        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
+        expect(mockPjp.proceed()).andThrow(throwable);
         replay(mockPjp);
 
-        aspect.call(mockPjp, mockAnnotation);
+        callCatchThrowable(mockPjp, new RuntimeException(throwable));
 
         verify(mockPjp);
         verify(mockAnnotation);
         verify(mockSignature);
-        assertEquals(2, aspect.getDelayCallCount());
-        assertEquals(123L, aspect.getCapturedDelay());
     }
 
-    @Test
-    public void testCall_WithUnexpectedThrowable() throws Throwable {
-        expect(mockAnnotation.maxRetries()).andReturn(2).anyTimes();
-        expect(mockAnnotation.retryDelayMillis()).andReturn(0L).anyTimes();
-        @SuppressWarnings("unchecked")
-        Class<Throwable>[] retryOn = new Class[] { IOException.class };
-        expect(mockAnnotation.retryOn()).andReturn(retryOn);
-        replay(mockAnnotation);
-
-        Throwable t = new Throwable();
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
-        expect(mockPjp.proceed()).andThrow(t);
-        replay(mockPjp);
-
-        callCatchThrowable(mockPjp, t);
-
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-        assertEquals(0, aspect.getDelayCallCount());
-    }
-
-    private static ProceedingJoinPoint createPjpMock(Signature mockSignature, int times) {
+    private static ProceedingJoinPoint createPjpMock(Signature mockSignature) {
         ProceedingJoinPoint mockPjp = createMock(ProceedingJoinPoint.class);
         // XXX: the following two interactions are for logging, so they may happen
         //      0 or n times, pending logging configuration
-        expect(mockPjp.getTarget()).andReturn("Target").times(0, times);
-        expect(mockPjp.getSignature()).andReturn(mockSignature).times(0, times);
+        expect(mockPjp.getTarget()).andReturn("Target").times(0, 1);
+        expect(mockPjp.getSignature()).andReturn(mockSignature).times(0, 1);
         return mockPjp;
     }
 
@@ -195,6 +125,7 @@ public class TestRetryableAspect {
             aspect.call(pjp, mockAnnotation);
         }
         catch (Throwable thrown) {
+            thrown.printStackTrace();
             assertEquals(expected.getClass(), thrown.getClass());
         }
     }

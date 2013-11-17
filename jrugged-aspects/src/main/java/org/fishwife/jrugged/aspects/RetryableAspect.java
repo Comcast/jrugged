@@ -17,8 +17,11 @@ package org.fishwife.jrugged.aspects;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.fishwife.jrugged.ServiceRetrier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.Callable;
 
 /**
  * Surrounds methods decorated with the {@link org.fishwife.jrugged.aspects.Retryable} annotation
@@ -44,11 +47,12 @@ public class RetryableAspect {
      * @return The return value from the method call.
      */
     @Around("@annotation(retryableAnnotation)")
-    public Object call(final ProceedingJoinPoint pjp,
-			  Retryable retryableAnnotation) throws Throwable {
-        final int maxRetries = retryableAnnotation.maxRetries();
-        final long retryDelayMillies = retryableAnnotation.retryDelayMillis();
+    public Object call(final ProceedingJoinPoint pjp, Retryable retryableAnnotation) throws Throwable {
+        final int maxTries = retryableAnnotation.maxTries();
+        final int retryDelayMillies = retryableAnnotation.retryDelayMillis();
         final Class<? extends Throwable>[] retryOn = retryableAnnotation.retryOn();
+        final boolean doubleDelay = retryableAnnotation.doubleDelay();
+        final boolean returnCauseException = retryableAnnotation.returnCauseException();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Have @Retryable method wrapping call on method {} of target object {}",
@@ -58,47 +62,26 @@ public class RetryableAspect {
                     });
         }
 
-        int retryCount = 0;
-        while (true) {
-            try {
-                return pjp.proceed();
-            } catch (Throwable e) {
+        ServiceRetrier serviceRetrier =
+                new ServiceRetrier(retryDelayMillies, maxTries, doubleDelay, returnCauseException, retryOn);
 
-                if (shouldRetry(e, retryOn)) {
-                    retryCount++;
-
-                    if (retryCount <= maxRetries) {
-                        if (retryDelayMillies > 0) {
-                            delay(retryDelayMillies);
+        return serviceRetrier.invoke(
+                new Callable<Object>() {
+                    public Object call() throws Exception {
+                        try {
+                            return pjp.proceed();
                         }
-                        continue;
+                        catch (Exception e) {
+                            throw e;
+                        }
+                        catch (Error e) {
+                            throw e;
+                        }
+                        catch (Throwable t) {
+                            throw new RuntimeException(t);
+                        }
                     }
                 }
-
-                throw e;
-            }
-        }
-    }
-
-    private boolean shouldRetry(Throwable cause, Class<? extends Throwable>[] retryOn) {
-        if (retryOn.length == 0) {
-            return true;
-        }
-
-        for (Class<? extends Throwable> clazz : retryOn) {
-            if (clazz.isInstance(cause)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    protected void delay(long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (InterruptedException e) {
-            // Nothing much to do here.
-        }
+        );
     }
 }
