@@ -60,5 +60,5 @@ public @interface Retryable {
      * Exception("Call failed n times") should be thrown.
      * @return if the root cause Exception should be thrown.
      */
-    boolean returnCauseException() default true;
+    boolean throwCauseException() default true;
 }

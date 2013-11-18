@@ -45,7 +45,7 @@ public class TestRetryableAspect {
         Class<Throwable>[] retryOn = new Class[0];
         expect(mockAnnotation.retryOn()).andReturn(retryOn);
         expect(mockAnnotation.doubleDelay()).andReturn(true);
-        expect(mockAnnotation.returnCauseException()).andReturn(true);
+        expect(mockAnnotation.throwCauseException()).andReturn(true);
         replay(mockAnnotation);
 
         mockSignature = createMock(Signature.class);

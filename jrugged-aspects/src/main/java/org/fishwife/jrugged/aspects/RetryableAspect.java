@@ -52,7 +52,7 @@ public class RetryableAspect {
         final int retryDelayMillies = retryableAnnotation.retryDelayMillis();
         final Class<? extends Throwable>[] retryOn = retryableAnnotation.retryOn();
         final boolean doubleDelay = retryableAnnotation.doubleDelay();
-        final boolean returnCauseException = retryableAnnotation.returnCauseException();
+        final boolean throwCauseException = retryableAnnotation.throwCauseException();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Have @Retryable method wrapping call on method {} of target object {}",
@@ -63,7 +63,7 @@ public class RetryableAspect {
         }
 
         ServiceRetrier serviceRetrier =
-                new ServiceRetrier(retryDelayMillies, maxTries, doubleDelay, returnCauseException, retryOn);
+                new ServiceRetrier(retryDelayMillies, maxTries, doubleDelay, throwCauseException, retryOn);
 
         return serviceRetrier.invoke(
                 new Callable<Object>() {
