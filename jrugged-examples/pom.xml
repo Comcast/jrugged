@@ -18,14 +18,14 @@
 	<parent>
 		<groupId>org.fishwife</groupId>
 		<artifactId>jrugged</artifactId>
-		<version>3.1.2-SNAPSHOT</version>
+		<version>3.2.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.fishwife</groupId>
     <artifactId>jrugged-examples</artifactId>
     <packaging>war</packaging>
-    <version>3.1.2-SNAPSHOT</version>
+    <version>3.2.0-SNAPSHOT</version>
     <name>jrugged-examples</name>
     <url>https://github.com/Comcast/jrugged</url>
 
@@ -161,9 +161,11 @@
         <plugins>
             <plugin>
                 <artifactId>maven-changes-plugin</artifactId>
+                <version>2.9</version>
             </plugin>
             <plugin>
                 <artifactId>maven-checkstyle-plugin</artifactId>
+                <version>2.10</version>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -172,12 +174,15 @@
             </plugin>
             <plugin>
                 <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
             </plugin>
             <plugin>
                 <artifactId>maven-jxr-plugin</artifactId>
+                <version>2.3</version>
             </plugin>
             <plugin>
                 <artifactId>maven-pmd-plugin</artifactId>
+                <version>2.7.1</version>
                 <configuration>
                     <linkXref>true</linkXref>
                     <targetJdk>1.5</targetJdk>
@@ -185,6 +190,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-surefire-report-plugin</artifactId>
+                <version>2.16</version>
             </plugin>
         </plugins>
     </reporting>
