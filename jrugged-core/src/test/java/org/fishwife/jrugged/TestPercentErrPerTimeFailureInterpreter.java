@@ -16,8 +16,6 @@
  */
 package org.fishwife.jrugged;
 
-import org.fishwife.jrugged.PercentErrPerTimeFailureInterpreter;
-import org.fishwife.jrugged.RequestCounter;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
@@ -234,5 +232,74 @@ public class TestPercentErrPerTimeFailureInterpreter {
             assertFalse(pept.shouldTrip(e));
         }
     }
+
+    @Test
+    public void testTripsOnSecondWindowWithRequestThresholdConfigured() throws Exception {
+        PercentErrPerTimeFailureInterpreter pept = new PercentErrPerTimeFailureInterpreter();
+        RequestCounter rc = new RequestCounter();
+        pept.setRequestCounter(rc);
+        pept.setPercent(50);
+        pept.setWindowMillis(1000);
+        pept.setRequestThreshold(5);
+
+        //
+        // First window - 1 valid request, 3 failures valid requests, less than request window, not tripped
+        //
+        rc.invoke(new DummyRunnable());
+
+        try {
+            rc.invoke(new DummyRunnableException());
+        }
+        catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+
+        try {
+            rc.invoke(new DummyRunnableException());
+        }
+        catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+
+        try {
+            rc.invoke(new DummyRunnableException());
+        }
+        catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+
+        // Sleep to reset the window
+        Thread.sleep(1100);
+
+        //
+        // Second Window - 2 failures, 2 success, 1 failure - should trip at the end.
+        //
+        try {
+            rc.invoke(new DummyRunnableException());
+        }
+        catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+
+        try {
+            rc.invoke(new DummyRunnableException());
+        }
+        catch (Exception e) {
+            assertFalse(pept.shouldTrip(e));
+        }
+
+        rc.invoke(new DummyRunnable());
+        rc.invoke(new DummyRunnable());
+
+        try {
+            rc.invoke(new DummyRunnableException());
+        }
+        catch (Exception e) {
+            assertTrue(pept.shouldTrip(e));
+        }
+
+
+    }
+
 }
 
