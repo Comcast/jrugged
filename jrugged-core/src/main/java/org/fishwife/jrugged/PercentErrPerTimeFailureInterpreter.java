@@ -31,6 +31,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
     private int percent = 0;
     private long windowMillis = 0;
     private int requestThreshold = 0;
+    private long previousRequestHighWaterMark = 0;
 
     // tracks times when exceptions occurred
     private List<Long> errorTimes = new LinkedList<Long>();
@@ -149,7 +150,6 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
         // keep circuit open unless exception threshold has passed
         if (hasWindowConditions()) {
             Long currentRequestCount = -1L;
-            Long previousRequestHighWaterMark;
             long numberOfErrorsAfter;
 
             synchronized (modificationLock) {
@@ -160,21 +160,14 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
                 final long removeTimeBeforeMillis = System.currentTimeMillis() - windowMillis;
                 final int numberOfErrorsBefore = this.errorTimes.size();
 
-                previousRequestHighWaterMark = removeErrorsPriorToCutoffTime(numberOfErrorsBefore, removeTimeBeforeMillis);
+                removeErrorsPriorToCutoffTime(numberOfErrorsBefore, removeTimeBeforeMillis);
 
                 numberOfErrorsAfter = this.errorTimes.size();
-
-                if (previousRequestHighWaterMark == -1) {
-                    previousRequestHighWaterMark = this.requestCounts.get(this.requestCounts.size() - 1);
-                }
 
                 currentRequestCount = this.requestCounts.get(requestCounts.size() - 1);
             }
 
             long windowRequests = (currentRequestCount - previousRequestHighWaterMark);
-            if (windowRequests == 0) {
-                windowRequests = currentRequestCount;
-            }
 
             // Trip if the number of errors over the total of requests over the same period
             // is over the percentage limit.
@@ -192,8 +185,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
         return false;
     }
 
-    private Long removeErrorsPriorToCutoffTime(int numberOfErrorsBefore, long removeTimeBeforeMillis) {
-        Long prevHighWaterMark  = -1L;
+    private void removeErrorsPriorToCutoffTime(int numberOfErrorsBefore, long removeTimeBeforeMillis) {
         boolean windowRemoval = false;
         
         // (could we speed this up by using binary search to find the entry point,
@@ -204,7 +196,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
 
             if (time < removeTimeBeforeMillis) {
                 if (!windowRemoval) {
-                    prevHighWaterMark = requestCounts.get(j);
+                    previousRequestHighWaterMark = requestCounts.get(j);
                     windowRemoval = true;
                 }
 
@@ -212,8 +204,6 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
                 this.requestCounts.remove(j);
             }
         }
-
-        return prevHighWaterMark;
     }
 
     /**
