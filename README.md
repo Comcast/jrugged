@@ -2,12 +2,10 @@
 
 A Java libary of robustness design patterns
 
-
 ## About JRugged
 The JRugged library implements some common patterns needed for building robust, production-ready server code in Java. It provides straightforward add-ons to existing code to make it more tolerant of failures and easier to manage. In other words, it makes your Java code more _rugged_!
 
 Getting started is easy, just check out our [Examples](https://github.com/Comcast/jrugged/wiki/Examples) page.  If you would just like to browse the wiki you can start on our [Main Page](https://github.com/Comcast/jrugged/wiki).
-
 
 ## News
 - *3 March 2013*: Version 3.1.0 of the JRugged Library released!
