@@ -18,7 +18,7 @@
 	<parent>
 		<groupId>org.fishwife</groupId>
 		<artifactId>jrugged</artifactId>
-		<version>3.2.0</version>
+		<version>3.2.0-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -31,7 +31,6 @@
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>
         <spring-batch.version>2.2.0.RELEASE</spring-batch.version>
-        <spring-retry.version>1.0.3.RELEASE</spring-retry.version>
         <guava.version>14.0.1</guava.version>
         <mockito.version>1.8.5</mockito.version>
         <hamcrest.version>1.2.1</hamcrest.version>
@@ -41,13 +40,13 @@
 		<dependency>
 			<groupId>org.fishwife</groupId>
 			<artifactId>jrugged-core</artifactId>
-			<version>3.2.0</version>
+			<version>3.2.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.fishwife</groupId>
 			<artifactId>jrugged-aspects</artifactId>
-			<version>3.2.0</version>
+			<version>3.2.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
         <dependency>
@@ -113,9 +112,9 @@
         </dependency>
         -->
         <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
-            <version>${spring-retry.version}</version>
+            <groupId>org.springframework.batch</groupId>
+            <artifactId>spring-batch-core</artifactId>
+            <version>${spring-batch.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-logging</groupId>
@@ -123,7 +122,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
         <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-test</artifactId>
