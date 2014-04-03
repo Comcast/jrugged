@@ -405,6 +405,24 @@ public class TestCircuitBreaker {
     }
 
     @Test
+    public void circuitBreakerReturnsExceptionAsString() {
+
+        try {
+            impl.invoke(new FailingCallable("broken"));
+        } catch (Exception e) {
+
+        }
+
+        Throwable tripException = impl.getTripException();
+
+        String s = impl.getTripExceptionAsString();
+
+        assertTrue(impl.getTripExceptionAsString().startsWith("java.lang.Exception: broken\n"));
+        assertTrue(impl.getTripExceptionAsString().contains("at org.fishwife.jrugged.TestCircuitBreaker$FailingCallable.call"));
+        assertTrue(impl.getTripExceptionAsString().contains("Caused by: java.lang.Exception: The Cause\n"));
+    }
+
+    @Test
     public void neverTrippedCircuitBreakerReturnsNullForTripException() throws Exception {
 
         impl.invoke(mockCallable);
@@ -422,8 +440,11 @@ public class TestCircuitBreaker {
             this.exceptionMessage = exceptionMessage;
         }
 
+        Exception causeException = new Exception("The Cause");
+
         public Object call() throws Exception {
-            throw new Exception(exceptionMessage);
+            throw new Exception(exceptionMessage, causeException);
         }
     }
+
 }

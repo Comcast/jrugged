@@ -16,6 +16,8 @@
  */
 package org.fishwife.jrugged;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -95,14 +97,10 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
     public String getTripExceptionAsString() {
         if (tripException == null) {
             return "";
-        }
+        } else {
+            return getFullStackTrace(tripException);
 
-        StringBuilder sb = new StringBuilder();
-        for (StackTraceElement element : tripException.getStackTrace()) {
-            sb.append(element.toString());
-            sb.append("\n");
         }
-        return sb.toString();
     }
 
 	/** Current state of the breaker. */
@@ -643,5 +641,11 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
             state = BreakerState.HALF_CLOSED;
         }
         return canAttempt();
+    }
+
+    private String getFullStackTrace(Throwable t) {
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
     }
 }
