@@ -1,6 +1,5 @@
 package org.fishwife.jrugged.spring.aspects;
 
-import com.google.common.base.Strings;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -11,8 +10,11 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.retry.RecoveryCallback;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
+
+import com.google.common.base.Strings;
 
 @Aspect
 public class RetryTemplateAspect implements BeanFactoryAware {
@@ -53,7 +55,7 @@ public class RetryTemplateAspect implements BeanFactoryAware {
         org.springframework.retry.support.RetryTemplate retryTemplate =
             beanFactory.getBean(name, org.springframework.retry.support.RetryTemplate.class);
 
-        org.springframework.retry.RecoveryCallback recoveryCallback = null;
+        RecoveryCallback<Object> recoveryCallback = null;
         if (! Strings.isNullOrEmpty(recoveryCallbackName)) {
             recoveryCallback =
                     beanFactory.getBean(recoveryCallbackName, org.springframework.retry.RecoveryCallback.class);
@@ -71,7 +73,7 @@ public class RetryTemplateAspect implements BeanFactoryAware {
         }
 
         return retryTemplate.execute(
-                new RetryCallback<Object>() {
+                new RetryCallback<Object, Exception>() {
                     public Object doWithRetry(RetryContext context) throws Exception {
                         try {
                             return pjp.proceed();

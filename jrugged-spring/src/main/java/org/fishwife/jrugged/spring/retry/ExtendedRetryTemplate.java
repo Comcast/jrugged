@@ -15,10 +15,14 @@
 
 package org.fishwife.jrugged.spring.retry;
 
-import org.springframework.retry.*;
-import org.springframework.retry.support.RetryTemplate;
-
 import java.util.concurrent.Callable;
+
+import org.springframework.retry.ExhaustedRetryException;
+import org.springframework.retry.RecoveryCallback;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.RetryState;
+import org.springframework.retry.support.RetryTemplate;
 
 /***
  * Extended version of the {@link RetryTemplate} to allow easy use of the {@link Callable}
@@ -42,7 +46,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      * @param <T> The return type of the callback
      * @return
      */
-    public <T> Callable<T> asCallable(final RetryCallback<T> callback) {
+    public <T> Callable<T> asCallable(final RetryCallback<T, Exception> callback) {
         return new Callable<T>() {
             public T call() throws Exception {
                return ExtendedRetryTemplate.this.execute(callback);
@@ -63,7 +67,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
     public <T> Callable<T> asCallable(final Callable<T> callable) {
         return new Callable<T>() {
             public T call() throws Exception {
-                return ExtendedRetryTemplate.this.execute(new RetryCallback<T>() {
+                return ExtendedRetryTemplate.this.execute(new RetryCallback<T, Exception>() {
                     public T doWithRetry(RetryContext retryContext) throws Exception {
                         return callable.call();
                     }
@@ -82,7 +86,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      * @throws ExhaustedRetryException If all retry attempts have been exhausted
      */
     public <T> T execute(final Callable<T> callable) throws Exception, ExhaustedRetryException {
-        return execute(new RetryCallback<T>() {
+        return execute(new RetryCallback<T, Exception>() {
             public T doWithRetry(RetryContext retryContext) throws Exception {
                 return callable.call();
             }
@@ -101,7 +105,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      */
     public <T> T execute(final Callable<T> callable, RetryState retryState) throws Exception, ExhaustedRetryException {
         return execute(
-                new RetryCallback<T>() {
+                new RetryCallback<T, Exception>() {
                     public T doWithRetry(RetryContext retryContext) throws Exception {
                         return callable.call();
                     }
@@ -122,7 +126,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      */
     public <T> T execute(final Callable<T> callable, RecoveryCallback<T> recoveryCallback, RetryState retryState) throws Exception, ExhaustedRetryException {
         return execute(
-                new RetryCallback<T>() {
+                new RetryCallback<T, Exception>() {
                     public T doWithRetry(RetryContext retryContext) throws Exception {
                         return callable.call();
                     }
