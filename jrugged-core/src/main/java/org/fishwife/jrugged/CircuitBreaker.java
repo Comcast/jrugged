@@ -337,9 +337,11 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
      *  resets.
      */
     public void trip() {
+        if (state != BreakerState.OPEN) {
+            openCount.getAndIncrement();
+        }
         state = BreakerState.OPEN;
         lastFailure.set(System.currentTimeMillis());
-        openCount.getAndIncrement();
         isAttemptLive = false;
 
         notifyBreakerStateChange(getStatus());

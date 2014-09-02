@@ -278,6 +278,18 @@ public class TestCircuitBreaker {
     }
 
     @Test
+    public void testGetTripCount() throws Exception {
+        long tripCount1 = impl.getTripCount();
+
+        impl.tripHard();
+        long tripCount2 = impl.getTripCount();
+        assertEquals(tripCount1 + 1, tripCount2);
+
+        impl.tripHard();
+        assertEquals(tripCount2, impl.getTripCount());
+    }
+
+    @Test
     public void testGetStatusWhenOpen() {
         impl.state = CircuitBreaker.BreakerState.OPEN;
         Assert.assertEquals(Status.DOWN, impl.getStatus());
