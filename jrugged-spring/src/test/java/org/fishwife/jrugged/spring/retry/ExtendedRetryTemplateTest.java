@@ -15,6 +15,8 @@
 
 package org.fishwife.jrugged.spring.retry;
 
+import java.util.concurrent.Callable;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -22,8 +24,6 @@ import org.springframework.retry.RecoveryCallback;
 import org.springframework.retry.RetryCallback;
 import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryState;
-
-import java.util.concurrent.Callable;
 
 public class ExtendedRetryTemplateTest {
     @Test
@@ -41,7 +41,7 @@ public class ExtendedRetryTemplateTest {
 
     @Test
     public void test_asCallable_callback() throws Exception {
-        RetryCallback<Long> callback = Mockito.mock(RetryCallback.class);
+        RetryCallback<Long, Exception> callback = Mockito.mock(RetryCallback.class);
         ExtendedRetryTemplate template = new ExtendedRetryTemplate();
 
         Mockito.when(callback.doWithRetry(Mockito.any(RetryContext.class))).thenReturn(10L);
