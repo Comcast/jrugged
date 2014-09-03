@@ -78,7 +78,7 @@ public class TestInitializer {
         impl.setMaxRetries(2);
         impl.setRetryMillis(1);
         impl.initialize();
-        Thread.sleep(5);
+        Thread.sleep(10);
 
         assertFalse(impl.isInitialized());
         assertFalse(impl.isCancelled());
@@ -97,7 +97,7 @@ public class TestInitializer {
         impl.setMaxRetries(2);
         impl.setRetryMillis(1);
         impl.initialize();
-        Thread.sleep(5);
+        Thread.sleep(10);
 
         assertFalse(impl.isInitialized());
         assertFalse(impl.isCancelled());

@@ -21,7 +21,6 @@ limitations under the License.
     <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.fishwife</groupId>
   <artifactId>jrugged-httpclient</artifactId>
   <version>3.2.2-SNAPSHOT</version>
   <name>jrugged-httpclient</name>

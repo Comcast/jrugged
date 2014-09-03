@@ -22,7 +22,6 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.fishwife</groupId>
 	<artifactId>jrugged-aspects</artifactId>
 	<packaging>jar</packaging>
 	<name>jrugged-aspects</name>
