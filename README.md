@@ -10,7 +10,7 @@ Getting started is easy, just check out our [Examples](https://github.com/Comcas
 ## News
 - *3 March 2013*: Version 3.1.0 of the JRugged Library released!
     - Modified performance monitor to return 0's instead of EmptySet Exception
-    - Removed a terribly linkage to log4j
+    - Removed a terrible linkage to log4j
     - Changed the way statuses were reported to add the sevice currently reporting a given status
     - Minor bug fixes from the 3.0.3 version
 
