@@ -87,6 +87,7 @@ public class CircuitBreakerAspect {
             DefaultFailureInterpreter dfi =
                     new DefaultFailureInterpreter(
                             circuitBreakerAnnotation.ignore(),
+                            circuitBreakerAnnotation.target(),
                             circuitBreakerAnnotation.limit(),
                             circuitBreakerAnnotation.windowMillis());
 

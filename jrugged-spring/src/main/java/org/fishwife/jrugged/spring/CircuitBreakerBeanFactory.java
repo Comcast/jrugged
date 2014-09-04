@@ -87,7 +87,7 @@ public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements 
             AnnotatedMethodScanner methodScanner = new AnnotatedMethodScanner();
             for (Method m : methodScanner.findAnnotatedMethods(packageScanBase, org.fishwife.jrugged.aspects.CircuitBreaker.class)) {
                 org.fishwife.jrugged.aspects.CircuitBreaker circuitBreakerAnnotation = m.getAnnotation(org.fishwife.jrugged.aspects.CircuitBreaker.class);
-                DefaultFailureInterpreter dfi = new DefaultFailureInterpreter(circuitBreakerAnnotation.ignore(), circuitBreakerAnnotation.limit(), circuitBreakerAnnotation.windowMillis());
+                DefaultFailureInterpreter dfi = new DefaultFailureInterpreter(circuitBreakerAnnotation.ignore(), circuitBreakerAnnotation.target(), circuitBreakerAnnotation.limit(), circuitBreakerAnnotation.windowMillis());
                 CircuitBreakerConfig config = new CircuitBreakerConfig(circuitBreakerAnnotation.resetMillis(), dfi);
                 createCircuitBreaker(circuitBreakerAnnotation.name(), config);
             }

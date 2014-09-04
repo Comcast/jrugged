@@ -43,6 +43,14 @@ public @interface CircuitBreaker {
     Class<? extends Throwable>[] ignore() default {};
 
     /**
+     * Exception types that the {@link
+     * org.fishwife.jrugged.CircuitBreaker} will consider as failure
+     * and may cause tripping if it reaches the limit.
+     * @return the Exception types.
+     */
+    Class<? extends Throwable>[] target() default {};
+    
+    /**
      * Specifies the length of the measurement window for failure
      * tolerances in milliseconds.  i.e. if <code>limit</code>
      * failures occur within <code>windowMillis</code> milliseconds,

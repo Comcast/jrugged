@@ -14,6 +14,7 @@
  */
 package org.fishwife.jrugged;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import org.junit.Before;
@@ -65,10 +66,11 @@ public final class TestDefaultFailureInterpreter{
 	public void testConstructorWithIgnoreAndTolerance() {
 		final Class exnClass = RuntimeException.class;
 		final Class[] myIgnore =  { exnClass };
+		final Class[] myTarget =  new Class[] {};
 		final int frequency = 7777;
 		final long time = 1234L;
 
-		impl = new DefaultFailureInterpreter(myIgnore, frequency, time);
+		impl = new DefaultFailureInterpreter(myIgnore, myTarget, frequency, time);
 		
 		assertEquals(frequency, impl.getLimit());
 		assertEquals(time, impl.getWindowMillis());
@@ -82,12 +84,52 @@ public final class TestDefaultFailureInterpreter{
 	@SuppressWarnings({ "rawtypes", "unchecked" })
     @Test
 	public void testIgnoredExceptionDoesNotTrip() {
-		final Class ignoreClass = IOException.class;
-        final Class[] myIgnore = { ignoreClass };
+        final Class[] myIgnore = { IOException.class };
 
         impl.setIgnore(myIgnore);
         assertFalse(impl.shouldTrip(new IOException()));
+        
+        // Exception inheriting from IOException should also not trip.
+        assertFalse(impl.shouldTrip(new FileNotFoundException()));
+        
+        // Exception not specified in ignore should trip.
+        assertTrue(impl.shouldTrip(new IllegalStateException()));
 	}
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test
+    public void testOnlyTargetedExceptionsTrip() {
+        final Class[] myTarget = { IOException.class, IllegalArgumentException.class };
+
+        impl.setTarget(myTarget);
+        assertTrue(impl.shouldTrip(new IOException()));
+        assertTrue(impl.shouldTrip(new IllegalArgumentException()));
+        
+        // Exception inheriting from IOException should also trip.
+        assertTrue(impl.shouldTrip(new FileNotFoundException()));
+        
+        // Exception not specified in target should not trip.
+        assertFalse(impl.shouldTrip(new IllegalStateException()));
+    }
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test(expected=IllegalArgumentException.class)
+    public void testSettingBothIgnoreAndTargetShouldFail() {
+	    final Class[] myIgnore = { IOException.class };
+	    final Class[] myTarget = { IllegalArgumentException.class };
+
+	    impl.setIgnore(myIgnore);
+        impl.setTarget(myTarget);
+    }
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+    @Test(expected=IllegalArgumentException.class)
+    public void testSettingBothIgnoreAndTargetInConstructorShouldFail() {
+        final Class[] myIgnore = { IOException.class };
+        final Class[] myTarget = { IllegalArgumentException.class };
+
+        new DefaultFailureInterpreter(myIgnore, myTarget, 0, 0);
+    }
 
     @Test
 	public void testAnyExceptionTripsByDefault() {

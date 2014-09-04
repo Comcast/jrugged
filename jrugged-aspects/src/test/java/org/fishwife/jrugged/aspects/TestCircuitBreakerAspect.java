@@ -54,6 +54,9 @@ public class TestCircuitBreakerAspect {
         @SuppressWarnings("unchecked")
         Class<Throwable>[] ignores = new Class[0];
         expect(mockAnnotation.ignore()).andReturn(ignores);
+        @SuppressWarnings("unchecked")
+        Class<Throwable>[] targets = new Class[0];
+        expect(mockAnnotation.target()).andReturn(targets);
 
         replay(mockAnnotation);
         replay(mockSignature);
@@ -84,6 +87,9 @@ public class TestCircuitBreakerAspect {
         @SuppressWarnings("unchecked")
         Class<Throwable>[] ignores = new Class[0];
         expect(otherMockAnnotation.ignore()).andReturn(ignores);
+        @SuppressWarnings("unchecked")
+        Class<Throwable>[] targets = new Class[0];
+        expect(otherMockAnnotation.target()).andReturn(targets);
         replay(otherMockAnnotation);
 
         // Test monitor with another circuit breaker.
