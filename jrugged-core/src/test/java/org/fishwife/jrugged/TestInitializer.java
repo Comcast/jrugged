@@ -76,7 +76,7 @@ public class TestInitializer {
         replay(mockClient);
 
         impl.setMaxRetries(2);
-        impl.setRetryMillis(1);
+        impl.setRetryMillis(3);
         impl.initialize();
         Thread.sleep(10);
 
@@ -95,7 +95,7 @@ public class TestInitializer {
         replay(mockClient);
 
         impl.setMaxRetries(2);
-        impl.setRetryMillis(1);
+        impl.setRetryMillis(3);
         impl.initialize();
         Thread.sleep(10);
 
