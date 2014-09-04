@@ -204,13 +204,14 @@ public class TestCircuitBreaker {
         impl.lastFailure.set(System.currentTimeMillis() - 2000);
 
         assertEquals(Status.DEGRADED, impl.getStatus());
+        assertEquals(CircuitBreaker.BreakerState.HALF_CLOSED, impl.state);
     }
 
     @Test
     public void testHalfClosedFailureOpensAgain()
             throws Exception {
 
-        impl.state = CircuitBreaker.BreakerState.CLOSED;
+        impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
         impl.resetMillis.set(1000);
         impl.lastFailure.set(System.currentTimeMillis() - 2000);
 
