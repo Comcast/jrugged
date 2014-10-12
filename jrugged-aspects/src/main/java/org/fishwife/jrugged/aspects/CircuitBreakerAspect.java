@@ -17,6 +17,7 @@ package org.fishwife.jrugged.aspects;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.fishwife.jrugged.CircuitBreakerConfig;
 import org.fishwife.jrugged.CircuitBreakerFactory;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
@@ -30,6 +31,7 @@ import java.util.concurrent.Callable;
  * {@link org.fishwife.jrugged.CircuitBreaker}.
  */
 @Aspect
+@DeclarePrecedence("CircuitBreakerAspect, PerformanceMonitorAspect")
 public class CircuitBreakerAspect {
 
     private static final Logger logger =

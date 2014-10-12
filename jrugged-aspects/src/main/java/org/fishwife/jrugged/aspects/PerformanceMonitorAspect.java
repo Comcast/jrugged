@@ -17,6 +17,7 @@ package org.fishwife.jrugged.aspects;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.fishwife.jrugged.PerformanceMonitorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,7 @@ import java.util.concurrent.Callable;
  * using the same value for the monitor key.
  */
 @Aspect
+@DeclarePrecedence("CircuitBreakerAspect, PerformanceMonitorAspect")
 public class PerformanceMonitorAspect {
 
     private static final Logger logger =
