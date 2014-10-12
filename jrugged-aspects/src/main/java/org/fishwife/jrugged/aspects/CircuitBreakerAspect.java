@@ -1,4 +1,4 @@
-/* Copyright 2009-2012 Comcast Interactive Media, LLC.
+/* Copyright 2009-2014 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.fishwife.jrugged.aspects;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.fishwife.jrugged.CircuitBreakerConfig;
 import org.fishwife.jrugged.CircuitBreakerFactory;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
@@ -30,6 +31,7 @@ import java.util.concurrent.Callable;
  * {@link org.fishwife.jrugged.CircuitBreaker}.
  */
 @Aspect
+@DeclarePrecedence("PerformanceMonitorAspect, CircuitBreakerAspect")
 public class CircuitBreakerAspect {
 
     private static final Logger logger =
