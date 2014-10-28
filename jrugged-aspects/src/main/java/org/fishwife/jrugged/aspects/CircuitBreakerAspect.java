@@ -31,7 +31,6 @@ import java.util.concurrent.Callable;
  * {@link org.fishwife.jrugged.CircuitBreaker}.
  */
 @Aspect
-@DeclarePrecedence("PerformanceMonitorAspect, CircuitBreakerAspect")
 public class CircuitBreakerAspect {
 
     private static final Logger logger =
