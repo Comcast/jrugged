@@ -410,7 +410,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
      */
     public ServiceStatus getServiceStatus() {
         boolean canSendProbeRequest = !isHardTrip && lastFailure.get() > 0
-            && (System.currentTimeMillis() - lastFailure.get() >= resetMillis.get());
+            && allowRequest();
 
         if (byPass) {
             return new ServiceStatus(name, Status.DEGRADED, "Bypassed");
@@ -580,13 +580,11 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
     }
 
 	private void handleFailure(Throwable cause) throws Exception {
-		if (failureInterpreter == null ||
-			failureInterpreter.shouldTrip(cause)) {
+		if (failureInterpreter == null || failureInterpreter.shouldTrip(cause)) {
             this.tripException = cause;
 			trip();
 		}
-
-        if (isAttemptLive) {
+        else if (isAttemptLive) {
             close();
         }
         

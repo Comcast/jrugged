@@ -33,6 +33,7 @@ import java.util.concurrent.Callable;
  * using the same value for the monitor key.
  */
 @Aspect
+@DeclarePrecedence("PerformanceMonitorAspect, CircuitBreakerAspect")
 public class PerformanceMonitorAspect {
 
     private static final Logger logger =
