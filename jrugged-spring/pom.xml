@@ -18,7 +18,7 @@
 	<parent>
 		<groupId>org.fishwife</groupId>
 		<artifactId>jrugged</artifactId>
-		<version>3.2.2</version>
+		<version>3.2.3-SNAPSHOT</version>
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
@@ -38,13 +38,13 @@
 		<dependency>
 			<groupId>org.fishwife</groupId>
 			<artifactId>jrugged-core</artifactId>
-			<version>3.2.2</version>
+			<version>3.2.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.fishwife</groupId>
 			<artifactId>jrugged-aspects</artifactId>
-			<version>3.2.2</version>
+			<version>3.2.3-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>
         <dependency>
