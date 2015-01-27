@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A ServiceStatus is used by a {@link MonitoredService} to report it's status.
+ * A ServiceStatus is used by a {@link MonitoredService} to report its status.
  * The status includes the name of the service, the {@link Status} for the
  * service, and the {@link List} of reasons for the status.
  */
