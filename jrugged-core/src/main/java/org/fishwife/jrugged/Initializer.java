@@ -24,7 +24,7 @@ package org.fishwife.jrugged;
  * background thread (so that other services can try to initialize
  * in the meantime). When initialization succeeds, the background
  * thread terminates and the client service can enter normal operation.
- * <p/>
+ *
  * Sample usage:
  * <pre>
  * public class Service implements Initializable, Monitorable {

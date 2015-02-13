@@ -88,7 +88,7 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
      *
      * @param source An Attribute node from the spring configuration
      *
-     * @return List<String>
+     * @return List&lt;String&gt;
      */
     private List<String> buildMethodList(Node source) {
         Attr attribute = (Attr)source;
@@ -102,7 +102,7 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
      *
      * @param methods the comma delimited list of methods from the spring configuration
      *
-     * @return List<String>
+     * @return List&lt;String&gt;
      */
     public List<String> parseMethodList(String methods) {
         

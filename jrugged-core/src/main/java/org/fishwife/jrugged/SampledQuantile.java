@@ -126,9 +126,9 @@ public class SampledQuantile {
      * Returns the <code>i</code>th percentile of the samples seen
 	 * thus far. This is equivalent to <code>getQuantile(i,100)</code>.
      *
-	 * @param i must be 0 < i < 100
+	 * @param i must be 0 &lt; i &lt; 100
 	 * @return i-th percentile, or 0 if there is no data
-	 * @throws QuantileOutOfBoundsException if i <= 0 or i >= 100
+	 * @throws QuantileOutOfBoundsException if i &lt;= 0 or i &gt;= 100
 	 */
 	public long getPercentile(int i) {
 		return getPercentile(i, System.currentTimeMillis());
@@ -142,10 +142,10 @@ public class SampledQuantile {
      * Returns the <code>k</code>th <code>q</code>-quantile of the samples
 	 * seen thus far.
      *
-	 * @param q must be >= 2
-	 * @param k must be 0 < k < q
+	 * @param q must be &gt;= 2
+	 * @param k must be 0 &lt; k &lt; q
 	 * @return k-th q-quantile, or 0 if there is no data
-	 * @throws QuantileOutOfBoundsException if k <= 0 or k >= q
+	 * @throws QuantileOutOfBoundsException if k &lt;= 0 or k &gt;= q
 	 */
 	public long getQuantile(int k, int q) {
 		return getQuantile(k, q, System.currentTimeMillis());
@@ -153,22 +153,29 @@ public class SampledQuantile {
 	
 	long getQuantile(int k, int q, long now) {
 		if (k <= 0 || k >= q) throw new QuantileOutOfBoundsException();
+
 		List<Sample> validSamples = getValidSamples(now);
-		if (validSamples.size() == 0) return 0;
-		Collections.sort(validSamples);
+
+        if (validSamples.size() == 0) return 0;
+
+        Collections.sort(validSamples);
 		double targetIndex = (validSamples.size() * k) / (q * 1.0);
-		if (validSamples.size() % 2 == 1) {
+
+        if (validSamples.size() % 2 == 1) {
 			return validSamples.get((int)Math.ceil(targetIndex) - 1).data;
 		}
-		int i0 = (int)Math.floor(targetIndex) - 1;
+
+        int i0 = (int)Math.floor(targetIndex) - 1;
 		return (validSamples.get(i0).data + validSamples.get(i0+1).data) / 2;
 	}
 
 	private List<Sample> getValidSamples(long now) {
 		if (windowMillis == null) return samples;
-		long deadline = now - windowMillis;
+
+        long deadline = now - windowMillis;
 		List<Sample> validSamples = new ArrayList<Sample>();
-		for(Sample sample : samples) {
+
+        for(Sample sample : samples) {
 			if (sample.timestamp >= deadline) {
 				validSamples.add(sample);
 			}
@@ -198,14 +205,18 @@ public class SampledQuantile {
 
 	private synchronized void updateWindowSegments(long now) {
 		if (windowMillis == null) return;
-		long deadline = now - windowMillis;
+
+        long deadline = now - windowMillis;
 		long segmentSize = windowMillis / NUM_WINDOW_SEGMENTS;
-		while(windowSegments.size() > 0 && windowSegments.peek().timestamp < deadline) {
+
+        while(windowSegments.size() > 0 && windowSegments.peek().timestamp < deadline) {
 			windowSegments.remove();
 		}
+
 		long mostRecentSegmentTimestamp = (windowSegments.size() > 0) ? 
 		    windowSegments.getLast().timestamp : 0L;
-		if (windowSegments.size() == 0 
+
+        if (windowSegments.size() == 0
 			|| now - mostRecentSegmentTimestamp > segmentSize) {
 			windowSegments.offer(new Sample(samplesSeen.get(), now));
 		}
@@ -219,11 +230,13 @@ public class SampledQuantile {
 	void addSample(long l, long now) {
 		samplesSeen.getAndIncrement();
 		updateWindowSegments(now);
-		if (samples.size() < maxSamples) {
+
+        if (samples.size() < maxSamples) {
 			samples.add(new Sample(l, now));
 			return;
 		}
-		if (rand.nextDouble() < maxSamples * 1.0 / getEffectiveSamplesSeen()) {
+
+        if (rand.nextDouble() < maxSamples * 1.0 / getEffectiveSamplesSeen()) {
 			int idx = rand.nextInt(maxSamples);
 			samples.set(idx, new Sample(l, now));
 		}

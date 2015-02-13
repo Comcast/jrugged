@@ -48,7 +48,7 @@ import java.util.concurrent.atomic.AtomicLong;
     public class Service implements Monitorable {
         private CircuitBreaker cb = new CircuitBreaker();
         public String doSomething(final Object arg) throws Exception {
-	    return cb.invoke(new Callable&lt;String>() {
+	    return cb.invoke(new Callable&lt;String&gt;() {
                                  public String call() {
                                      // make the call ...
                                  }

@@ -43,7 +43,7 @@ public class AnnotatedMethodScanner {
      *
      * @param scanBase Package to scan recursively, in dot notation (ie: org.jrugged...)
      * @param annotationClass Class of the annotation to search for
-     * @return Set<Method> The set of all @{java.lang.reflect.Method}s having the annotation
+     * @return Set&lt;Method&gt; The set of all @{java.lang.reflect.Method}s having the annotation
      */
     public Set<Method> findAnnotatedMethods(String scanBase, Class<? extends Annotation> annotationClass) {
         Set<BeanDefinition> filteredComponents = findCandidateBeans(scanBase, annotationClass);

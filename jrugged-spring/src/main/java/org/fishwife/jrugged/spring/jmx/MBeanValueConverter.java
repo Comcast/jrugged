@@ -36,7 +36,7 @@ public class MBeanValueConverter {
 
     /**
      * Convert the {@link String} parameter value into its native type.
-     *   The {@link String} '<null>' is converted into a null value.
+     *   The {@link String} '&lt;null&gt;' is converted into a null value.
      *   Only types String, Boolean, Int, Long, Float, and Double are supported.
      * @param parameterName the parameter name to convert.
      * @param type the native type for the parameter.
