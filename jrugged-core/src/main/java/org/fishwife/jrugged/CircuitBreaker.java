@@ -235,6 +235,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
             }
 
             try {
+                isAttemptLive = true;
                 V result = c.call();
                 close();
                 return result;
@@ -264,6 +265,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
             }
 
             try {
+                isAttemptLive = true;
                 r.run();
                 close();
                 return;
@@ -295,6 +297,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
             }
 
             try {
+                isAttemptLive = true;
                 r.run();
                 close();
                 return result;
@@ -612,7 +615,6 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
         if (!(BreakerState.HALF_CLOSED == state) || isAttemptLive) {
             return false;
         }
-        isAttemptLive = true;
         return true;
     }
 
