@@ -1,7 +1,7 @@
 /* TestCircuitBreaker.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -156,25 +156,6 @@ public class TestCircuitBreaker {
         assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
         assertTrue(impl.lastFailure.get() >= start);
         assertTrue(impl.lastFailure.get() <= end);
-    }
-
-    @Test
-    public void testHalfClosedWithLiveAttemptThrowsCBException()
-            throws Exception {
-
-        impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
-        impl.isAttemptLive = true;
-        replay(mockCallable);
-
-        try {
-            impl.invoke(mockCallable);
-            fail("should have thrown an exception");
-        } catch (CircuitBreakerException expected) {
-        }
-
-        verify(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.HALF_CLOSED, impl.state);
-        assertTrue(impl.isAttemptLive);
     }
 
     @Test
