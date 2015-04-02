@@ -31,12 +31,12 @@ public class RequestCounter implements ServiceWrapper {
 	/** Default constructor. */
 	public RequestCounter() { }
 
-    private synchronized void succeed() {
+    protected synchronized void succeed() {
     	numRequests++;
     	numSuccesses++;
     }
 
-    private synchronized void fail() {
+    protected synchronized void fail() {
     	numRequests++;
     	numFailures++;
     }
