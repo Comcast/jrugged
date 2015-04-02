@@ -147,7 +147,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
     private static final String DEFAULT_NAME="CircuitBreaker";
 
     /** The name for the CircuitBreaker. */
-    private String name = DEFAULT_NAME;
+    protected String name = DEFAULT_NAME;
 
     /** Creates a {@link CircuitBreaker} with a {@link
      *  DefaultFailureInterpreter} and the default "tripped" exception
@@ -575,14 +575,14 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
         return this.exceptionMapper;
     }
 
-    private Exception mapException(CircuitBreakerException cbe) {
+    protected Exception mapException(CircuitBreakerException cbe) {
         if (exceptionMapper == null)
             return cbe;
 
         return exceptionMapper.map(this, cbe);
     }
 
-	private void handleFailure(Throwable cause) throws Exception {
+	protected void handleFailure(Throwable cause) throws Exception {
 		if (failureInterpreter == null || failureInterpreter.shouldTrip(cause)) {
             this.tripException = cause;
 			trip();
@@ -605,7 +605,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
      * putting the <code>CircuitBreaker</code> back into the CLOSED
      * state serving requests.
      */
-    private void close() {
+    protected void close() {
         state = BreakerState.CLOSED;
         isAttemptLive = false;
         notifyBreakerStateChange(getStatus());
@@ -630,7 +630,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
      * @return boolean whether the breaker will allow a request
      * through or not.
      */
-    private boolean allowRequest() {
+    protected boolean allowRequest() {
         if (this.isHardTrip) {
             return false;
         }
