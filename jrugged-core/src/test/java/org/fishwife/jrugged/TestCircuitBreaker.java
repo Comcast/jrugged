@@ -218,12 +218,12 @@ public class TestCircuitBreaker {
     @Test
     public void testGetStatusNotUpdatingIsAttemptLive() throws Exception {
 
+        impl.resetMillis.set(50);
         impl.trip();
         assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
         assertEquals(false, impl.isAttemptLive);
 
-        impl.resetMillis.set(50);
-        Thread.sleep(100);
+        Thread.sleep(200);
 
         // The getStatus()->canAttempt() call also updated isAttemptLive to true
         assertEquals(Status.DEGRADED.getValue(), impl.getStatus().getValue());

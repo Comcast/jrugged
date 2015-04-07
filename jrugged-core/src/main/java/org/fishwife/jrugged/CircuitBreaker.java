@@ -612,7 +612,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
     }
 
     private synchronized boolean canAttempt() {
-        if (!(BreakerState.HALF_CLOSED == state)) {
+        if (!(BreakerState.HALF_CLOSED == state) || isAttemptLive) {
             return false;
         }
         return true;
