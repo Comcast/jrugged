@@ -32,14 +32,14 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 public class CircuitBreakerBean extends CircuitBreaker implements InitializingBean {
 
     private boolean disabledAtStart = false;
-    
+
     /**
      * {@inheritDoc}
      */
     public void afterPropertiesSet() throws Exception {
         if (disabledAtStart) tripHard();
     }
-    
+
     /**
      * Creates a {@link CircuitBreakerBean} with a
      * {@link DefaultFailureInterpreter} and the default "tripped" exception
@@ -101,13 +101,13 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
      *
      *  @param name the name for the {@link CircuitBreakerBean}
      *  @param fi the <code>FailureInterpreter</code> to use when
-     *    determining whether a specific failure ought to cause the 
+     *    determining whether a specific failure ought to cause the
      *    breaker to trip
      *  @param mapper helper used to translate a {@link
      *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
      */
     public CircuitBreakerBean(String name, FailureInterpreter fi,
-    		CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+            CircuitBreakerExceptionMapper<? extends Exception> mapper) {
         super(name, fi, mapper);
     }
 
@@ -141,8 +141,8 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     }
 
     /**
-	 * Returns the number of times the breaker has tripped OPEN during
-	 * its lifetime.
+     * Returns the number of times the breaker has tripped OPEN during
+     * its lifetime.
      * @return long the number of times the circuit breaker tripped
      */
     @ManagedAttribute
@@ -209,18 +209,18 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
         super.setResetMillis(l);
     }
 
-	/**
+    /**
      * Returns a {@link String} representation of the breaker's
-	 * status; potentially useful for exposing to monitoring software.
+     * status; potentially useful for exposing to monitoring software.
      *
-	 * @return <code>String</code> which is <code>"GREEN"</code> if
-	 *   the breaker is CLOSED; <code>"YELLOW"</code> if the breaker
-	 *   is HALF_CLOSED; and <code>"RED"</code> if the breaker is
-	 *   OPEN (tripped).
+     * @return <code>String</code> which is <code>"GREEN"</code> if
+     *   the breaker is CLOSED; <code>"YELLOW"</code> if the breaker
+     *   is HALF_CLOSED; and <code>"RED"</code> if the breaker is
+     *   OPEN (tripped).
      */
     @ManagedAttribute
     @Override
-	public String getHealthCheck() { return super.getHealthCheck(); }
+    public String getHealthCheck() { return super.getHealthCheck(); }
 
     /**
      * Gets the failure tolerance limit for the {@link DefaultFailureInterpreter} that

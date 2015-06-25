@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 public class PerformanceMonitor implements ServiceWrapper {
 
     private static final String WRAP_MSG =
-		"org.fishwife.jrugged.PerformanceMonitor.WRAPPED";
+        "org.fishwife.jrugged.PerformanceMonitor.WRAPPED";
 
     private final long startupMillis = System.currentTimeMillis();
 
@@ -59,10 +59,10 @@ public class PerformanceMonitor implements ServiceWrapper {
     private MovingAverage totalRequestsPerSecondLastDay;
     private MovingAverage successRequestsPerSecondLastDay;
     private MovingAverage failureRequestsPerSecondLastDay;
-    
+
     private SampledQuantile lifetimeSuccessLatencyQuantile = new SampledQuantile();
     private SampledQuantile lifetimeFailureLatencyQuantile = new SampledQuantile();
-    
+
     private SampledQuantile successLatencyQuantileLastMinute = new SampledQuantile(60L, TimeUnit.SECONDS);
     private SampledQuantile successLatencyQuantileLastHour = new SampledQuantile(3600L, TimeUnit.SECONDS);
     private SampledQuantile successLatencyQuantileLastDay = new SampledQuantile(86400L, TimeUnit.SECONDS);
@@ -70,105 +70,105 @@ public class PerformanceMonitor implements ServiceWrapper {
     private SampledQuantile failureLatencyQuantileLastMinute = new SampledQuantile(60L, TimeUnit.SECONDS);
     private SampledQuantile failureLatencyQuantileLastHour = new SampledQuantile(3600L, TimeUnit.SECONDS);
     private SampledQuantile failureLatencyQuantileLastDay = new SampledQuantile(86400L, TimeUnit.SECONDS);
-    
+
     private long lifetimeMaxSuccessMillis;
     private long lifetimeMaxFailureMillis;
 
-	/** Default constructor. */
+    /** Default constructor. */
     public PerformanceMonitor() {
-		createMovingAverages();
+        createMovingAverages();
     }
 
-	private void createMovingAverages() {
-		averageSuccessLatencyLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
-		averageSuccessLatencyLastHour = new MovingAverage(ONE_HOUR_MILLIS);
-		averageSuccessLatencyLastDay = new MovingAverage(ONE_DAY_MILLIS);
-		averageFailureLatencyLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
-		averageFailureLatencyLastHour = new MovingAverage(ONE_HOUR_MILLIS);
-		averageFailureLatencyLastDay = new MovingAverage(ONE_DAY_MILLIS);
+    private void createMovingAverages() {
+        averageSuccessLatencyLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
+        averageSuccessLatencyLastHour = new MovingAverage(ONE_HOUR_MILLIS);
+        averageSuccessLatencyLastDay = new MovingAverage(ONE_DAY_MILLIS);
+        averageFailureLatencyLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
+        averageFailureLatencyLastHour = new MovingAverage(ONE_HOUR_MILLIS);
+        averageFailureLatencyLastDay = new MovingAverage(ONE_DAY_MILLIS);
 
-		totalRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
-		successRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
-		failureRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
+        totalRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
+        successRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
+        failureRequestsPerSecondLastMinute = new MovingAverage(ONE_MINUTE_MILLIS);
 
-		totalRequestsPerSecondLastHour = new MovingAverage(ONE_HOUR_MILLIS);
-		successRequestsPerSecondLastHour = new MovingAverage(ONE_HOUR_MILLIS);
-		failureRequestsPerSecondLastHour = new MovingAverage(ONE_HOUR_MILLIS);
+        totalRequestsPerSecondLastHour = new MovingAverage(ONE_HOUR_MILLIS);
+        successRequestsPerSecondLastHour = new MovingAverage(ONE_HOUR_MILLIS);
+        failureRequestsPerSecondLastHour = new MovingAverage(ONE_HOUR_MILLIS);
 
-		totalRequestsPerSecondLastDay = new MovingAverage(ONE_DAY_MILLIS);
-		successRequestsPerSecondLastDay = new MovingAverage(ONE_DAY_MILLIS);
-		failureRequestsPerSecondLastDay = new MovingAverage(ONE_DAY_MILLIS);
-	}
+        totalRequestsPerSecondLastDay = new MovingAverage(ONE_DAY_MILLIS);
+        successRequestsPerSecondLastDay = new MovingAverage(ONE_DAY_MILLIS);
+        failureRequestsPerSecondLastDay = new MovingAverage(ONE_DAY_MILLIS);
+    }
 
-	private void recordRequest() {
-		double[] rates = flowMeter.sample();
-		totalRequestsPerSecondLastMinute.update(rates[0]);
-		totalRequestsPerSecondLastHour.update(rates[0]);
-		totalRequestsPerSecondLastDay.update(rates[0]);
+    private void recordRequest() {
+        double[] rates = flowMeter.sample();
+        totalRequestsPerSecondLastMinute.update(rates[0]);
+        totalRequestsPerSecondLastHour.update(rates[0]);
+        totalRequestsPerSecondLastDay.update(rates[0]);
 
-		successRequestsPerSecondLastMinute.update(rates[1]);
-		successRequestsPerSecondLastHour.update(rates[1]);
-		successRequestsPerSecondLastDay.update(rates[1]);
+        successRequestsPerSecondLastMinute.update(rates[1]);
+        successRequestsPerSecondLastHour.update(rates[1]);
+        successRequestsPerSecondLastDay.update(rates[1]);
 
         failureRequestsPerSecondLastMinute.update(rates[2]);
-		failureRequestsPerSecondLastHour.update(rates[2]);
-		failureRequestsPerSecondLastDay.update(rates[2]);
-	}
+        failureRequestsPerSecondLastHour.update(rates[2]);
+        failureRequestsPerSecondLastDay.update(rates[2]);
+    }
 
-	private void recordSuccess(LatencyTracker latencyTracker) {
-		long successMillis = latencyTracker.getLastSuccessMillis();
-		averageSuccessLatencyLastMinute.update(successMillis);
-		averageSuccessLatencyLastHour.update(successMillis);
-		averageSuccessLatencyLastDay.update(successMillis);
-		lifetimeSuccessLatencyQuantile.addSample(successMillis);
-		successLatencyQuantileLastMinute.addSample(successMillis);
-		successLatencyQuantileLastHour.addSample(successMillis);
-		successLatencyQuantileLastDay.addSample(successMillis);
-		lifetimeMaxSuccessMillis =
-			(successMillis > lifetimeMaxSuccessMillis) ?
-					successMillis : lifetimeMaxSuccessMillis;
-		recordRequest();
-	}
+    private void recordSuccess(LatencyTracker latencyTracker) {
+        long successMillis = latencyTracker.getLastSuccessMillis();
+        averageSuccessLatencyLastMinute.update(successMillis);
+        averageSuccessLatencyLastHour.update(successMillis);
+        averageSuccessLatencyLastDay.update(successMillis);
+        lifetimeSuccessLatencyQuantile.addSample(successMillis);
+        successLatencyQuantileLastMinute.addSample(successMillis);
+        successLatencyQuantileLastHour.addSample(successMillis);
+        successLatencyQuantileLastDay.addSample(successMillis);
+        lifetimeMaxSuccessMillis =
+            (successMillis > lifetimeMaxSuccessMillis) ?
+                    successMillis : lifetimeMaxSuccessMillis;
+        recordRequest();
+    }
 
-	private void recordFailure(LatencyTracker latencyTracker) {
-		long failureMillis = latencyTracker.getLastFailureMillis();
-		averageFailureLatencyLastMinute.update(failureMillis);
-		averageFailureLatencyLastHour.update(failureMillis);
-		averageFailureLatencyLastDay.update(failureMillis);
-		lifetimeFailureLatencyQuantile.addSample(failureMillis);
-		failureLatencyQuantileLastMinute.addSample(failureMillis);
-		failureLatencyQuantileLastHour.addSample(failureMillis);
-		failureLatencyQuantileLastDay.addSample(failureMillis);
-		lifetimeMaxFailureMillis =
-			(failureMillis > lifetimeMaxFailureMillis) ?
-					failureMillis : lifetimeMaxFailureMillis;
-		recordRequest();
-	}
+    private void recordFailure(LatencyTracker latencyTracker) {
+        long failureMillis = latencyTracker.getLastFailureMillis();
+        averageFailureLatencyLastMinute.update(failureMillis);
+        averageFailureLatencyLastHour.update(failureMillis);
+        averageFailureLatencyLastDay.update(failureMillis);
+        lifetimeFailureLatencyQuantile.addSample(failureMillis);
+        failureLatencyQuantileLastMinute.addSample(failureMillis);
+        failureLatencyQuantileLastHour.addSample(failureMillis);
+        failureLatencyQuantileLastDay.addSample(failureMillis);
+        lifetimeMaxFailureMillis =
+            (failureMillis > lifetimeMaxFailureMillis) ?
+                    failureMillis : lifetimeMaxFailureMillis;
+        recordRequest();
+    }
 
     public <T> T invoke(final Callable<T> c) throws Exception {
         final LatencyTracker latencyTracker = new LatencyTracker();
-		try {
-			T result = requestCounter.invoke(new Callable<T>() {
-					public T call() throws Exception {
-						return latencyTracker.invoke(c);
-					}
-				});
-			recordSuccess(latencyTracker);
-			return result;
-		} catch (Exception e) {
-			recordFailure(latencyTracker);
-			if (WRAP_MSG.equals(e.getMessage())) {
-				throw (Exception)e.getCause();
-			} else {
-				throw e;
-			}
-		}
+        try {
+            T result = requestCounter.invoke(new Callable<T>() {
+                    public T call() throws Exception {
+                        return latencyTracker.invoke(c);
+                    }
+                });
+            recordSuccess(latencyTracker);
+            return result;
+        } catch (Exception e) {
+            recordFailure(latencyTracker);
+            if (WRAP_MSG.equals(e.getMessage())) {
+                throw (Exception)e.getCause();
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void invoke(final Runnable r) throws Exception {
         final LatencyTracker latencyTracker = new LatencyTracker();
-		try {
-			requestCounter.invoke(new Runnable() {
+        try {
+            requestCounter.invoke(new Runnable() {
                 public void run() {
                     try {
                         latencyTracker.invoke(r);
@@ -402,15 +402,15 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long getMedianPercentileSuccessLatencyLifetime() {
-    	return lifetimeSuccessLatencyQuantile.getPercentile(50);
-    }    
+        return lifetimeSuccessLatencyQuantile.getPercentile(50);
+    }
 
     /** Returns the 95th-percentile latency seen by this
      * {@link PerformanceMonitor} for successful requests.
      * @return latency in milliseconds
      */
     public long get95thPercentileSuccessLatencyLifetime() {
-    	return lifetimeSuccessLatencyQuantile.getPercentile(95);
+        return lifetimeSuccessLatencyQuantile.getPercentile(95);
     }
 
     /** Returns the 99th-percentile latency seen by this
@@ -418,7 +418,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long get99thPercentileSuccessLatencyLifetime() {
-    	return lifetimeSuccessLatencyQuantile.getPercentile(99);
+        return lifetimeSuccessLatencyQuantile.getPercentile(99);
     }
 
     /** Returns the maximum latency seen by this
@@ -426,7 +426,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long getMaxSuccessLatencyLifetime() {
-    	return lifetimeMaxSuccessMillis;
+        return lifetimeMaxSuccessMillis;
     }
 
     /** Returns the median latency seen by this {@link
@@ -435,8 +435,8 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long getMedianPercentileSuccessLatencyLastMinute() {
-    	return successLatencyQuantileLastMinute.getPercentile(50);
-    }    
+        return successLatencyQuantileLastMinute.getPercentile(50);
+    }
 
     /** Returns the 95th-percentile latency seen by this {@link
      * PerformanceMonitor} for successful requests over the last
@@ -444,16 +444,16 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long get95thPercentileSuccessLatencyLastMinute() {
-    	return successLatencyQuantileLastMinute.getPercentile(95);
+        return successLatencyQuantileLastMinute.getPercentile(95);
     }
 
     /** Returns the 99th-percentile latency seen by this {@link
-     * PerformanceMonitor} for successful requests over the last 
+     * PerformanceMonitor} for successful requests over the last
      * minute.
      * @return latency in milliseconds
      */
     public long get99thPercentileSuccessLatencyLastMinute() {
-    	return successLatencyQuantileLastMinute.getPercentile(99);
+        return successLatencyQuantileLastMinute.getPercentile(99);
     }
 
     /** Returns the median latency seen by this {@link
@@ -462,8 +462,8 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long getMedianPercentileSuccessfulLatencyLastHour() {
-    	return successLatencyQuantileLastHour.getPercentile(50);
-    }    
+        return successLatencyQuantileLastHour.getPercentile(50);
+    }
 
     /** Returns the 95th-percentile latency seen by this {@link
      * PerformanceMonitor} for successful requests over the last
@@ -471,16 +471,16 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long get95thPercentileSuccessLatencyLastHour() {
-    	return successLatencyQuantileLastHour.getPercentile(95);
+        return successLatencyQuantileLastHour.getPercentile(95);
     }
 
     /** Returns the 99th-percentile latency seen by this {@link
-     * PerformanceMonitor} for successful requests over the last 
+     * PerformanceMonitor} for successful requests over the last
      * hour.
      * @return latency in milliseconds
      */
     public long get99thPercentileSuccessLatencyLastHour() {
-    	return successLatencyQuantileLastHour.getPercentile(99);
+        return successLatencyQuantileLastHour.getPercentile(99);
     }
 
     /** Returns the median latency seen by this {@link
@@ -489,8 +489,8 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long getMedianPercentileSuccessLatencyLastDay() {
-    	return successLatencyQuantileLastDay.getPercentile(50);
-    }    
+        return successLatencyQuantileLastDay.getPercentile(50);
+    }
 
     /** Returns the 95th-percentile latency seen by this {@link
      * PerformanceMonitor} for successful requests over the last
@@ -498,33 +498,33 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long get95thPercentileSuccessLatencyLastDay() {
-    	return successLatencyQuantileLastDay.getPercentile(95);
+        return successLatencyQuantileLastDay.getPercentile(95);
     }
 
     /** Returns the 99th-percentile latency seen by this {@link
-     * PerformanceMonitor} for successful requests over the last 
+     * PerformanceMonitor} for successful requests over the last
      * hour.
      * @return latency in milliseconds
      */
     public long get99thPercentileSuccessLatencyLastDay() {
-    	return successLatencyQuantileLastDay.getPercentile(99);
+        return successLatencyQuantileLastDay.getPercentile(99);
     }
 
-    
+
     /** Returns the median latency seen by this {@link
      * PerformanceMonitor} for failed requests.
      * @return latency in milliseconds
      */
     public long getMedianPercentileFailureLatencyLifetime() {
-    	return lifetimeFailureLatencyQuantile.getPercentile(50);
-    }    
+        return lifetimeFailureLatencyQuantile.getPercentile(50);
+    }
 
     /** Returns the 95th-percentile latency seen by this {@link
      * PerformanceMonitor} for failed requests.
      * @return latency in milliseconds
      */
     public long get95thPercentileFailureLatencyLifetime() {
-    	return lifetimeFailureLatencyQuantile.getPercentile(95);
+        return lifetimeFailureLatencyQuantile.getPercentile(95);
     }
 
     /** Returns the 99th-percentile latency seen by this {@link
@@ -532,7 +532,7 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long get99thPercentileFailureLatencyLifetime() {
-    	return lifetimeFailureLatencyQuantile.getPercentile(99);
+        return lifetimeFailureLatencyQuantile.getPercentile(99);
     }
 
     /** Returns the maximum latency seen by this {@link
@@ -540,17 +540,17 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long getMaxFailureLatencyLifetime() {
-    	return lifetimeMaxFailureMillis;
+        return lifetimeMaxFailureMillis;
     }
-    
+
     /** Returns the median latency seen by this {@link
      * PerformanceMonitor} for failed requests over the
      * last minute.
      * @return latency in milliseconds
      */
     public long getMedianPercentileFailureLatencyLastMinute() {
-    	return failureLatencyQuantileLastMinute.getPercentile(50);
-    }    
+        return failureLatencyQuantileLastMinute.getPercentile(50);
+    }
 
     /** Returns the 95th-percentile latency seen by this {@link
      * PerformanceMonitor} for failed requests over the last
@@ -558,16 +558,16 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long get95thPercentileFailureLatencyLastMinute() {
-    	return failureLatencyQuantileLastMinute.getPercentile(95);
+        return failureLatencyQuantileLastMinute.getPercentile(95);
     }
 
     /** Returns the 99th-percentile latency seen by this {@link
-     * PerformanceMonitor} for failed requests over the last 
+     * PerformanceMonitor} for failed requests over the last
      * minute.
      * @return latency in milliseconds
      */
     public long get99thPercentileFailureLatencyLastMinute() {
-    	return failureLatencyQuantileLastMinute.getPercentile(99);
+        return failureLatencyQuantileLastMinute.getPercentile(99);
     }
 
     /** Returns the median latency seen by this {@link
@@ -576,8 +576,8 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long getMedianPercentileFailureLatencyLastHour() {
-    	return failureLatencyQuantileLastHour.getPercentile(50);
-    }    
+        return failureLatencyQuantileLastHour.getPercentile(50);
+    }
 
     /** Returns the 95th-percentile latency seen by this {@link
      * PerformanceMonitor} for failed requests over the last
@@ -585,16 +585,16 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long get95thPercentileFailureLatencyLastHour() {
-    	return failureLatencyQuantileLastHour.getPercentile(95);
+        return failureLatencyQuantileLastHour.getPercentile(95);
     }
 
     /** Returns the 99th-percentile latency seen by this {@link
-     * PerformanceMonitor} for failed requests over the last 
+     * PerformanceMonitor} for failed requests over the last
      * hour.
      * @return latency in milliseconds
      */
     public long get99thPercentileFailureLatencyLastHour() {
-    	return failureLatencyQuantileLastHour.getPercentile(99);
+        return failureLatencyQuantileLastHour.getPercentile(99);
     }
 
     /** Returns the median latency seen by this {@link
@@ -603,8 +603,8 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long getMedianPercentileFailureLatencyLastDay() {
-    	return failureLatencyQuantileLastDay.getPercentile(50);
-    }    
+        return failureLatencyQuantileLastDay.getPercentile(50);
+    }
 
     /** Returns the 95th-percentile latency seen by this {@link
      * PerformanceMonitor} for failed requests over the last
@@ -612,16 +612,16 @@ public class PerformanceMonitor implements ServiceWrapper {
      * @return latency in milliseconds
      */
     public long get95thPercentileFailureLatencyLastDay() {
-    	return failureLatencyQuantileLastDay.getPercentile(95);
+        return failureLatencyQuantileLastDay.getPercentile(95);
     }
 
     /** Returns the 99th-percentile latency seen by this {@link
-     * PerformanceMonitor} for failed requests over the last 
+     * PerformanceMonitor} for failed requests over the last
      * hour.
      * @return latency in milliseconds
      */
     public long get99thPercentileFailureLatencyLastDay() {
-    	return failureLatencyQuantileLastDay.getPercentile(99);
+        return failureLatencyQuantileLastDay.getPercentile(99);
     }
 
 }

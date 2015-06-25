@@ -1,7 +1,7 @@
 /* TestRollingCounter.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,121 +25,121 @@ import org.junit.Test;
 
 public final class TestWindowedEventCounter {
 
-	private WindowedEventCounter impl;
+    private WindowedEventCounter impl;
 
-	private StoppedClock clock = new StoppedClock();
+    private StoppedClock clock = new StoppedClock();
 
-	private static int CAPACITY = 3;
+    private static int CAPACITY = 3;
 
-	private static long WINDOW_MILLIS = 5L;
+    private static long WINDOW_MILLIS = 5L;
 
-	@Before
-	public void setUp() {
-		impl = new WindowedEventCounter(CAPACITY, WINDOW_MILLIS);
-		clock.currentTimeMillis = System.currentTimeMillis();
-		impl.setClock(clock);
-		
-		// several tests depend on this assumption
-		assertTrue(WINDOW_MILLIS > CAPACITY);
-	}
+    @Before
+    public void setUp() {
+        impl = new WindowedEventCounter(CAPACITY, WINDOW_MILLIS);
+        clock.currentTimeMillis = System.currentTimeMillis();
+        impl.setClock(clock);
 
-	// constructor tests
-	@Test
-	public void testConstructor() {
-		assertEquals(CAPACITY, impl.getCapacity());
-		assertEquals(WINDOW_MILLIS, impl.getWindowMillis());
-	}
+        // several tests depend on this assumption
+        assertTrue(WINDOW_MILLIS > CAPACITY);
+    }
 
-	@Test
-	public void testConstructorThrowsExceptionOnBadCapacity() {
-		try {
+    // constructor tests
+    @Test
+    public void testConstructor() {
+        assertEquals(CAPACITY, impl.getCapacity());
+        assertEquals(WINDOW_MILLIS, impl.getWindowMillis());
+    }
+
+    @Test
+    public void testConstructorThrowsExceptionOnBadCapacity() {
+        try {
             new WindowedEventCounter(0, WINDOW_MILLIS);
-			fail("constructor should have thrown IllegalArgumentException");
-		} catch (IllegalArgumentException iae) {
-			// this is expected. ignore and let test pass.
-		}
-	}
+            fail("constructor should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException iae) {
+            // this is expected. ignore and let test pass.
+        }
+    }
 
-	@Test
-	public void testConstructorThrowsExceptionOnBadWindowMillis() {
-		try {
+    @Test
+    public void testConstructorThrowsExceptionOnBadWindowMillis() {
+        try {
             new WindowedEventCounter(CAPACITY, 0);
-			fail("constructor should have thrown IllegalArgumentException");
-		} catch (IllegalArgumentException iae) {
-			// this is expected. ignore and let test pass.
-		}
-	}
+            fail("constructor should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException iae) {
+            // this is expected. ignore and let test pass.
+        }
+    }
 
-	@Test
-	public void testStartsEmpty() {
-		assertEquals(0, impl.tally());
-	}
+    @Test
+    public void testStartsEmpty() {
+        assertEquals(0, impl.tally());
+    }
 
-	@Test
-	public void testCountsToCapacity() {
-		for (int i = 1; i <= CAPACITY; i++) {
-			impl.mark();
-			clock.currentTimeMillis = clock.currentTimeMillis + 1;
-			assertEquals(i, impl.tally());
-		}
-	}
+    @Test
+    public void testCountsToCapacity() {
+        for (int i = 1; i <= CAPACITY; i++) {
+            impl.mark();
+            clock.currentTimeMillis = clock.currentTimeMillis + 1;
+            assertEquals(i, impl.tally());
+        }
+    }
 
-	@Test
-	public void testCountsToCapacityOnOverflow() {
-		for (int i = 0; i < (CAPACITY * 2); i++) {
-			clock.currentTimeMillis = clock.currentTimeMillis + 1;
-			impl.mark();
-		}
-		assertEquals(CAPACITY, impl.tally());
-	}
+    @Test
+    public void testCountsToCapacityOnOverflow() {
+        for (int i = 0; i < (CAPACITY * 2); i++) {
+            clock.currentTimeMillis = clock.currentTimeMillis + 1;
+            impl.mark();
+        }
+        assertEquals(CAPACITY, impl.tally());
+    }
 
-	@Test
-	public void testRollingExpiration() {
-		// empty at t0
-		long t0 = clock.currentTimeMillis;
+    @Test
+    public void testRollingExpiration() {
+        // empty at t0
+        long t0 = clock.currentTimeMillis;
 
-		/*
-		 * fill 'er up, marking once per milli (first event is at t1, second
-		 * event at t2...)
-		 */
-		for (int i = 1; i <= CAPACITY; i++) {
-			clock.currentTimeMillis = t0 + i;
-			impl.mark();
-		}
+        /*
+         * fill 'er up, marking once per milli (first event is at t1, second
+         * event at t2...)
+         */
+        for (int i = 1; i <= CAPACITY; i++) {
+            clock.currentTimeMillis = t0 + i;
+            impl.mark();
+        }
 
-		/*
-		 * represents that last time that all the events should still be
-		 * in-window.
-		 */
-		clock.currentTimeMillis = t0 + 1 + WINDOW_MILLIS;
-		int expectedCount = CAPACITY;
-		assertEquals(CAPACITY, impl.tally());
+        /*
+         * represents that last time that all the events should still be
+         * in-window.
+         */
+        clock.currentTimeMillis = t0 + 1 + WINDOW_MILLIS;
+        int expectedCount = CAPACITY;
+        assertEquals(CAPACITY, impl.tally());
 
-		// the tally count should drain at a rate one per milli now
-		for (int j = 1; j <= CAPACITY; j++) {
-			clock.currentTimeMillis++;
-			expectedCount--;
-			assertEquals(expectedCount, impl.tally());
-		}
+        // the tally count should drain at a rate one per milli now
+        for (int j = 1; j <= CAPACITY; j++) {
+            clock.currentTimeMillis++;
+            expectedCount--;
+            assertEquals(expectedCount, impl.tally());
+        }
 
-		clock.currentTimeMillis++;
-		// we should be empty now
-		assertEquals(0, impl.tally());
-	}
+        clock.currentTimeMillis++;
+        // we should be empty now
+        assertEquals(0, impl.tally());
+    }
 
     @Test
     public void testReducingWindowDecreasesTally() throws Exception {
-		// empty at t0
-		long t0 = clock.currentTimeMillis;
+        // empty at t0
+        long t0 = clock.currentTimeMillis;
 
-		/*
-		 * fill 'er up, marking once per milli (first event is at t1, second
-		 * event at t2...)
-		 */
-		for (int i = 1; i <= CAPACITY; i++) {
-			clock.currentTimeMillis = t0 + i;
-			impl.mark();
-		}
+        /*
+         * fill 'er up, marking once per milli (first event is at t1, second
+         * event at t2...)
+         */
+        for (int i = 1; i <= CAPACITY; i++) {
+            clock.currentTimeMillis = t0 + i;
+            impl.mark();
+        }
 
         // Move time to 1 MS past the last entry.
         clock.currentTimeMillis = clock.currentTimeMillis + 1;
@@ -148,58 +148,58 @@ public final class TestWindowedEventCounter {
         assertEquals(1, impl.tally());
     }
 
-	@Test
-	public void testReducingCapacityDecreasesTally() {
-		// fill up to capacity
-		for (int i = 1; i <= CAPACITY; i++) {
-			impl.mark();
-		}
-		assertEquals(CAPACITY, impl.tally());
+    @Test
+    public void testReducingCapacityDecreasesTally() {
+        // fill up to capacity
+        for (int i = 1; i <= CAPACITY; i++) {
+            impl.mark();
+        }
+        assertEquals(CAPACITY, impl.tally());
 
-		// reduce capacity
-		impl.setCapacity(CAPACITY - 1);
-		assertEquals(CAPACITY - 1, impl.tally());
-	}
+        // reduce capacity
+        impl.setCapacity(CAPACITY - 1);
+        assertEquals(CAPACITY - 1, impl.tally());
+    }
 
-	@Test
-	public void testIncreasingCapacity() {
-		// fill up to capacity
-		for (int i = 1; i <= CAPACITY; i++) {
-			impl.mark();
-		}
-		assertEquals(CAPACITY, impl.tally());
+    @Test
+    public void testIncreasingCapacity() {
+        // fill up to capacity
+        for (int i = 1; i <= CAPACITY; i++) {
+            impl.mark();
+        }
+        assertEquals(CAPACITY, impl.tally());
 
-		impl.setCapacity(CAPACITY + 1);
+        impl.setCapacity(CAPACITY + 1);
 
-		assertEquals(CAPACITY, impl.tally());
-	}
+        assertEquals(CAPACITY, impl.tally());
+    }
 
-	@Test
-	public void testSettingBadCapacityThrowsException() {
-		try {
-			impl.setCapacity(0);
-			fail("should have thrown IllegalArgumentException");
-		} catch (IllegalArgumentException iae) {
-			// this is expected. ignore and let test pass.
-		}
-	}
+    @Test
+    public void testSettingBadCapacityThrowsException() {
+        try {
+            impl.setCapacity(0);
+            fail("should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException iae) {
+            // this is expected. ignore and let test pass.
+        }
+    }
 
-	@Test
-	public void testSettingBadWindowMillisThrowsException() {
-		try {
-			impl.setWindowMillis(0);
-			fail("should have thrown IllegalArgumentException");
-		} catch (IllegalArgumentException iae) {
-			// this is expected. ignore and let test pass.
-		}
-	}
+    @Test
+    public void testSettingBadWindowMillisThrowsException() {
+        try {
+            impl.setWindowMillis(0);
+            fail("should have thrown IllegalArgumentException");
+        } catch (IllegalArgumentException iae) {
+            // this is expected. ignore and let test pass.
+        }
+    }
 
-	public class StoppedClock implements Clock {
-		public long currentTimeMillis;
+    public class StoppedClock implements Clock {
+        public long currentTimeMillis;
 
-		public long currentTimeMillis() {
-			return currentTimeMillis;
-		}
-	}
+        public long currentTimeMillis() {
+            return currentTimeMillis;
+        }
+    }
 
 }

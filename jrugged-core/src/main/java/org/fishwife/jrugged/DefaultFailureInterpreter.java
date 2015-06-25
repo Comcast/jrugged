@@ -1,7 +1,7 @@
 /* DefaultFailureInterpreter.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,18 +31,18 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
     private int limit = 0;
     private long windowMillis = 0;
 
-	private WindowedEventCounter counter;
-	
-	@SuppressWarnings("unchecked")
-	private static Class<? extends Throwable>[] defaultIgnore = 
-		new Class[0];
+    private WindowedEventCounter counter;
+
+    @SuppressWarnings("unchecked")
+    private static Class<? extends Throwable>[] defaultIgnore =
+        new Class[0];
 
     /**
      * Default constructor. Any {@link Throwable} will cause the breaker to trip.
      */
     public DefaultFailureInterpreter() {
-		setIgnore(defaultIgnore);
-	}
+        setIgnore(defaultIgnore);
+    }
 
     /**
      * Constructor that allows a tolerance for a certain number of
@@ -54,88 +54,88 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
      *   the window will cause the breaker to trip.
      * @param windowMillis length of the window in milliseconds
      */
-	public DefaultFailureInterpreter(int limit, long windowMillis) {
-		setIgnore(defaultIgnore);
-		setLimit(limit);
-		setWindowMillis(windowMillis);
-		initCounter();
-	}
+    public DefaultFailureInterpreter(int limit, long windowMillis) {
+        setIgnore(defaultIgnore);
+        setLimit(limit);
+        setWindowMillis(windowMillis);
+        initCounter();
+    }
 
     /**
      * Constructor where we specify certain {@link Throwable} classes
      * that will be ignored by the breaker and not be treated as
-     * failures (they will be passed through transparently without 
+     * failures (they will be passed through transparently without
      * causing the breaker to trip).
      * @param ignore an array of {@link Throwable} classes that will
      *   be ignored. Any given <code>Throwable</code> that is a
-     *   subclass of one of these classes will be ignored. 
+     *   subclass of one of these classes will be ignored.
      */
-	public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore) {
-		setIgnore(ignore);
-	}
+    public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore) {
+        setIgnore(ignore);
+    }
 
     /**
      * Constructor where we specify tolerance and a set of ignored failures.
      *
      * @param ignore an array of {@link Throwable} classes that will
      *   be ignored. Any given <code>Throwable</code> that is a
-     *   subclass of one of these classes will be ignored. 
+     *   subclass of one of these classes will be ignored.
      * @param limit the number of failures that will be tolerated
      *   (i.e. the number of failures has to be strictly <em>greater
      *   than</em> this number in order to trip the breaker). For
-     *   example, if the limit is 3, the fourth failure during 
+     *   example, if the limit is 3, the fourth failure during
      *   the window will cause the breaker to trip.
      * @param windowMillis length of the window in milliseconds
      */
-	public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore,
-									 int limit, long windowMillis) {
-		setIgnore(ignore);
-		setLimit(limit);
-		setWindowMillis(windowMillis);
-		initCounter();
-	}
+    public DefaultFailureInterpreter(Class<? extends Throwable>[] ignore,
+                                     int limit, long windowMillis) {
+        setIgnore(ignore);
+        setLimit(limit);
+        setWindowMillis(windowMillis);
+        initCounter();
+    }
 
     private boolean hasWindowConditions() {
         return this.limit > 0 && this.windowMillis > 0;
     }
-	
-	public boolean shouldTrip(Throwable cause) {
-		for(Class<?> clazz : ignore) {
-			if (clazz.isInstance(cause)) {
-				return false;
-			}
-		}
 
-		// if Exception is of specified type, and window conditions exist,
-		// keep circuit open unless exception threshold has passed
-		if (hasWindowConditions()) {
-			counter.mark();
-			// Trip if the exception count has passed the limit
-			return (counter.tally() > limit);
-		}
-		
-		return true;
-	}
-	
-	private void initCounter() {
-		if (hasWindowConditions()) {
-			int capacity = limit + 1;
-			if (counter == null) {
-				this.counter = new WindowedEventCounter(capacity,windowMillis);
-			} else {
-				if (capacity != counter.getCapacity()) {
-					counter.setCapacity(capacity);
-				}
+    public boolean shouldTrip(Throwable cause) {
+        for(Class<?> clazz : ignore) {
+            if (clazz.isInstance(cause)) {
+                return false;
+            }
+        }
 
-				if (windowMillis != counter.getWindowMillis()) {
-					counter.setWindowMillis(windowMillis);
-				}
-			}
-		} else {
-			// we're not under windowConditions, no counter needed
-			counter = null;
-		}
-	}
+        // if Exception is of specified type, and window conditions exist,
+        // keep circuit open unless exception threshold has passed
+        if (hasWindowConditions()) {
+            counter.mark();
+            // Trip if the exception count has passed the limit
+            return (counter.tally() > limit);
+        }
+
+        return true;
+    }
+
+    private void initCounter() {
+        if (hasWindowConditions()) {
+            int capacity = limit + 1;
+            if (counter == null) {
+                this.counter = new WindowedEventCounter(capacity,windowMillis);
+            } else {
+                if (capacity != counter.getCapacity()) {
+                    counter.setCapacity(capacity);
+                }
+
+                if (windowMillis != counter.getWindowMillis()) {
+                    counter.setWindowMillis(windowMillis);
+                }
+            }
+        } else {
+            // we're not under windowConditions, no counter needed
+            counter = null;
+        }
+    }
 
     /**
      * Returns the set of currently ignored {@link Throwable} classes.
@@ -151,7 +151,7 @@ public final class DefaultFailureInterpreter implements FailureInterpreter {
      * @param ignore array of {@link Class} objects
      */
     public synchronized void setIgnore(Class<? extends Throwable>[] ignore) {
-		this.ignore = new HashSet<Class<? extends Throwable>>(Arrays.asList(ignore));
+        this.ignore = new HashSet<Class<? extends Throwable>>(Arrays.asList(ignore));
     }
 
     /**

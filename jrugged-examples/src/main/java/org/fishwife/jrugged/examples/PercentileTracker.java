@@ -33,13 +33,13 @@ public class PercentileTracker {
     protected ConcurrentSkipListMap<Long, Double> cslm = new ConcurrentSkipListMap<Long, Double>();
 
     public PercentileTracker(long windowMillis) {
-		this.windowMillis = windowMillis;
+        this.windowMillis = windowMillis;
     }
 
     /** Updates the average with the latest measurement.
      *  @param sample the latest measurement in the rolling average */
     public synchronized void update(double sample) {
-		long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
 
         removeOutOfTimeWindowEntries();
         cslm.put(now, sample);
@@ -92,7 +92,7 @@ public class PercentileTracker {
         if (cslm.isEmpty()) {
             return;
         }
-        
+
         // Optimization - if the last entry is also outside
         // the time window, all items in the list can be cleared.
         if (System.currentTimeMillis() - cslm.lastKey() > windowMillis) {

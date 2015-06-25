@@ -42,16 +42,16 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
 
     private RequestCounter requestCounter;
 
-	private static Class[] defaultIgnore = { };
+    private static Class[] defaultIgnore = { };
 
     /**
      * Default constructor. Any {@link Throwable} will cause the breaker to trip.
      */
     @SuppressWarnings("unchecked")
     public PercentErrPerTimeFailureInterpreter() {
-		setIgnore(defaultIgnore);
+        setIgnore(defaultIgnore);
         requestCounter = new RequestCounter();
-	}
+    }
 
     /**
      * Constructor that allows a tolerance for a certain number of
@@ -68,13 +68,13 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      * @param windowMillis length of the window in milliseconds
      */
     @SuppressWarnings("unchecked")
-	public PercentErrPerTimeFailureInterpreter(RequestCounter rc,
+    public PercentErrPerTimeFailureInterpreter(RequestCounter rc,
                                                int percent, long windowMillis) {
-		setIgnore(defaultIgnore);
+        setIgnore(defaultIgnore);
         setPercent(percent);
-		setWindowMillis(windowMillis);
+        setWindowMillis(windowMillis);
         setRequestCounter(rc);
-	}
+    }
 
     /**
      * Constructor that allows a tolerance for a certain number of
@@ -92,13 +92,13 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      * @param windowMillis length of the window in milliseconds
      */
     @SuppressWarnings("unchecked")
-	public PercentErrPerTimeFailureInterpreter(PerformanceMonitor p,
+    public PercentErrPerTimeFailureInterpreter(PerformanceMonitor p,
                                                int percent, long windowMillis) {
-		setIgnore(defaultIgnore);
+        setIgnore(defaultIgnore);
         setPercent(percent);
-		setWindowMillis(windowMillis);
+        setWindowMillis(windowMillis);
         setRequestCounter(p.getRequestCounter());
-	}
+    }
 
     /**
      * Constructor where we specify certain {@link Throwable} classes
@@ -109,9 +109,9 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      *   be ignored. Any given <code>Throwable</code> that is a
      *   subclass of one of these classes will be ignored.
      */
-	public PercentErrPerTimeFailureInterpreter(Class<? extends Throwable>[] ignore) {
-		setIgnore(ignore);
-	}
+    public PercentErrPerTimeFailureInterpreter(Class<? extends Throwable>[] ignore) {
+        setIgnore(ignore);
+    }
 
     /**
      * Constructor where we specify tolerance and a set of ignored failures.
@@ -130,20 +130,20 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      *   above that number during the window will cause the breaker to trip.
      * @param windowMillis length of the window in milliseconds
      */
-	public PercentErrPerTimeFailureInterpreter(RequestCounter rc,
+    public PercentErrPerTimeFailureInterpreter(RequestCounter rc,
                                                Class<? extends Throwable>[] ignore,
-									           int percent, long windowMillis) {
+                                               int percent, long windowMillis) {
         setRequestCounter(rc);
-		setIgnore(ignore);
-		setPercent(percent);
-		setWindowMillis(windowMillis);
-	}
+        setIgnore(ignore);
+        setPercent(percent);
+        setWindowMillis(windowMillis);
+    }
 
     private boolean hasWindowConditions() {
         return this.percent > 0 && this.windowMillis > 0;
     }
 
-	public boolean shouldTrip(Throwable cause) {
+    public boolean shouldTrip(Throwable cause) {
         if (isExceptionIgnorable(cause)) return false;
 
         // if Exception is of specified type, and window conditions exist,
@@ -174,7 +174,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
             return windowRequests >= requestThreshold && (((double) numberOfErrorsAfter / (double) windowRequests) * 100d >= percent);
         }
         return true;
-	}
+    }
 
     private boolean isExceptionIgnorable(Throwable cause) {
         for(Class clazz : ignore) {
@@ -187,7 +187,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
 
     private void removeErrorsPriorToCutoffTime(int numberOfErrorsBefore, long removeTimeBeforeMillis) {
         boolean windowRemoval = false;
-        
+
         // (could we speed this up by using binary search to find the entry point,
         // then removing any items before that point?)
         for (int j = numberOfErrorsBefore - 1; j >= 0; j--) {
@@ -220,7 +220,7 @@ public final class PercentErrPerTimeFailureInterpreter implements FailureInterpr
      * @param ignore array of {@link Class} objects
      */
     public synchronized void setIgnore(Class<? extends Throwable>[] ignore) {
-		this.ignore = new HashSet<Class<? extends Throwable>>(Arrays.asList(ignore));
+        this.ignore = new HashSet<Class<? extends Throwable>>(Arrays.asList(ignore));
     }
 
     /**

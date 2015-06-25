@@ -1,7 +1,7 @@
 /* RequestCounter.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -28,17 +28,17 @@ public class RequestCounter implements ServiceWrapper {
     private long numSuccesses = 0L;
     private long numFailures = 0L;
 
-	/** Default constructor. */
-	public RequestCounter() { }
+    /** Default constructor. */
+    public RequestCounter() { }
 
-    private synchronized void succeed() {
-    	numRequests++;
-    	numSuccesses++;
+    protected synchronized void succeed() {
+        numRequests++;
+        numSuccesses++;
     }
 
-    private synchronized void fail() {
-    	numRequests++;
-    	numFailures++;
+    protected synchronized void fail() {
+        numRequests++;
+        numFailures++;
     }
 
     /** Wrap the given service call with the {@link RequestCounter}
@@ -47,8 +47,8 @@ public class RequestCounter implements ServiceWrapper {
      *
      *  @return whatever c would return on success
      *
-	 *  @throws Exception if <code>c</code> throws one during
-	 *    execution
+     *  @throws Exception if <code>c</code> throws one during
+     *    execution
      */
     public <T> T invoke(Callable<T> c) throws Exception {
         try {
@@ -65,8 +65,8 @@ public class RequestCounter implements ServiceWrapper {
      *  to count the number of calls made.
      *  @param r the {@link Runnable} to attempt
      *
-	 *  @throws Exception if <code>c</code> throws one during
-	 *    execution
+     *  @throws Exception if <code>c</code> throws one during
+     *    execution
      */
     public void invoke(Runnable r) throws Exception {
         try {
@@ -85,8 +85,8 @@ public class RequestCounter implements ServiceWrapper {
      *
      *  @return result
      *
-	 *  @throws Exception if <code>c</code> throws one during
-	 *    execution
+     *  @throws Exception if <code>c</code> throws one during
+     *    execution
      */
     public <T> T invoke(Runnable r, T result) throws Exception {
         try {

@@ -1,7 +1,7 @@
 /* StatusController.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -45,63 +45,63 @@ import org.springframework.web.servlet.mvc.Controller;
  */
 public class StatusController implements Controller {
 
-	private static Map<Status,Integer> responseCodeMap;
-	static {
-		responseCodeMap = new HashMap<Status,Integer>();
-		responseCodeMap.put(Status.FAILED, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		responseCodeMap.put(Status.INIT, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-		responseCodeMap.put(Status.DOWN, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-		responseCodeMap.put(Status.DEGRADED, HttpServletResponse.SC_OK);
-		responseCodeMap.put(Status.BYPASS, HttpServletResponse.SC_OK);
-		responseCodeMap.put(Status.UP, HttpServletResponse.SC_OK);
-	}
-	
-	private MonitoredService monitoredService;
-	
-	public StatusController(MonitoredService monitoredService) {
-		this.monitoredService = monitoredService;
-	}
+    private static Map<Status,Integer> responseCodeMap;
+    static {
+        responseCodeMap = new HashMap<Status,Integer>();
+        responseCodeMap.put(Status.FAILED, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        responseCodeMap.put(Status.INIT, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        responseCodeMap.put(Status.DOWN, HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+        responseCodeMap.put(Status.DEGRADED, HttpServletResponse.SC_OK);
+        responseCodeMap.put(Status.BYPASS, HttpServletResponse.SC_OK);
+        responseCodeMap.put(Status.UP, HttpServletResponse.SC_OK);
+    }
 
-	public ModelAndView handleRequest(HttpServletRequest req,
-			HttpServletResponse resp) throws Exception {
-		Status currentStatus = monitoredService.getServiceStatus().getStatus();
-		setResponseCode(currentStatus, resp);
-		setAppropriateWarningHeaders(resp, currentStatus);
-		setCachingHeaders(resp);
-		writeOutCurrentStatusInResponseBody(resp, currentStatus);
-		return null;
-	}
+    private MonitoredService monitoredService;
 
-	private void setCachingHeaders(HttpServletResponse resp) {
-		long now = System.currentTimeMillis();
-		resp.setDateHeader("Date", now);
-		resp.setDateHeader("Expires", now);
-		resp.setHeader("Cache-Control","no-cache");
-	}
+    public StatusController(MonitoredService monitoredService) {
+        this.monitoredService = monitoredService;
+    }
 
-	private void setAppropriateWarningHeaders(HttpServletResponse resp,
-			Status currentStatus) {
-		if (Status.DEGRADED.equals(currentStatus)) {
-			resp.addHeader("Warning", "199 jrugged \"Status degraded\"");			
-		}
-	}
+    public ModelAndView handleRequest(HttpServletRequest req,
+            HttpServletResponse resp) throws Exception {
+        Status currentStatus = monitoredService.getServiceStatus().getStatus();
+        setResponseCode(currentStatus, resp);
+        setAppropriateWarningHeaders(resp, currentStatus);
+        setCachingHeaders(resp);
+        writeOutCurrentStatusInResponseBody(resp, currentStatus);
+        return null;
+    }
 
-	private void writeOutCurrentStatusInResponseBody(HttpServletResponse resp,
-			Status currentStatus) throws IOException {
-		resp.setHeader("Content-Type","text/plain;charset=utf-8");
-		String body = currentStatus + "\n";
-		byte[] bytes = body.getBytes();
-		resp.setHeader("Content-Length", bytes.length + "");
-		OutputStream out = resp.getOutputStream();
-		out.write(bytes);
-		out.flush();
-		out.close();
-	}
+    private void setCachingHeaders(HttpServletResponse resp) {
+        long now = System.currentTimeMillis();
+        resp.setDateHeader("Date", now);
+        resp.setDateHeader("Expires", now);
+        resp.setHeader("Cache-Control","no-cache");
+    }
 
-	private void setResponseCode(Status currentStatus, HttpServletResponse resp) {
-		if (responseCodeMap.containsKey(currentStatus)) {
-			resp.setStatus(responseCodeMap.get(currentStatus));
-		}
-	}
+    private void setAppropriateWarningHeaders(HttpServletResponse resp,
+            Status currentStatus) {
+        if (Status.DEGRADED.equals(currentStatus)) {
+            resp.addHeader("Warning", "199 jrugged \"Status degraded\"");
+        }
+    }
+
+    private void writeOutCurrentStatusInResponseBody(HttpServletResponse resp,
+            Status currentStatus) throws IOException {
+        resp.setHeader("Content-Type","text/plain;charset=utf-8");
+        String body = currentStatus + "\n";
+        byte[] bytes = body.getBytes();
+        resp.setHeader("Content-Length", bytes.length + "");
+        OutputStream out = resp.getOutputStream();
+        out.write(bytes);
+        out.flush();
+        out.close();
+    }
+
+    private void setResponseCode(Status currentStatus, HttpServletResponse resp) {
+        if (responseCodeMap.containsKey(currentStatus)) {
+            resp.setStatus(responseCodeMap.get(currentStatus));
+        }
+    }
 
 }

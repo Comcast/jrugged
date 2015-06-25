@@ -26,23 +26,23 @@ import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.PerformanceMonitor;
 import org.fishwife.jrugged.ServiceWrapper;
 
-/** 
+/**
  * A Spring interceptor that allows wrapping a method invocation with
  * a {@link ServiceWrapper} (for example, a {@link CircuitBreaker} or
  * {@link PerformanceMonitor}).
  */
 public class ServiceWrapperInterceptor implements MethodInterceptor {
 
-	private Map<String, ServiceWrapper> methodMap;
+    private Map<String, ServiceWrapper> methodMap;
 
-	/** See if the given method invocation is one that needs to be
-	 * called through a {@link ServiceWrapper}, and if so, do so.
-	 * @param invocation the {@link MethodInvocation} in question
-	 * @return whatever the underlying method call would normally
-	 * return
-	 * @throws Throwable that the method call would generate, or
-	 *   that the {@link ServiceWrapper} would generate when tripped.
-	 */
+    /** See if the given method invocation is one that needs to be
+     * called through a {@link ServiceWrapper}, and if so, do so.
+     * @param invocation the {@link MethodInvocation} in question
+     * @return whatever the underlying method call would normally
+     * return
+     * @throws Throwable that the method call would generate, or
+     *   that the {@link ServiceWrapper} would generate when tripped.
+     */
     public Object invoke(final MethodInvocation invocation) throws Throwable {
         String methodName = invocation.getMethod().getName();
 
@@ -83,8 +83,8 @@ public class ServiceWrapperInterceptor implements MethodInterceptor {
     }
 
     /** Specifies which methods will be wrapped with which ServiceWrappers.
-	 *  @param methodMap the mapping!
-	 */
+     *  @param methodMap the mapping!
+     */
     public void setMethods(Map<String, ServiceWrapper> methodMap)  {
         this.methodMap = methodMap;
     }

@@ -61,10 +61,10 @@ public class InstrumentationImpact {
         int numberOfTimesToTryAMethodCall = 500;
         int numberOfAttemptsBeforeThrowingException = 5;
         int expectedNumberOfFailures =
-			numberOfTimesToTryAMethodCall /
-			numberOfAttemptsBeforeThrowingException;
+            numberOfTimesToTryAMethodCall /
+            numberOfAttemptsBeforeThrowingException;
         int expectedNumberOfSuccess = numberOfTimesToTryAMethodCall -
-			expectedNumberOfFailures;
+            expectedNumberOfFailures;
 
         PerformanceMonitor perfMon = new PerformanceMonitor();
         final OccasionalExceptionPerformer performer =
@@ -87,14 +87,14 @@ public class InstrumentationImpact {
             }
         }
 
-        System.out.println("Performance Counter Failures: " 
-						   + perfMon.getFailureCount()
-						   + " Expected Failure Count is: " 
-						   + expectedNumberOfFailures);
-        System.out.println("Performance Counter Success: " 
-						   + perfMon.getSuccessCount()
-						   + " Expected Success Count is: " 
-						   + expectedNumberOfSuccess);
+        System.out.println("Performance Counter Failures: "
+                           + perfMon.getFailureCount()
+                           + " Expected Failure Count is: "
+                           + expectedNumberOfFailures);
+        System.out.println("Performance Counter Success: "
+                           + perfMon.getSuccessCount()
+                           + " Expected Success Count is: "
+                           + expectedNumberOfSuccess);
     }
 
     public void exampleRunningSuccessRPS() throws Exception {
@@ -110,13 +110,13 @@ public class InstrumentationImpact {
         }
 
         System.out.println("Counter: " + counter);
-        System.out.println("Success rate last minute: " 
-						   + perfMon.getSuccessRequestsPerSecondLastMinute());
-        System.out.println("Success rate last hour: " 
-						   + perfMon.getSuccessRequestsPerSecondLastHour());
-        System.out.println("Success rate last day: " 
-						   + perfMon.getSuccessRequestsPerSecondLastDay());
-        System.out.println("Success rate last lifetime: " 
-						   + perfMon.getSuccessRequestsPerSecondLifetime());
+        System.out.println("Success rate last minute: "
+                           + perfMon.getSuccessRequestsPerSecondLastMinute());
+        System.out.println("Success rate last hour: "
+                           + perfMon.getSuccessRequestsPerSecondLastHour());
+        System.out.println("Success rate last day: "
+                           + perfMon.getSuccessRequestsPerSecondLastDay());
+        System.out.println("Success rate last lifetime: "
+                           + perfMon.getSuccessRequestsPerSecondLifetime());
     }
 }

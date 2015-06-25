@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- 
+<!--
 Copyright 2009-2012 Comcast Interactive Media, LLC.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,14 +28,14 @@ limitations under the License.
         <filter name="template" value="${OBJECT_NAME}:${alias}" />
 
         <property name="OBJECT_NAME" value="org.fishwife.jrugged.spring:type=CircuitBreakerBean,name=*"/>
-       
+
         <actions include="reset,setLimit,tripHard,trip,setByPassState,setResetMillis,setWindowMillis,getHealthCheck"/>
 
         <metric name="Bypass State" template="${OBJECT_NAME}:ByPassState" category="Availability" units="none" collectionType="dynamic" />
         <metric name="Last Trip Time" category="Utilization" units="ms" collectionType="dynamic" />
         <metric name="Limit" category="Utilization" units="none" collectionType="dynamic" />
         <metric name="Reset Millis" category="Utilization" units="ms" collectionType="dynamic" />
-        <metric name="Trip Count" category="Utilization" indicator="true" units="none" collectionType="dynamic" />	
+        <metric name="Trip Count" category="Utilization" indicator="true" units="none" collectionType="dynamic" />
         <metric name="Window Millis" category="Utilization" units="ms" collectionType="dynamic" />
 
     </service>

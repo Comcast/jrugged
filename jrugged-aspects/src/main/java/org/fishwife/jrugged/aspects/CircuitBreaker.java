@@ -62,7 +62,7 @@ public @interface CircuitBreaker {
     /**
      * Amount of time in milliseconds after tripping after which the
      * {@link org.fishwife.jrugged.CircuitBreaker} is reset and will
-	 * allow a test request through.
+     * allow a test request through.
      * @return the amount of time in milliseconds.
      */
     long resetMillis() default -1;

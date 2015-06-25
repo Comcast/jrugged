@@ -78,7 +78,7 @@ public class CircuitBreakerAspect {
      */
     @Around("@annotation(circuitBreakerAnnotation)")
     public Object monitor(final ProceedingJoinPoint pjp,
-			  CircuitBreaker circuitBreakerAnnotation) throws Throwable {
+              CircuitBreaker circuitBreakerAnnotation) throws Throwable {
         final String name = circuitBreakerAnnotation.name();
 
         org.fishwife.jrugged.CircuitBreaker circuitBreaker =

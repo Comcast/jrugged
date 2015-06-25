@@ -1,7 +1,7 @@
 /* FlowMeter.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,7 +35,7 @@ public class FlowMeter {
      *    rates from
      */
     public FlowMeter(RequestCounter counter) {
-    	this.counter = counter;
+        this.counter = counter;
     }
 
     /**
@@ -46,12 +46,12 @@ public class FlowMeter {
      * @return double rate
      */
     private double rate(long events, long t) {
-    	return ((double)events / (double)t) * 1000.0;
+        return ((double)events / (double)t) * 1000.0;
     }
 
     /**
      * Takes a sample of the request rates. Calculations are based on
-     *  differences in request counts since the last call to 
+     *  differences in request counts since the last call to
      *  <code>sample()</code>.
      *  @return an array of three <code>doubles</code>: total requests per
      *    second, successful requests per second, failed requests per

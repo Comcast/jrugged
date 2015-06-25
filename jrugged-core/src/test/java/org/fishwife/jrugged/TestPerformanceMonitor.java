@@ -27,16 +27,16 @@ public class TestPerformanceMonitor {
         int numberOfTimesToTryAMethodCall = 500;
         int numberOfAttemptsBeforeThrowingException = 5;
         int expectedNumberOfFailures =
-			numberOfTimesToTryAMethodCall
-			/ numberOfAttemptsBeforeThrowingException;
+            numberOfTimesToTryAMethodCall
+            / numberOfAttemptsBeforeThrowingException;
 
         int expectedNumberOfSuccess = numberOfTimesToTryAMethodCall
-			- expectedNumberOfFailures;
+            - expectedNumberOfFailures;
 
         PerformanceMonitor perfMon = new PerformanceMonitor();
 
         final OccasionalExceptionPerformer performer =
-			new OccasionalExceptionPerformer(numberOfAttemptsBeforeThrowingException);
+            new OccasionalExceptionPerformer(numberOfAttemptsBeforeThrowingException);
 
         for(int i=0; i<numberOfTimesToTryAMethodCall; i++) {
             try {

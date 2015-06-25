@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- 
+<!--
 Copyright 2009-2012 Comcast Interactive Media, LLC.
 
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,36 +15,36 @@ See the License for the specific language governing permissions and
 limitations under the License.
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:jrugged="http://www.fishwife.org/schema/jrugged"
-	xsi:schemaLocation="
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:jrugged="http://www.fishwife.org/schema/jrugged"
+    xsi:schemaLocation="
 http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
 http://www.fishwife.org/schema/jrugged jrugged.xsd">
 
-	<bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
-		<property name="locateExistingServerIfPossible" value="true" />
-	</bean>
+    <bean id="mbeanServer" class="org.springframework.jmx.support.MBeanServerFactoryBean">
+        <property name="locateExistingServerIfPossible" value="true" />
+    </bean>
 
-	<bean id="attributeSource"
-		class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+    <bean id="attributeSource"
+        class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
 
-	<bean id="assembler"
-		class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
-		<property name="attributeSource" ref="attributeSource" />
-	</bean>
+    <bean id="assembler"
+        class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+        <property name="attributeSource" ref="attributeSource" />
+    </bean>
 
-	<!-- will pick up the ObjectName from the annotation -->
-	<bean id="namingStrategy"
-		class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
-		<property name="attributeSource" ref="attributeSource" />
-	</bean>
+    <!-- will pick up the ObjectName from the annotation -->
+    <bean id="namingStrategy"
+        class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+        <property name="attributeSource" ref="attributeSource" />
+    </bean>
 
-	<jrugged:perfmon id="performanceMonitor" />
-	
-	<bean id="dummyService" class="org.fishwife.jrugged.spring.config.DummyService"
-		jrugged:methods="foo, bar" jrugged:perfmon="true"/>
-		
-	<bean id="dummyService2" class="org.fishwife.jrugged.spring.config.DummyService"
-		jrugged:methods="foo" jrugged:perfmon="false"/>		
+    <jrugged:perfmon id="performanceMonitor" />
+
+    <bean id="dummyService" class="org.fishwife.jrugged.spring.config.DummyService"
+        jrugged:methods="foo, bar" jrugged:perfmon="true"/>
+
+    <bean id="dummyService2" class="org.fishwife.jrugged.spring.config.DummyService"
+        jrugged:methods="foo" jrugged:perfmon="false"/>
 
 </beans>

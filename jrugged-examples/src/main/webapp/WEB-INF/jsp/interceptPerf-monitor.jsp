@@ -14,17 +14,17 @@
    limitations under the License.
 -->
 <html>
-	<head>
-	   <title>JRugged Examples - Interceptor Performance Monitor</title>
-	</head>
-	
-	<body>
-	
-	<h1>JRugged Examples - Interceptor Performance Monitor</h1>
+    <head>
+       <title>JRugged Examples - Interceptor Performance Monitor</title>
+    </head>
 
-	<p>The response for this page was delayed by <%= request.getAttribute("delay") %> ms.</p>
-	
-	<p>After loading this page a few times take a look at the <a href="./interceptPerformanceMonitor/stats">performance stats</a>.</p>
-	
-	</body>
+    <body>
+
+    <h1>JRugged Examples - Interceptor Performance Monitor</h1>
+
+    <p>The response for this page was delayed by <%= request.getAttribute("delay") %> ms.</p>
+
+    <p>After loading this page a few times take a look at the <a href="./interceptPerformanceMonitor/stats">performance stats</a>.</p>
+
+    </body>
 </html>

@@ -19,7 +19,7 @@
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
-       http://www.springframework.org/schema/context 
+       http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context-2.5.xsd
        ">
 
@@ -39,10 +39,10 @@
     <bean id="interceptPerformanceMonitorExample"
         class="org.fishwife.jrugged.examples.webapp.InterceptPerformanceMonitorExample"/>
 
-	<bean id="viewResolver"
-	    class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-	    <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
-	    <property name="prefix" value="/WEB-INF/jsp/"/>
-	    <property name="suffix" value=".jsp"/>
-	</bean>
+    <bean id="viewResolver"
+        class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
 </beans>

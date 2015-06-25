@@ -1,7 +1,7 @@
 /* TestLatencyTracker.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,8 +30,8 @@ public class TestLatencyTracker {
     private LatencyTracker impl;
 
     @Before
-    public void setUp() { 
-	    impl = new LatencyTracker();
+    public void setUp() {
+        impl = new LatencyTracker();
     }
 
     @Test
@@ -52,7 +52,7 @@ public class TestLatencyTracker {
 
     @Test
     public void testCallableFailure() throws Exception {
-	
+
         try {
             impl.invoke(new Callable<Object>() {
                 public Object call() throws Exception {

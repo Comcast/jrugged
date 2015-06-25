@@ -1,7 +1,7 @@
 /* MovingAverage.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,28 +29,28 @@ public class MovingAverage {
 
     /** Construct a {@link MovingAverage}, providing the time window
      *  we want the average over. For example, providing a value of
-	 *  3,600,000 provides a moving average over the last hour.
+     *  3,600,000 provides a moving average over the last hour.
      *  @param windowMillis the length of the sliding window in
      *    milliseconds */
     public MovingAverage(long windowMillis) {
-		this.windowMillis = windowMillis;
+        this.windowMillis = windowMillis;
     }
 
     /** Updates the average with the latest measurement.
      *  @param sample the latest measurement in the rolling average */
     public synchronized void update(double sample) {
-		long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
 
-		if (lastMillis == 0) {	// first sample
-			average = sample;
-			lastMillis = now;
-			return;
-		}
-		long deltaTime = now - lastMillis;
-		double coeff = Math.exp(-1.0 * ((double)deltaTime / windowMillis));
+        if (lastMillis == 0) {    // first sample
+            average = sample;
+            lastMillis = now;
+            return;
+        }
+        long deltaTime = now - lastMillis;
+        double coeff = Math.exp(-1.0 * ((double)deltaTime / windowMillis));
         average = (1.0 - coeff) * sample + coeff * average;
-        
-		lastMillis = now;
+
+        lastMillis = now;
     }
 
     /**

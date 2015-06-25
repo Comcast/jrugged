@@ -1,7 +1,7 @@
 /* Status.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,7 @@ package org.fishwife.jrugged;
  */
 public enum Status {
     /** Unrecoverable: we're basically dead for good. */
-    FAILED(-2,"RED"),		
+    FAILED(-2,"RED"),
 
     /** Being initialized: not yet ready to serve. */
     INIT(-1,"RED"),
@@ -67,11 +67,11 @@ public enum Status {
     private final String signal;
 
     Status(int value, String signal) {
-		this.value = value;
-		this.signal = signal;
+        this.value = value;
+        this.signal = signal;
     }
 
-    /** Returns the current status as an integer. Higher values are for 
+    /** Returns the current status as an integer. Higher values are for
      *  states of higher functionality/availability. */
     public int getValue() { return value; }
 

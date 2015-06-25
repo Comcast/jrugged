@@ -1,7 +1,7 @@
 /* ConstantFlowRegulator.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -62,8 +62,8 @@ public class ConstantFlowRegulator implements ServiceWrapper {
      *
      *  @throws FlowRateExceededException if the total requests per second
      *    through the flow regulator exceeds the configured value
-	 *  @throws Exception if <code>c</code> throws one during
-	 *    execution
+     *  @throws Exception if <code>c</code> throws one during
+     *    execution
      */
     public <T> T invoke(Callable<T> c) throws Exception {
         if (canProceed()) {
@@ -80,8 +80,8 @@ public class ConstantFlowRegulator implements ServiceWrapper {
      *
      *  @throws FlowRateExceededException if the total requests per second
      *    through the flow regulator exceeds the configured value
-	 *  @throws Exception if <code>c</code> throws one during
-	 *    execution
+     *  @throws Exception if <code>c</code> throws one during
+     *    execution
      */
     public void invoke(Runnable r) throws Exception {
         if (canProceed()) {
@@ -101,8 +101,8 @@ public class ConstantFlowRegulator implements ServiceWrapper {
      *
      *  @throws FlowRateExceededException if the total requests per second
      *    through the flow regulator exceeds the configured value
-	 *  @throws Exception if <code>c</code> throws one during
-	 *    execution
+     *  @throws Exception if <code>c</code> throws one during
+     *    execution
      */
     public <T> T invoke(Runnable r, T result) throws Exception {
         if (canProceed()) {
@@ -155,7 +155,7 @@ public class ConstantFlowRegulator implements ServiceWrapper {
 
     /**
      * Get the helper that converts {@link FlowRateExceededException}s into
-	 * application-specific exceptions.
+     * application-specific exceptions.
      *
      * @return {@link ConstantFlowRegulatorExceptionMapper} my converter object, or
      *   <code>null</code> if one is not currently set.
@@ -173,7 +173,7 @@ public class ConstantFlowRegulator implements ServiceWrapper {
     public void setExceptionMapper(ConstantFlowRegulatorExceptionMapper<? extends Exception> mapper) {
         this.exceptionMapper = mapper;
     }
-    
+
     private void calculateDeltaWaitTime() {
         if (requestPerSecondThreshold > 0) {
             deltaWaitTimeMillis = 1000L / requestPerSecondThreshold;

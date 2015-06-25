@@ -14,19 +14,19 @@
    limitations under the License.
 -->
 <html>
-	<head>
-	   <title>JRugged Examples</title>
-	</head>
-	
-	<body>
-	
-	<h1>JRugged Examples</h1>
+    <head>
+       <title>JRugged Examples</title>
+    </head>
 
-	<ul>
+    <body>
+
+    <h1>JRugged Examples</h1>
+
+    <ul>
         <li><a href="./aspectPerformanceMonitor">Aspect Performance Monitor</a></li>
         <li><a href="./interceptCircuitBreaker">Interceptor Circuit Breaker</a></li>
-        <li><a href="./interceptPerformanceMonitor">Interceptor Performance Monitor</a></li>	
-	</ul>
+        <li><a href="./interceptPerformanceMonitor">Interceptor Performance Monitor</a></li>
+    </ul>
 
-	</body>
+    </body>
 </html>

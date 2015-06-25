@@ -1,7 +1,7 @@
 /* PerformanceMonitorFilter.java
- * 
+ *
  * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,36 +40,36 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  */
 @ManagedResource
 public class PerformanceMonitorFilter extends PerformanceMonitorBean implements Filter {
-	
-	public void doFilter(final ServletRequest req, final ServletResponse resp,
-			final FilterChain chain) throws IOException, ServletException {
-		try {
-			invoke(new Runnable() {
-				public void run() {
-					try {
-						chain.doFilter(req, resp);
-					} catch (IOException e) {
-						throw new WrappedException(e);
-					} catch (ServletException e) {
-						throw new WrappedException(e);
-					}
-				}
-			});
-		} catch (WrappedException e) {
-			Throwable wrapped = e.getCause();
-			if (wrapped instanceof IOException) {
-				throw (IOException)wrapped;
-			} else if (wrapped instanceof ServletException) {
-				throw (ServletException)wrapped;
-			} else {
-				throw new IllegalStateException("unknown wrapped exception", wrapped);
-			}
-		} catch (Exception e) {
-			throw new IllegalStateException("unknown checked exception", e);
-		}
-	}
-	
-	public void init(FilterConfig config) throws ServletException { }
-	
-	public void destroy() { }
+
+    public void doFilter(final ServletRequest req, final ServletResponse resp,
+            final FilterChain chain) throws IOException, ServletException {
+        try {
+            invoke(new Runnable() {
+                public void run() {
+                    try {
+                        chain.doFilter(req, resp);
+                    } catch (IOException e) {
+                        throw new WrappedException(e);
+                    } catch (ServletException e) {
+                        throw new WrappedException(e);
+                    }
+                }
+            });
+        } catch (WrappedException e) {
+            Throwable wrapped = e.getCause();
+            if (wrapped instanceof IOException) {
+                throw (IOException)wrapped;
+            } else if (wrapped instanceof ServletException) {
+                throw (ServletException)wrapped;
+            } else {
+                throw new IllegalStateException("unknown wrapped exception", wrapped);
+            }
+        } catch (Exception e) {
+            throw new IllegalStateException("unknown checked exception", e);
+        }
+    }
+
+    public void init(FilterConfig config) throws ServletException { }
+
+    public void destroy() { }
 }
