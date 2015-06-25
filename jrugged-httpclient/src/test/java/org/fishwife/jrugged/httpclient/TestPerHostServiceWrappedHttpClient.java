@@ -1,7 +1,7 @@
 /* TestPerHostServiceWrappedHttpClient.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,7 +57,7 @@ public class TestPerHostServiceWrappedHttpClient {
 
         mockBackend = createMock(HttpClient.class);
         mockFactory = createMock(ServiceWrapperFactory.class);
-        impl = new PerHostServiceWrappedHttpClient(mockBackend, mockFactory);        
+        impl = new PerHostServiceWrappedHttpClient(mockBackend, mockFactory);
     }
 
     private void replayMocks() {
@@ -69,12 +69,12 @@ public class TestPerHostServiceWrappedHttpClient {
         verify(mockBackend);
         verify(mockFactory);
     }
-    
+
     @Test
     public void isAnHttpClient() {
         assertTrue(impl instanceof HttpClient);
     }
-    
+
     @Test
     public void usesRequestHostToCreateWrapper() throws Exception {
         final ServiceWrapper wrapper = new NullWrapper();
@@ -98,7 +98,7 @@ public class TestPerHostServiceWrappedHttpClient {
         verifyMocks();
         assertTrue(f.set);
     }
-    
+
     @Test
     public void reusesWrapperForRequestsFromSameHost() throws Exception {
         ServiceWrapper wrapper = new NullWrapper();
@@ -117,7 +117,7 @@ public class TestPerHostServiceWrappedHttpClient {
         impl.execute(req2, ctx);
         verifyMocks();
     }
-    
+
     @Test
     public void reusesWrapperForRequestsFromEquivalentHostsDefaultHttpPort() throws Exception {
         ServiceWrapper wrapper = new NullWrapper();
@@ -136,7 +136,7 @@ public class TestPerHostServiceWrappedHttpClient {
         impl.execute(req2, ctx);
         verifyMocks();
     }
-    
+
     @Test
     public void reusesWrapperForRequestsFromEquivalentHostsDefaultHttpsPort() throws Exception {
         ServiceWrapper wrapper = new NullWrapper();
@@ -174,7 +174,7 @@ public class TestPerHostServiceWrappedHttpClient {
         impl.execute(req2, ctx);
         verifyMocks();
     }
-    
+
     @Test
     public void usesDifferentWrappersForDifferentHosts() throws Exception {
         Flag f1 = new Flag();
@@ -197,19 +197,19 @@ public class TestPerHostServiceWrappedHttpClient {
         assertTrue(f1.set && !f2.set);
         impl.execute(req2, ctx);
         assertTrue(f1.set && f2.set);
-        verifyMocks();        
+        verifyMocks();
     }
-    
+
     private static class Flag {
         public boolean set;
     }
-    
+
     private static class NullWrapper implements ServiceWrapper {
 
         private Flag f = new Flag();
         public NullWrapper() { }
         public NullWrapper(Flag f) { this.f = f; }
-        
+
         public <T> T invoke(Callable<T> c) throws Exception {
             f.set = true;
             return c.call();

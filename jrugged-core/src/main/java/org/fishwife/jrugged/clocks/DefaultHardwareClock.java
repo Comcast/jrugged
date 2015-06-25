@@ -1,7 +1,7 @@
 /* DefaultHardwareClock.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -30,24 +30,24 @@ class DefaultHardwareClock implements HardwareClock {
     private static long DEFAULT_PERIOD_MILLIS = 100 * 1000L;
     private long periodMillis = DEFAULT_PERIOD_MILLIS;
     private static int DEFAULT_NUM_SAMPLES = 100;
-    
+
     /** I sure hope we can count on the clock ticking at least once a
      * year. Normalize clock readings so that the returned intervals
      * land in reasonable positive ranges. */
     private static long MIN_CLOCK_TIME = 1000000000L * 3600 * 24 * 365;
-    
+
     private AtomicLong lastSampleTime = new AtomicLong(0L);
     private int sampleIndex = 0;
     private long maxGranularity;
     private long[] samples;
     private Long offset;
     private Env env;
-    
+
     /** Default constructor. */
     public DefaultHardwareClock() {
         this(new DefaultEnv(), DEFAULT_NUM_SAMPLES, DEFAULT_PERIOD_MILLIS);
     }
-    
+
     /** Constructs a new <code>HardwareClock</code> with an alternative
      * implementation for various static system methods. Primarily useful
      * for testing.
@@ -56,7 +56,7 @@ class DefaultHardwareClock implements HardwareClock {
     public DefaultHardwareClock(Env env) {
         this(env, DEFAULT_NUM_SAMPLES, DEFAULT_PERIOD_MILLIS);
     }
-    
+
     /** Constructs a new <code>HardwareClock</code> with all dependencies
      * and/or configuration specified.
      * @param env alternative implementation of required static system methods
@@ -70,19 +70,19 @@ class DefaultHardwareClock implements HardwareClock {
         samples = new long[numSamples];
         this.periodMillis = periodMillis;
     }
-    
+
     long elapsedTime(long start, long end) {
         if (end > start) return (end - start);
         return (Long.MAX_VALUE - start) + 1 + (end - Long.MIN_VALUE);
     }
-    
+
     long sampleGranularity() {
         long start = env.nanoTime();
         long end;
         while((end = env.nanoTime()) == start) /* loop */;
         return elapsedTime(start, end);
     }
-    
+
     /* (non-Javadoc)
      * @see org.fishwife.jrugged.clocks.HardwareClock#getGranularity()
      */
@@ -101,7 +101,7 @@ class DefaultHardwareClock implements HardwareClock {
         }
         return maxGranularity;
     }
-    
+
     /* (non-Javadoc)
      * @see org.fishwife.jrugged.clocks.HardwareClock#getNanoTime()
      */
@@ -112,7 +112,7 @@ class DefaultHardwareClock implements HardwareClock {
         long now = env.nanoTime() + getOffset();
         return new DiscreteInterval(now - err, now + err);
     }
-    
+
     private long getOffset() {
         if (offset != null) return offset;
         long now = env.nanoTime();
@@ -130,7 +130,7 @@ class DefaultHardwareClock implements HardwareClock {
         /** @see {@link System#currentTimeMillis} */
         long currentTimeMillis();
     }
-    
+
     /** The default implementation for static dependencies encapsulated
      *  in the <code>Env</code> interface.
      */

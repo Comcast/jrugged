@@ -1,7 +1,7 @@
 /* TestFailureHandlingHttpClient.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,7 +44,7 @@ public class TestFailureHandlingHttpClient {
     private HttpHost host;
     private HttpRequest req;
     private HttpContext ctx;
-    
+
     @Before
     public void setUp() {
         mockBackend = createMock(HttpClient.class);
@@ -54,7 +54,7 @@ public class TestFailureHandlingHttpClient {
         ctx = new BasicHttpContext();
         impl = new FailureHandlingHttpClient(mockBackend);
     }
-    
+
     @Test
     public void returnsBackendResponseOnSuccess() throws Exception {
        expect(mockBackend.execute(host, req, ctx))
@@ -64,23 +64,23 @@ public class TestFailureHandlingHttpClient {
        verify(mockBackend);
        assertSame(resp, result);
     }
-    
+
     @Test
     public void returnsEnclosedResponseOnUnsuccessfulException() throws Exception {
         Exception e = new UnsuccessfulResponseException(resp);
         expect(mockBackend.execute(host, req, ctx))
             .andThrow(e);
-        replay(mockBackend);    
+        replay(mockBackend);
         HttpResponse result = impl.execute(host, req, ctx);
         verify(mockBackend);
         assertSame(resp, result);
     }
-    
+
     @Test
     public void throwsIOExceptionForCircuitBreakerException() throws Exception {
         expect(mockBackend.execute(host, req, ctx))
             .andThrow(new CircuitBreakerException());
-        replay(mockBackend);    
+        replay(mockBackend);
         try {
             impl.execute(host, req, ctx);
             fail("should have thrown exception");

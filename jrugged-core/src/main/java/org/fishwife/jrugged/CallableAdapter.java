@@ -1,7 +1,7 @@
 /* CallableAdapter.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -24,20 +24,20 @@ import java.util.concurrent.Callable;
  */
 
 public class CallableAdapter<R> implements Callable<R> {
-    
+
     private Runnable runnable;
     private R result;
-    
+
     public CallableAdapter(Runnable runnable) {
         this(runnable, null);
     }
-    
+
     public CallableAdapter(Runnable runnable, R result) {
         this.runnable = runnable;
         this.result = result;
     }
-    
-    public R call() throws Exception {       
+
+    public R call() throws Exception {
         runnable.run();
         return result;
     }

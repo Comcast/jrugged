@@ -1,6 +1,6 @@
 /* ServiceWrapperChain.java
  *
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,9 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 public class ServiceWrapperChain implements ServiceWrapper {
-    
+
     private List<ServiceWrapper> wrappers;
-    
+
     public ServiceWrapperChain(Collection<ServiceWrapper> wrappers) {
        ArrayList<ServiceWrapper> rev = new ArrayList<ServiceWrapper>();
        for(ServiceWrapper wrapper : wrappers) {
@@ -40,7 +40,7 @@ public class ServiceWrapperChain implements ServiceWrapper {
             }
         };
     }
-    
+
     private Runnable wrap(final Runnable r, final ServiceWrapper wrapper) {
         return new Runnable() {
             public void run() {
@@ -52,7 +52,7 @@ public class ServiceWrapperChain implements ServiceWrapper {
             }
         };
     }
-    
+
     public <T> T invoke(Callable<T> c) throws Exception {
         for(ServiceWrapper wrapper : wrappers) {
             c = wrap(c, wrapper);

@@ -1,4 +1,4 @@
-/* Copyright 2009-2012 Comcast Interactive Media, LLC.
+/* Copyright 2009-2015 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ public class PerformanceMonitorAspect {
     /**
      * Wraps a method annotated with the {@link org.fishwife.jrugged.PerformanceMonitor} annotation
      * with a {@link org.fishwife.jrugged.PerformanceMonitor}.
-     * 
+     *
      * @param pjp Represents the method that is being executed.
      * @param performanceMonitorAnnotation The PerformanceMonitor annotation
      * associated with the method being execute.

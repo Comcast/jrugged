@@ -1,7 +1,7 @@
 /* PerformanceMonitorBeanDefinitionDecorator.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -33,7 +33,7 @@ import org.w3c.dom.Node;
  */
 public class PerformanceMonitorBeanDefinitionDecorator implements
                 BeanDefinitionDecorator {
-    
+
     /**
      * Method called by Spring when it encounters the jrugged:perfmon attribute.
      * Checks if the attribute is true, and if so, it registers a proxy for the
@@ -42,19 +42,19 @@ public class PerformanceMonitorBeanDefinitionDecorator implements
     public BeanDefinitionHolder decorate(Node source,
                                          BeanDefinitionHolder holder,
                                          ParserContext context) {
-        
+
         boolean enabled = getBooleanAttributeValue(source);
         if (enabled) {
             registerProxyCreator(source, holder, context);
         }
-        
+
         return holder;
     }
 
     /**
      * Gets the value of an attribute and returns true if it is set to "true"
      * (case-insensitive), otherwise returns false.
-     * 
+     *
      * @param source An Attribute node from the spring configuration
      *
      * @return boolean
@@ -70,7 +70,7 @@ public class PerformanceMonitorBeanDefinitionDecorator implements
      * monitored. The proxy is associated with the PerformanceMonitorInterceptor
      * for the bean, which is created when parsing the methods attribute from
      * the springconfiguration xml file.
-     * 
+     *
      * @param source An Attribute node from the spring configuration
      * @param holder A container for the beans I will create
      * @param context the context currently parsing my spring config
@@ -78,18 +78,18 @@ public class PerformanceMonitorBeanDefinitionDecorator implements
     private void registerProxyCreator(Node source,
                                       BeanDefinitionHolder holder,
                                       ParserContext context) {
-        
+
         String beanName = holder.getBeanName();
         String proxyName = beanName + "Proxy";
         String interceptorName = beanName + "PerformanceMonitorInterceptor";
-        
+
         BeanDefinitionBuilder initializer =
             BeanDefinitionBuilder.rootBeanDefinition(BeanNameAutoProxyCreator.class);
-        
+
         initializer.addPropertyValue("beanNames", beanName);
         initializer.addPropertyValue("interceptorNames", interceptorName);
-        
+
         BeanDefinitionRegistry registry = context.getRegistry();
         registry.registerBeanDefinition(proxyName, initializer.getBeanDefinition());
-    } 
+    }
 }

@@ -1,4 +1,4 @@
-/* Copyright 2009-2012 Comcast Interactive Media, LLC.
+/* Copyright 2009-2015 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.core.type.filter.TypeFilter;
 public class AnnotatedMethodFilter implements TypeFilter {
 
     private final Class<? extends Annotation> annotatedClass;
-    
+
     /**
      * Create filter for classes with {@link java.lang.reflect.Method}s
      * annotated with specified annotation.
@@ -41,7 +41,7 @@ public class AnnotatedMethodFilter implements TypeFilter {
     public AnnotatedMethodFilter(Class<? extends Annotation> annotatedClass) {
         this.annotatedClass = annotatedClass;
     }
-    
+
     /**
      * {@inheritDoc}
      */

@@ -1,7 +1,7 @@
 /* SpringHandlerTest.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -27,7 +27,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 public class SpringHandlerTest {
-    
+
     ClassPathXmlApplicationContext context;
 
     @Before
@@ -43,32 +43,32 @@ public class SpringHandlerTest {
 
     @Test
     public void testAttributesCreatePerfMon() {
-        
+
         DummyService service = (DummyService)context.getBean("dummyService");
         assertNotNull(service);
 
         PerformanceMonitor monitor =
             (PerformanceMonitor)context.getBean("dummyServicePerformanceMonitor");
-        assertNotNull(monitor);        
-        
-        service.foo();  
+        assertNotNull(monitor);
+
+        service.foo();
         assertEquals(1, monitor.getRequestCount());
-        
+
         service.bar();
         assertEquals(2, monitor.getRequestCount());
 
         service.baz();
-        assertEquals(2, monitor.getRequestCount());        
-        
+        assertEquals(2, monitor.getRequestCount());
+
         MethodInterceptor wrapper =
             (MethodInterceptor)context.getBean("dummyServicePerformanceMonitorInterceptor");
-        assertNotNull(wrapper);   
+        assertNotNull(wrapper);
     }
 
     @Test
     public void testPerfMonElementCreatedPerfMon() {
         PerformanceMonitor monitor =
             (PerformanceMonitor)context.getBean("performanceMonitor");
-        assertNotNull(monitor);            
+        assertNotNull(monitor);
     }
 }

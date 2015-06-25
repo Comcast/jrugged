@@ -1,6 +1,6 @@
 /* CircuitBreakerNotificationCallback.java
  *
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ public abstract class CircuitBreakerNotificationCallback {
     /**
      * The method needing an application specific implementation
      * to deal with a change in {@link CircuitBreaker} state.
-     * 
+     *
      * @param s The new status of the {@link CircuitBreaker}
      */
     public abstract void notify(Status s);

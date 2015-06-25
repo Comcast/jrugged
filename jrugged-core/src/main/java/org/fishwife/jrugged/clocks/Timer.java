@@ -1,6 +1,6 @@
 /* Timer.java
  *
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ public class Timer {
     private DiscreteInterval targetElapsedTime;
     private DiscreteInterval startTime;
     private DiscreteInterval targetEndTime;
-    
+
     public Timer() {
         this(new DefaultHardwareClock());
     }
-    
+
     public Timer(HardwareClock clock) {
         this.clock = clock;
     }
@@ -61,7 +61,7 @@ public class Timer {
         if (!wasSet) throw new IllegalStateException("cannot compute time remaining without having duration set");
         if (startTime == null) return targetElapsedTime;
         DiscreteInterval diff = targetEndTime.minus(clock.getNanoTime());
-        return (diff.getMin() <= 0L) ? new DiscreteInterval(0L,0L) : diff; 
+        return (diff.getMin() <= 0L) ? new DiscreteInterval(0L,0L) : diff;
     }
 
     public void waitUntilElapsed() {

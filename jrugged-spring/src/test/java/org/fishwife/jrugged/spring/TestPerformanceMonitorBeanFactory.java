@@ -1,4 +1,4 @@
-/* Copyright 2009-2012 Comcast Interactive Media, LLC.
+/* Copyright 2009-2015 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class TestPerformanceMonitorBeanFactory {
                                     "PerformanceMonitorBean,name=testCreate");
         mockMBeanExporter.registerManagedResource(EasyMock.<Object>anyObject(), EasyMock.eq(objectName));
         replay(mockMBeanExporter);
-        
+
         factory.setMBeanExportOperations(mockMBeanExporter);
         factory.createPerformanceMonitor("testCreate");
         EasyMock.verify(mockMBeanExporter);
@@ -139,7 +139,7 @@ public class TestPerformanceMonitorBeanFactory {
         mockMBeanExporter.registerManagedResource(
           EasyMock.<Object>anyObject(), EasyMock.<ObjectName>anyObject());
         replay(mockMBeanExporter);
-        
+
         factory.setMBeanExportOperations(mockMBeanExporter);
         PerformanceMonitor createdMonitor =
                 factory.createPerformanceMonitor(
@@ -157,30 +157,30 @@ public class TestPerformanceMonitorBeanFactory {
         factory.setMBeanExportOperations(mockMBeanExporter);
         factory.createPerformanceMonitor("=\"");
     }
-    
+
 
     //---------
     // The following tests depend on org.fishwife.jrugged.spring.testonly
-    
+
     @Test
     public void testFactorySeededWithPackageScanBaseFindsMonitors() {
         factory.setPackageScanBase("org.fishwife.jrugged.spring.testonly");
         factory.createInitialPerformanceMonitors();
-        
+
         assertNotNull(factory.findPerformanceMonitor("monitorA"));
         assertNotNull(factory.findPerformanceMonitor("monitorB"));
     }
-    
+
     // the idea here is that the monitors are created and no exceptions occur
     @Test
     public void testPackageScanStyleAndInitialMonitorStylePlayNice() {
         List<String> initialPerformanceMonitors = new ArrayList<String>();
         initialPerformanceMonitors.add("monitorA");
-        
+
         factory.setPackageScanBase("org.fishwife.jrugged.spring.testonly");
         factory.setInitialPerformanceMonitors(initialPerformanceMonitors);
         factory.createInitialPerformanceMonitors();
-        
+
         assertNotNull(factory.findPerformanceMonitor("monitorA"));
         assertNotNull(factory.findPerformanceMonitor("monitorB"));
     }

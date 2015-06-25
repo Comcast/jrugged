@@ -1,7 +1,7 @@
 /* TestAbstractHttpClientDecorator.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -43,22 +43,22 @@ public class TestAbstractHttpClientDecorator {
             }
         };
     }
-    
+
     @Test
     public void canExtractSimpleHostProperly() {
         assertEquals(new HttpHost("foo.example.com"),
                 impl.getHttpHost(new HttpGet("http://foo.example.com/bar")));
     }
-    
+
     @Test
     public void canExtractHostWithPort() {
         assertEquals(new HttpHost("foo.example.com:8080"),
-                impl.getHttpHost(new HttpGet("http://foo.example.com:8080/bar")));        
+                impl.getHttpHost(new HttpGet("http://foo.example.com:8080/bar")));
     }
-    
+
     @Test
     public void canExtractHttpsHostProperly() {
         assertEquals(new HttpHost("https://foo.example.com:443"),
-                impl.getHttpHost(new HttpGet("https://foo.example.com:443/bar")));                
+                impl.getHttpHost(new HttpGet("https://foo.example.com:443/bar")));
     }
 }

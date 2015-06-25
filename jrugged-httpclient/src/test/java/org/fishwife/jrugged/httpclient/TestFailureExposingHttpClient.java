@@ -1,7 +1,7 @@
 /* TestFailureExposingHttpClient.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -57,28 +57,28 @@ public class TestFailureExposingHttpClient {
         for(int i = 100; i <= 199; i++) {
             resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "1XX Thingy");
             backend.setResponse(resp);
-            assertSame(resp, impl.execute(host, req, ctx));        
+            assertSame(resp, impl.execute(host, req, ctx));
         }
     }
-    
+
     @Test
     public void returns2XXResponseAsIs() throws Exception {
         for(int i = 200; i <= 299; i++) {
             resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "Success");
             backend.setResponse(resp);
-            assertSame(resp, impl.execute(host, req, ctx));        
+            assertSame(resp, impl.execute(host, req, ctx));
         }
     }
-    
+
     @Test
     public void returns3XXResponseAsIs() throws Exception {
         for(int i = 300; i <= 399; i++) {
             resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "3XX Thingy");
             backend.setResponse(resp);
-            assertSame(resp, impl.execute(host, req, ctx));        
+            assertSame(resp, impl.execute(host, req, ctx));
         }
     }
-    
+
     @Test
     public void generatesFailureOn4XXResponse() throws Exception {
         for(int i = 400; i <= 499; i++) {
@@ -91,7 +91,7 @@ public class TestFailureExposingHttpClient {
             }
         }
     }
-    
+
     @Test
     public void generatesFailureOn5XXResponse() throws Exception {
         for(int i = 500; i <= 599; i++) {
@@ -104,7 +104,7 @@ public class TestFailureExposingHttpClient {
             }
         }
     }
-    
+
     @Test(expected=UnsuccessfulResponseException.class)
     public void exposesFailureIfAssessorSaysTo() throws Exception {
         resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK");
@@ -116,7 +116,7 @@ public class TestFailureExposingHttpClient {
         });
         impl.execute(host, req, ctx);
     }
-    
+
     @Test
     public void doesNotExposeFailureIfAssessorSaysNotTo() throws Exception {
         resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_INTERNAL_SERVER_ERROR, "Bork");
@@ -129,17 +129,17 @@ public class TestFailureExposingHttpClient {
         HttpResponse result = impl.execute(host, req, ctx);
         assertSame(result, resp);
     }
-    
+
     private static class StubHttpClient extends AbstractHttpClientDecorator {
         private HttpResponse response;
-        
+
         public StubHttpClient() { super(null); }
-        
+
         public HttpResponse execute(HttpHost host, HttpRequest req,
                 HttpContext ctx) throws IOException, ClientProtocolException {
             return response;
         }
-        
+
         public void setResponse(HttpResponse resp) {
             this.response = resp;
         }

@@ -1,7 +1,7 @@
 /* MonitorMethodInterceptorDefinitionDecorator.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -40,7 +40,7 @@ import org.w3c.dom.Node;
  */
 public class MonitorMethodInterceptorDefinitionDecorator implements
                 BeanDefinitionDecorator {
-    
+
     /**
      * Method called by Spring when it encounters the custom jrugged:methods
      * attribute. Registers the performance monitor and interceptor.
@@ -52,8 +52,8 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
         String beanName = holder.getBeanName();
         BeanDefinitionRegistry registry = context.getRegistry();
         registerPerformanceMonitor(beanName, registry);
-        registerInterceptor(source, beanName, registry);        
-        
+        registerInterceptor(source, beanName, registry);
+
         return holder;
     }
 
@@ -70,14 +70,14 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
                                      String beanName,
                                      BeanDefinitionRegistry registry) {
         List<String> methodList = buildMethodList(source);
-        
+
         BeanDefinitionBuilder initializer =
             BeanDefinitionBuilder.rootBeanDefinition(SingleServiceWrapperInterceptor.class);
         initializer.addPropertyValue("methods", methodList);
-        
+
         String perfMonitorName = beanName + "PerformanceMonitor";
         initializer.addPropertyReference("serviceWrapper", perfMonitorName);
-        
+
         String interceptorName = beanName + "PerformanceMonitorInterceptor";
         registry.registerBeanDefinition(interceptorName, initializer.getBeanDefinition());
     }
@@ -92,10 +92,10 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
      */
     private List<String> buildMethodList(Node source) {
         Attr attribute = (Attr)source;
-        String methods = attribute.getValue();   
+        String methods = attribute.getValue();
         return parseMethodList(methods);
     }
-    
+
     /**
      * Parse a comma-delimited list of method names into a List of strings.
      * Whitespace is ignored.
@@ -105,27 +105,27 @@ public class MonitorMethodInterceptorDefinitionDecorator implements
      * @return List&lt;String&gt;
      */
     public List<String> parseMethodList(String methods) {
-        
+
         String[] methodArray = StringUtils.delimitedListToStringArray(methods, ",");
-        
+
         List<String> methodList = new ArrayList<String>();
-        
+
         for (String methodName : methodArray) {
             methodList.add(methodName.trim());
         }
-        return methodList;        
+        return methodList;
     }
 
     /**
      * Register a new PerformanceMonitor with Spring if it does not already exist.
-     * 
+     *
      * @param beanName The name of the bean that this performance monitor is wrapped around
      * @param registry The registry where all the spring beans are registered
      */
     private void registerPerformanceMonitor(String beanName,
                                             BeanDefinitionRegistry registry) {
-        
-        String perfMonitorName = beanName + "PerformanceMonitor";  
+
+        String perfMonitorName = beanName + "PerformanceMonitor";
         if (!registry.containsBeanDefinition(perfMonitorName))  {
             BeanDefinitionBuilder initializer =
                 BeanDefinitionBuilder.rootBeanDefinition(PerformanceMonitorBean.class);

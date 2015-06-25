@@ -1,7 +1,7 @@
 /* TestHardwareClock.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -31,14 +31,14 @@ public class TestDefaultHardwareClock {
     private DefaultHardwareClock.Env mockEnv;
     private DefaultHardwareClock impl;
     private Random random;
-    
+
     @Before
     public void setUp() {
         random = new Random();
         mockEnv = createMock(DefaultHardwareClock.Env.class);
         impl = new DefaultHardwareClock(mockEnv);
     }
-    
+
     @Test
     public void normalizesToPositiveReadings() {
         expect(mockEnv.nanoTime()).andReturn(-100L);
@@ -50,24 +50,24 @@ public class TestDefaultHardwareClock {
         assertTrue(out.getMin() >= 0);
         assertTrue(out.getMax() >= 0);
     }
-    
+
     @Test
     public void elapsedTimeWorksIfNoElapsedTime() {
-       assertEquals(0L, impl.elapsedTime(1L, 1L)); 
+       assertEquals(0L, impl.elapsedTime(1L, 1L));
     }
-    
+
     @Test
     public void elapsedTimeWorksWhenNoOverflow() {
         assertEquals(3L, impl.elapsedTime(4L,7L));
     }
-    
+
     @Test
     public void elapsedTimeWorksWhenOverflowed() {
         long start = Long.MAX_VALUE - 3L;
         long end = start + 10L;
         assertEquals(10L, impl.elapsedTime(start, end));
     }
-    
+
     @Test
     public void canSampleImmediatelyIncrementingClock() {
         expect(mockEnv.nanoTime()).andReturn(4L);
@@ -76,7 +76,7 @@ public class TestDefaultHardwareClock {
         assertEquals(1L, impl.sampleGranularity());
         verify(mockEnv);
     }
-    
+
     @Test
     public void samplesClockUntilItTicks() {
         int i = random.nextInt(10) + 2;
@@ -86,13 +86,13 @@ public class TestDefaultHardwareClock {
         assertEquals(6L, impl.sampleGranularity());
         verify(mockEnv);
     }
-    
+
     @Test
     public void canRetrieveClockReadingInterval() {
         impl = new DefaultHardwareClock();
         assertTrue(impl.getNanoTime() instanceof DiscreteInterval);
     }
-    
+
     @Test
     public void errorIsHalfOfGranularityForEvenGranularity() {
         impl = new DefaultHardwareClock(mockEnv) {
@@ -103,7 +103,7 @@ public class TestDefaultHardwareClock {
         assertEquals(7L, impl.getNanoTime().size());
         verify(mockEnv);
     }
-    
+
     @Test
     public void errorRoundsProperlyForOddGranularity() {
         impl = new DefaultHardwareClock(mockEnv) {
@@ -114,7 +114,7 @@ public class TestDefaultHardwareClock {
         assertEquals(7L, impl.getNanoTime().size());
         verify(mockEnv);
     }
-    
+
     @Test
     public void canTakeMultipleReadings() {
         impl = new DefaultHardwareClock();

@@ -1,7 +1,7 @@
 /* SingleServiceWrapperInterceptor.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -25,10 +25,10 @@ import org.fishwife.jrugged.ServiceWrapper;
 
 /**
  * Rework of the ServiceWrapperInterceptor that uses a list of methods instead
- * of a map and only supports one ServiceWrapper. 
+ * of a map and only supports one ServiceWrapper.
  */
 public class SingleServiceWrapperInterceptor implements MethodInterceptor {
-    
+
     private List<String> methodList;
     private ServiceWrapper serviceWrapper;
 
@@ -71,7 +71,7 @@ public class SingleServiceWrapperInterceptor implements MethodInterceptor {
      * It looks the method name up in the methodList. If its in the list, then
      * the method should be wrapped. If the list is null, then all methods
      * are wrapped.
-     * 
+     *
      * @param methodName The method being called
      *
      * @return boolean
@@ -97,7 +97,7 @@ public class SingleServiceWrapperInterceptor implements MethodInterceptor {
     public void setMethods(List<String> methodList)  {
         this.methodList = methodList;
     }
-    
+
     /**
      * Return the ServiceWrapper being used to wrap the methods.
      *

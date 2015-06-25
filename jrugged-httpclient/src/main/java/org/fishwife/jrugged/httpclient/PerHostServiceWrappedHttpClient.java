@@ -1,7 +1,7 @@
 /* PerHostServiceWrappedHttpClient.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -35,7 +35,7 @@ public class PerHostServiceWrappedHttpClient extends AbstractHttpClientDecorator
 
     private ServiceWrapperFactory factory;
     private Map<HttpHost, HttpClient> clients = new HashMap<HttpHost, HttpClient>();
-    
+
     public PerHostServiceWrappedHttpClient(HttpClient backend, ServiceWrapperFactory factory) {
         super(backend);
         this.factory = factory;
@@ -64,7 +64,7 @@ public class PerHostServiceWrappedHttpClient extends AbstractHttpClientDecorator
         int port = uri.getPort();
         String scheme = uri.getScheme();
         boolean isHttps = "HTTPS".equalsIgnoreCase(scheme);
-        String schemePart = isHttps ? (scheme + "://") : ""; 
+        String schemePart = isHttps ? (scheme + "://") : "";
         if (port == -1) {
             port = isHttps ? 443 : 80;
         }

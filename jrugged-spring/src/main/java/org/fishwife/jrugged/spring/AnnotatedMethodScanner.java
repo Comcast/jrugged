@@ -1,4 +1,4 @@
-/* Copyright 2009-2012 Comcast Interactive Media, LLC.
+/* Copyright 2009-2015 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -23,21 +23,21 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 
 public class AnnotatedMethodScanner {
-    
+
     private final ClassLoader classLoader;
     private final ClassPathScanningCandidateComponentProvider provider;
-    
+
     public AnnotatedMethodScanner() {
         classLoader = AnnotatedMethodScanner.class.getClassLoader();
         provider = new ClassPathScanningCandidateComponentProvider(false);
     }
-    
+
     // package private for testing only
     AnnotatedMethodScanner(ClassLoader classLoader, ClassPathScanningCandidateComponentProvider provider) {
         this.classLoader = classLoader;
         this.provider = provider;
     }
-    
+
     /**
      * Find all methods on classes under scanBase that are annotated with annotationClass.
      *
@@ -49,7 +49,7 @@ public class AnnotatedMethodScanner {
         Set<BeanDefinition> filteredComponents = findCandidateBeans(scanBase, annotationClass);
         return extractAnnotatedMethods(filteredComponents, annotationClass);
     }
-    
+
     Set<Method> extractAnnotatedMethods(
             Set<BeanDefinition> filteredComponents,
             Class<? extends Annotation> annoClass) {
@@ -67,7 +67,7 @@ public class AnnotatedMethodScanner {
                 // no-op
             }
         }
-        
+
         return annotatedMethods;
     }
 
@@ -75,7 +75,7 @@ public class AnnotatedMethodScanner {
             Class<? extends Annotation> annotatedClass) {
         provider.resetFilters(false);
         provider.addIncludeFilter(new AnnotatedMethodFilter(annotatedClass));
-        
+
         String basePackage = scanBase.replace('.', '/');
         return provider.findCandidateComponents(basePackage);
     }

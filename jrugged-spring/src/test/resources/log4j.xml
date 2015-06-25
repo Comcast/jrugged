@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
 <!--
-   Copyright 2009-2012 Comcast Interactive Media, LLC.
+   Copyright 2009-2015 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -44,7 +44,7 @@
     <logger name="org.hibernate">
         <level value="WARN"/>
     </logger>
-  
+
     <!--logger name="org.hibernate.SQL">
         <level value="DEBUG"/>
     </logger-->
@@ -66,7 +66,7 @@
     <logger name="org.appfuse">
         <level value="INFO"/>
     </logger>
-    
+
     <logger name="org.fishwife">
         <level value="DEBUG"/>
     </logger>

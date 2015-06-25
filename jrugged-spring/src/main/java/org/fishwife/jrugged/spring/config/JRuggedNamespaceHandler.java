@@ -1,7 +1,7 @@
 /* JRuggedNamespaceHandler.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -22,24 +22,24 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * Handler class for the JRugged Spring namespace. This class registers
  * custom parsers and decorators for the new perform element and the
  * perfmon and methods attributes on bean elements.
- * 
+ *
  * This class is associated with the http://www.fishwife.org/schema/jrugged
  * namespace via the META-INF/spring.handlers file.
  */
 public class JRuggedNamespaceHandler extends NamespaceHandlerSupport {
-    
+
     /**
      * Called by Spring to register any parsers and decorators.
      */
     public void init() {
         registerBeanDefinitionParser("perfmon",
-                        new PerformanceMonitorBeanDefinitionParser()); 
-        
+                        new PerformanceMonitorBeanDefinitionParser());
+
         registerBeanDefinitionDecoratorForAttribute("perfmon",
                         new PerformanceMonitorBeanDefinitionDecorator());
-        
+
         registerBeanDefinitionDecoratorForAttribute("methods",
                         new MonitorMethodInterceptorDefinitionDecorator());
     }
-    
+
 }

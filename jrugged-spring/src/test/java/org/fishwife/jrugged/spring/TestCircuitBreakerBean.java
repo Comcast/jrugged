@@ -1,6 +1,6 @@
 /* TestCircuitBreakerBean.java
  *
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ public class TestCircuitBreakerBean {
     private CircuitBreakerBean impl;
     private final Object out = new Object();
     private Callable<Object> call;
-    
+
     @Before
     public void setUp() {
         impl = new CircuitBreakerBean();
@@ -39,19 +39,19 @@ public class TestCircuitBreakerBean {
             }
         };
     }
-    
+
     @Test
     public void startsEnabled() throws Exception {
         assertSame(out, impl.invoke(call));
     }
-    
+
     @Test
     public void isenabledIfConfiguredAsNotDisabled() throws Exception {
         impl.setDisabled(false);
         impl.afterPropertiesSet();
         assertSame(out, impl.invoke(call));
     }
-    
+
     @Test
     public void canBeDisabled() throws Exception {
         impl.setDisabled(true);

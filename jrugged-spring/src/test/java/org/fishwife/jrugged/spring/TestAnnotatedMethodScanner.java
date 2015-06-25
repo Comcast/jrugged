@@ -1,6 +1,6 @@
 /* TestAnnotatedMethodScanner.java
  *
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,48 +40,48 @@ public class TestAnnotatedMethodScanner {
 
     private ClassLoader mockClassLoader;
     private ClassPathScanningCandidateComponentProvider mockProvider;
-    
+
     private AnnotatedMethodScanner impl;
-    
+
     @Before
     public void setUp() {
         mockClassLoader = createMock(ClassLoader.class);
         mockProvider = createMock(ClassPathScanningCandidateComponentProvider.class);
         impl = new AnnotatedMethodScanner(mockClassLoader, mockProvider);
     }
-    
+
     @Test
     public void testFindCandidateBeansAppliesAnnotatedMethodFilter() {
         String basePackage = "faux.package";
         Set<BeanDefinition> filteredComponents = new HashSet<BeanDefinition>();
-        
+
         mockProvider.resetFilters(false);
         expectLastCall();
         mockProvider.addIncludeFilter(EasyMock.isA(AnnotatedMethodFilter.class));
         expectLastCall();
-        
+
         expect(mockProvider.findCandidateComponents(eq(basePackage.replace('.', '/')))).
                    andReturn(filteredComponents);
-        
+
         replayMocks();
         impl.findCandidateBeans(basePackage, SomeAnno.class);
         verifyMocks();
     }
-    
+
     void replayMocks() {
         replay(mockClassLoader);
         replay(mockProvider);
     }
-    
+
     void verifyMocks() {
         verify(mockClassLoader);
         verify(mockProvider);
     }
-    
+
     // Dummy anno for test
     @Target({ElementType.METHOD, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
     private @interface SomeAnno {
-        
+
     }
 }

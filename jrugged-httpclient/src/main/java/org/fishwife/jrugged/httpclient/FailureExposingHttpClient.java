@@ -1,7 +1,7 @@
 /* FailureExposingHttpClient.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -29,18 +29,18 @@ import org.apache.http.protocol.HttpContext;
  * This is a decorator for an {@link org.apache.http.client.HttpClient}
  * that will raise runtime exceptions for 4XX or 5XX responses, so that
  * they can be used to signal failures to JRugged
- * {@link org.fishwife.jrugged.ServiceWrapper} instances. 
+ * {@link org.fishwife.jrugged.ServiceWrapper} instances.
  *
  */
 public class FailureExposingHttpClient extends AbstractHttpClientDecorator {
 
     private ResponseFailureAssessor assessor;
-    
+
     public FailureExposingHttpClient(HttpClient backend) {
         super(backend);
         assessor = new DefaultResponseFailureAssessor();
     }
-    
+
     public FailureExposingHttpClient(HttpClient backend, ResponseFailureAssessor assessor) {
         super(backend);
         this.assessor = assessor;

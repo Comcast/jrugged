@@ -1,6 +1,6 @@
 /* HardwareClock.java
  *
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ interface HardwareClock {
      */
     long getGranularity();
 
-    /** Get an estimate of the current hardware clock reading, 
+    /** Get an estimate of the current hardware clock reading,
      * represented as a range of times. The +/- error should be half
      * of the measurement increment, which is the clock granularity
      * in our case. Thus, this effectively returns the hardware clock

@@ -1,7 +1,7 @@
 /* ServiceWrappedHttpClient.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -36,19 +36,19 @@ import org.fishwife.jrugged.ServiceWrapper;
 public class ServiceWrappedHttpClient extends AbstractHttpClientDecorator {
 
     private HttpClient client;
-    
+
     public ServiceWrappedHttpClient(HttpClient backend, ServiceWrapper wrapper) {
         super(backend);
         HttpClient client1 = new FailureExposingHttpClient(backend);
         HttpClient client2 = new ServiceWrappedHttpClientDecorator(client1, wrapper);
-        this.client = new FailureHandlingHttpClient(client2); 
+        this.client = new FailureHandlingHttpClient(client2);
     }
 
     public ServiceWrappedHttpClient(HttpClient backend, ServiceWrapper wrapper, ResponseFailureAssessor assessor) {
         super(backend);
         HttpClient client1 = new FailureExposingHttpClient(backend, assessor);
         HttpClient client2 = new ServiceWrappedHttpClientDecorator(client1, wrapper);
-        this.client = new FailureHandlingHttpClient(client2); 
+        this.client = new FailureHandlingHttpClient(client2);
     }
 
     public HttpResponse execute(HttpHost host, HttpRequest req, HttpContext ctx)

@@ -1,6 +1,6 @@
 /* DiscreteInterval.java
  *
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ public class DiscreteInterval {
     public long getMax() {
         return max;
     }
-    
+
     /** Returns the number of discrete values covered by this
      * range.
      */
@@ -59,7 +59,7 @@ public class DiscreteInterval {
     }
 
     /** Returns an interval representing the addition of the
-     * given interval with this one. 
+     * given interval with this one.
      * @param other interval to add to this one
      * @return interval sum
      */
@@ -104,7 +104,7 @@ public class DiscreteInterval {
         result = prime * result + (int) (min ^ (min >>> 32));
         return result;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj)

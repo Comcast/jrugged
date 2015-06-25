@@ -1,4 +1,4 @@
-/* Copyright 2009-2012 Comcast Interactive Media, LLC.
+/* Copyright 2009-2015 Comcast Interactive Media, LLC.
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory imp
     private List<String> initialPerformanceMonitorList;
 
     private String packageScanBase;
-    
+
     /**
      * Constructor.
      */
@@ -49,7 +49,7 @@ public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory imp
         initialPerformanceMonitorList = new ArrayList<String>();
         packageScanBase = null;
     }
-    
+
     /**
      * {@inheritDoc}
      */
@@ -78,7 +78,7 @@ public class PerformanceMonitorBeanFactory extends PerformanceMonitorFactory imp
     public void setPackageScanBase(String packageScanBase) {
         this.packageScanBase = packageScanBase;
     }
-    
+
     /**
      * Create the initial {@link PerformanceMonitorBean} instances.
      */

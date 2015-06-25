@@ -1,7 +1,7 @@
 /* AbstractHttpClientDecorator.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -37,14 +37,14 @@ import org.apache.http.protocol.HttpContext;
 public abstract class AbstractHttpClientDecorator implements HttpClient {
 
     protected HttpClient backend;
-    
+
     public AbstractHttpClientDecorator(HttpClient backend) {
         this.backend = backend;
     }
-    
+
     public abstract HttpResponse execute(HttpHost host, HttpRequest req,
             HttpContext ctx) throws IOException, ClientProtocolException;
-    
+
     protected HttpHost getHttpHost(HttpUriRequest req) {
         URI uri = req.getURI();
         String scheme = uri.getScheme();
@@ -54,7 +54,7 @@ public abstract class AbstractHttpClientDecorator implements HttpClient {
             return new HttpHost(uri.getAuthority());
         }
     }
-    
+
     public HttpResponse execute(HttpUriRequest req) throws IOException,
             ClientProtocolException {
         return execute(req, (HttpContext)null);
@@ -96,7 +96,7 @@ public abstract class AbstractHttpClientDecorator implements HttpClient {
     public ClientConnectionManager getConnectionManager() {
         return backend.getConnectionManager();
     }
-    
+
     public HttpParams getParams() {
         return backend.getParams();
     }

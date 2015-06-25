@@ -1,7 +1,7 @@
 /* Controller.java
- * 
- * Copyright 2009-2012 Comcast Interactive Media, LLC.
- * 
+ *
+ * Copyright 2009-2015 Comcast Interactive Media, LLC.
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
@@ -18,9 +18,9 @@ package org.fishwife.jrugged.control;
 
 interface Controller<M extends Model<? extends Event>, A extends Action> {
     void addObjective(Objective<M> objective);
-    
+
     void withdrawObjective(Objective<M> objective);
-    
+
     A selectAction(M model);
 
     void assessObjectives(M model);
