@@ -86,12 +86,39 @@
             </map>
         </property>
     </bean>
+    
+    <bean id="interceptSkepticBreaker" class="org.fishwife.jrugged.spring.SkepticBreakerBean">
+        <property name="limit" value="2"/>
+        <property name="windowMillis" value="5000"/>
+        <property name="waitBase" value="1000"/>
+        <property name="waitMult" value="100"/>
+        <property name="goodBase" value="600000"/>
+        <property name="goodMult" value="100"/>
+        <property name="maxLevel" value="20"/>   
+    </bean>
 
-    <bean id="breakerProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
-        <property name="beanNames" value="breakerResponseTweaker"/>
+    <bean id="skepticBreakerInterceptor" class="org.fishwife.jrugged.spring.ServiceWrapperInterceptor">
+        <property name="methods">
+            <map>
+                <entry key="delay" value-ref="interceptSkepticBreaker"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="circuitBreakerProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="circuitBreakerResponseTweaker"/>
         <property name="interceptorNames">
             <list>
                 <value>circuitBreakerInterceptor</value>
+            </list>
+        </property>
+    </bean>
+    
+    <bean id="skepticBreakerProxy" class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">
+        <property name="beanNames" value="skepticBreakerResponseTweaker"/>
+        <property name="interceptorNames">
+            <list>
+                <value>skepticBreakerInterceptor</value>
             </list>
         </property>
     </bean>
@@ -108,6 +135,7 @@
             <map>
                 <entry key="jrugged:name=interceptCircuitBreaker" value-ref="interceptCircuitBreaker"/>
                 <entry key="jrugged:name=performanceMonitor" value-ref="performanceMonitor"/>
+                <entry key="jrugged:name=interceptSkepticBreaker" value-ref="interceptSkepticBreaker"/>
             </map>
         </property>
     </bean>
