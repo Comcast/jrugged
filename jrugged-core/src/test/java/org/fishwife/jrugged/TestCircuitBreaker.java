@@ -76,7 +76,7 @@ public class TestCircuitBreaker {
         assertSame(result, theReturned);
     }
 
-    @Test(expected = CircuitBreakerException.class)
+    @Test(expected = BreakerException.class)
     public void testInvokeWithRunnableResultAndTripHardReturnsException() throws Exception {
         final Object result = new Object();
         impl.tripHard();
@@ -111,7 +111,7 @@ public class TestCircuitBreaker {
         verify(mockRunnable);
     }
 
-    @Test(expected = CircuitBreakerException.class)
+    @Test(expected = BreakerException.class)
     public void testInvokeWithRunnableAndTripHardReturnsException() throws Exception {
         impl.tripHard();
 
@@ -169,7 +169,7 @@ public class TestCircuitBreaker {
         try {
             impl.invoke(mockCallable);
             fail("should have thrown an exception");
-        } catch (CircuitBreakerException expected) {
+        } catch (BreakerException expected) {
         }
 
         verify(mockCallable);
@@ -241,7 +241,7 @@ public class TestCircuitBreaker {
         try {
             impl.invoke(mockCallable);
             fail("Manual trip method failed.");
-        } catch (CircuitBreakerException e) {
+        } catch (BreakerException e) {
         }
 
         impl.reset();
@@ -263,7 +263,7 @@ public class TestCircuitBreaker {
         try {
             impl.invoke(mockCallable);
             fail("exception expected after CircuitBreaker.tripHard()");
-        } catch (CircuitBreakerException e) {
+        } catch (BreakerException e) {
         }
         assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
 
@@ -354,7 +354,7 @@ public class TestCircuitBreaker {
 
         try {
             impl.invoke(mockCallable);
-        } catch (CircuitBreakerException e) {
+        } catch (BreakerException e) {
             fail("exception not expected when CircuitBreaker is bypassed.");
         }
         assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
@@ -371,7 +371,7 @@ public class TestCircuitBreaker {
     @Test
     public void testNotificationCallback() throws Exception {
 
-        CircuitBreakerNotificationCallback cb = new CircuitBreakerNotificationCallback() {
+        BreakerNotificationCallback cb = new BreakerNotificationCallback() {
             public void notify(Status s) {
                 theStatus = s;
             }
