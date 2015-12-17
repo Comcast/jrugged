@@ -2,8 +2,8 @@ package org.fishwife.jrugged.spring;
 
 import java.util.concurrent.Callable;
 
-import org.fishwife.jrugged.CircuitBreakerException;
-import org.fishwife.jrugged.CircuitBreakerExceptionMapper;
+import org.fishwife.jrugged.BreakerException;
+import org.fishwife.jrugged.BreakerExceptionMapper;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.springframework.util.concurrent.ListenableFuture;
@@ -14,13 +14,13 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
 
     /** Creates a {@link AsyncCircuitBreaker} with a {@link
      *  DefaultFailureInterpreter} and the default "tripped" exception
-     *  behavior (throwing a {@link CircuitBreakerException}). */
+     *  behavior (throwing a {@link BreakerException}). */
     public AsyncCircuitBreaker() {
     }
 
     /** Creates a {@link AsyncCircuitBreaker} with a {@link
      *  DefaultFailureInterpreter} and the default "tripped" exception
-     *  behavior (throwing a {@link CircuitBreakerException}).
+     *  behavior (throwing a {@link BreakerException}).
      *  @param name the name for the {@link AsyncCircuitBreaker}.
      */
     public AsyncCircuitBreaker(String name) {
@@ -29,7 +29,7 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
 
     /** Creates a {@link AsyncCircuitBreaker} with the specified {@link
      *    FailureInterpreter} and the default "tripped" exception
-     *    behavior (throwing a {@link CircuitBreakerException}).
+     *    behavior (throwing a {@link BreakerException}).
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
@@ -40,7 +40,7 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
 
     /** Creates a {@link AsyncCircuitBreaker} with the specified {@link
      *    FailureInterpreter} and the default "tripped" exception
-     *    behavior (throwing a {@link CircuitBreakerException}).
+     *    behavior (throwing a {@link BreakerException}).
      *  @param name the name for the {@link AsyncCircuitBreaker}.
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
@@ -53,29 +53,29 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
 
     /** Creates a {@link AsyncCircuitBreaker} with a {@link
      *  DefaultFailureInterpreter} and using the supplied {@link
-     *  CircuitBreakerExceptionMapper} when client calls are made
+     *  BreakerExceptionMapper} when client calls are made
      *  while the breaker is tripped.
      *  @param name the name for the {@link AsyncCircuitBreaker}.
      *  @param mapper helper used to translate a {@link
-     *    CircuitBreakerException} into an application-specific one */
-    public AsyncCircuitBreaker(String name, CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+     *    BreakerException} into an application-specific one */
+    public AsyncCircuitBreaker(String name, BreakerExceptionMapper<? extends Exception> mapper) {
         this.name = name;
         exceptionMapper = mapper;
     }
 
     /** Creates a {@link AsyncCircuitBreaker} with the provided {@link
      *  FailureInterpreter} and using the provided {@link
-     *  CircuitBreakerExceptionMapper} when client calls are made
+     *  BreakerExceptionMapper} when client calls are made
      *  while the breaker is tripped.
      *  @param name the name for the {@link AsyncCircuitBreaker}.
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
      *  @param mapper helper used to translate a {@link
-     *    CircuitBreakerException} into an application-specific one */
+     *    BreakerException} into an application-specific one */
     public AsyncCircuitBreaker(String name,
         FailureInterpreter fi,
-        CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+        BreakerExceptionMapper<? extends Exception> mapper) {
         this.name = name;
         failureInterpreter = fi;
         exceptionMapper = mapper;
@@ -84,7 +84,7 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
     /** Wrap the given service call with the {@link AsyncCircuitBreaker} protection logic.
      *  @param callable the {@link java.util.concurrent.Callable} to attempt
      *  @return {@link ListenableFuture} of whatever callable would return
-     *  @throws org.fishwife.jrugged.CircuitBreakerException if the
+     *  @throws org.fishwife.jrugged.BreakerException if the
      *    breaker was OPEN or HALF_CLOSED and this attempt wasn't the
      *    reset attempt
      *  @throws Exception if the {@link org.fishwife.jrugged.CircuitBreaker} is in OPEN state
@@ -111,7 +111,7 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
 
         if (!byPass) {
             if (!allowRequest()) {
-                throw mapException(new CircuitBreakerException());
+                throw mapException(new BreakerException());
             }
 
             try {

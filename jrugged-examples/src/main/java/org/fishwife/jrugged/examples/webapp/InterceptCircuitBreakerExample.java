@@ -50,7 +50,7 @@ public class InterceptCircuitBreakerExample {
     @RequestMapping("/interceptCircuitBreaker")
     public ModelAndView viewMain(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int delayedFor = breakerResponseTweaker.delay();
-        ModelAndView view = new ModelAndView("interceptBreaker");
+        ModelAndView view = new ModelAndView("interceptCircuitBreaker");
         view.addObject("delay", new Integer(delayedFor));
         return view;
     }

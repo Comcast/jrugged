@@ -19,7 +19,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.fishwife.jrugged.CircuitBreakerConfig;
-import org.fishwife.jrugged.CircuitBreakerFactory;
+import org.fishwife.jrugged.BreakerFactory;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,30 +39,30 @@ public class CircuitBreakerAspect {
     /**
      * Maps names to CircuitBreakers.
      */
-    private CircuitBreakerFactory circuitBreakerFactory;
+    private BreakerFactory circuitBreakerFactory;
 
     /** Default constructor. */
     public CircuitBreakerAspect() {
-        circuitBreakerFactory = new CircuitBreakerFactory();
+        circuitBreakerFactory = new BreakerFactory();
     }
 
     /**
-     * Sets the {@link org.fishwife.jrugged.CircuitBreakerFactory} to use when creating new
+     * Sets the {@link org.fishwife.jrugged.BreakerFactory} to use when creating new
      * {@link org.fishwife.jrugged.CircuitBreaker} instances.
-     * @param circuitBreakerFactory the {@link org.fishwife.jrugged.CircuitBreakerFactory} to
+     * @param circuitBreakerFactory the {@link org.fishwife.jrugged.BreakerFactory} to
      *   use.
      */
     public void setCircuitBreakerFactory(
-            CircuitBreakerFactory circuitBreakerFactory) {
+            BreakerFactory circuitBreakerFactory) {
         this.circuitBreakerFactory = circuitBreakerFactory;
     }
 
     /**
-     * Get the {@link org.fishwife.jrugged.CircuitBreakerFactory} that is being used to create
+     * Get the {@link org.fishwife.jrugged.BreakerFactory} that is being used to create
      * new {@link org.fishwife.jrugged.CircuitBreaker} instances.
-     * @return the {@link org.fishwife.jrugged.CircuitBreakerFactory}.
+     * @return the {@link org.fishwife.jrugged.BreakerFactory}.
      */
-    public CircuitBreakerFactory getCircuitBreakerFactory() {
+    public BreakerFactory getCircuitBreakerFactory() {
         return circuitBreakerFactory;
     }
 

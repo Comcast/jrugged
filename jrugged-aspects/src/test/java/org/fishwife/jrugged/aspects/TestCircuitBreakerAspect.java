@@ -16,8 +16,8 @@ package org.fishwife.jrugged.aspects;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
-import org.fishwife.jrugged.CircuitBreakerException;
-import org.fishwife.jrugged.CircuitBreakerFactory;
+import org.fishwife.jrugged.BreakerException;
+import org.fishwife.jrugged.BreakerFactory;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -104,7 +104,7 @@ public class TestCircuitBreakerAspect {
         expect(mockPjp.proceed()).andReturn(null);
         replay(mockPjp);
 
-        CircuitBreakerFactory factory = new CircuitBreakerFactory();
+        BreakerFactory factory = new BreakerFactory();
         aspect.setCircuitBreakerFactory(factory);
 
         aspect.monitor(mockPjp, mockAnnotation);
@@ -169,7 +169,7 @@ public class TestCircuitBreakerAspect {
         replay(mockPjp);
 
         aspect.monitor(mockPjp, mockAnnotation);
-        CircuitBreakerFactory circuitBreakerFactory =
+        BreakerFactory circuitBreakerFactory =
                 aspect.getCircuitBreakerFactory();
 
         assertNotNull(circuitBreakerFactory);
@@ -196,7 +196,7 @@ public class TestCircuitBreakerAspect {
             callMonitorCatchThrowable(mockPjp, e);
         }
 
-        CircuitBreakerException cbe = new CircuitBreakerException();
+        BreakerException cbe = new BreakerException();
         callMonitorCatchThrowable(mockPjp, cbe);
         verifyBreakerExists(TEST_CIRCUIT_BREAKER);
 

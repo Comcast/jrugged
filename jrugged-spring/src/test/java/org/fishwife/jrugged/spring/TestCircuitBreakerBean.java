@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 
 import java.util.concurrent.Callable;
 
-import org.fishwife.jrugged.CircuitBreakerException;
+import org.fishwife.jrugged.BreakerException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ public class TestCircuitBreakerBean {
         try {
             impl.invoke(call);
             fail("Should have thrown CircuitBreakerException");
-        } catch (CircuitBreakerException cbe) {
+        } catch (BreakerException cbe) {
         }
     }
 }

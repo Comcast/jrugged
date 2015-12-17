@@ -31,7 +31,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-import org.fishwife.jrugged.CircuitBreakerException;
+import org.fishwife.jrugged.BreakerException;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -79,7 +79,7 @@ public class TestFailureHandlingHttpClient {
     @Test
     public void throwsIOExceptionForCircuitBreakerException() throws Exception {
         expect(mockBackend.execute(host, req, ctx))
-            .andThrow(new CircuitBreakerException());
+            .andThrow(new BreakerException());
         replay(mockBackend);
         try {
             impl.execute(host, req, ctx);

@@ -15,7 +15,7 @@
 package org.fishwife.jrugged.spring;
 
 import org.fishwife.jrugged.CircuitBreaker;
-import org.fishwife.jrugged.CircuitBreakerExceptionMapper;
+import org.fishwife.jrugged.BreakerExceptionMapper;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
 import org.springframework.beans.factory.InitializingBean;
@@ -43,14 +43,14 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     /**
      * Creates a {@link CircuitBreakerBean} with a
      * {@link DefaultFailureInterpreter} and the default "tripped" exception
-     * behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     * behavior (throwing a {@link org.fishwife.jrugged.BreakerException}).
      */
     public CircuitBreakerBean() { super(); }
 
     /**
      * Creates a {@link CircuitBreakerBean} with a
      * {@link DefaultFailureInterpreter} and the default "tripped" exception
-     * behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     * behavior (throwing a {@link org.fishwife.jrugged.BreakerException}).
      *  @param name the name for the {@link CircuitBreakerBean}
      */
     public CircuitBreakerBean(String name) { super(name); }
@@ -58,7 +58,7 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     /**
      * Creates a {@link CircuitBreakerBean} with the specified
      * {@link FailureInterpreter} and the default "tripped" exception
-     * behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     * behavior (throwing a {@link org.fishwife.jrugged.BreakerException}).
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
@@ -70,7 +70,7 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     /**
      * Creates a {@link CircuitBreakerBean} with the specified
      * {@link FailureInterpreter} and the default "tripped" exception
-     * behavior (throwing a {@link org.fishwife.jrugged.CircuitBreakerException}).
+     * behavior (throwing a {@link org.fishwife.jrugged.BreakerException}).
      *  @param name the name for the {@link CircuitBreakerBean}
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
@@ -83,20 +83,20 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     /**
      * Creates a {@link CircuitBreaker} with a {@link
      *  DefaultFailureInterpreter} and using the supplied {@link
-     *  CircuitBreakerExceptionMapper} when client calls are made
+     *  BreakerExceptionMapper} when client calls are made
      *  while the breaker is tripped.
      *  @param name the name for the {@link CircuitBreakerBean}
      *  @param mapper helper used to translate a {@link
-     *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
+     *    org.fishwife.jrugged.BreakerException} into an application-specific one
      */
-    public CircuitBreakerBean(String name, CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+    public CircuitBreakerBean(String name, BreakerExceptionMapper<? extends Exception> mapper) {
       super(name, mapper);
     }
 
     /**
      * Creates a {@link CircuitBreaker} with the provided {@link
      *  FailureInterpreter} and using the provided {@link
-     *  CircuitBreakerExceptionMapper} when client calls are made
+     *  BreakerExceptionMapper} when client calls are made
      *  while the breaker is tripped.
      *
      *  @param name the name for the {@link CircuitBreakerBean}
@@ -104,10 +104,10 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
      *  @param mapper helper used to translate a {@link
-     *    org.fishwife.jrugged.CircuitBreakerException} into an application-specific one
+     *    org.fishwife.jrugged.BreakerException} into an application-specific one
      */
     public CircuitBreakerBean(String name, FailureInterpreter fi,
-            CircuitBreakerExceptionMapper<? extends Exception> mapper) {
+            BreakerExceptionMapper<? extends Exception> mapper) {
         super(name, fi, mapper);
     }
 
