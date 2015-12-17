@@ -20,10 +20,10 @@ package org.fishwife.jrugged;
  * This exception gets thrown by a {@link CircuitBreaker} if a wrapped
  * call is disallowed by a tripped (OPEN) breaker.
  */
-public class CircuitBreakerException extends RuntimeException {
+public class BreakerException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
     /** Default constructor. */
-    public CircuitBreakerException() { }
+    public BreakerException() { }
 }

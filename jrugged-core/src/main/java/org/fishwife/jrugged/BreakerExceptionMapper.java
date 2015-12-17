@@ -15,25 +15,22 @@
 package org.fishwife.jrugged;
 
 /**
- * The CircuitBreakerConfig class holds a
- * {@link org.fishwife.jrugged.CircuitBreaker} configuration.
+ * Allows the user to map the standard {@link BreakerException}
+ * thrown by a tripped {@link CircuitBreaker} into an application
+ * specific exception.
+ *
+ * @param <T> is the application specific exception type.
  */
-public class CircuitBreakerConfig implements BreakerConfig{
+public interface BreakerExceptionMapper<T extends Exception> {
 
-    private FailureInterpreter failureInterpreter;
-    private long resetMillis;
-
-    public CircuitBreakerConfig(long resetMillis,
-            FailureInterpreter failureInterpreter) {
-        this.resetMillis = resetMillis;
-        this.failureInterpreter = failureInterpreter;
-    }
-
-    public long getResetMillis() {
-        return resetMillis;
-    }
-
-    public FailureInterpreter getFailureInterpreter() {
-        return failureInterpreter;
-    }
+    /**
+     * Turns a {@link BreakerException} into the desired exception (T)
+     *
+     * @param breaker the {@link CircuitBreaker}
+     * @param e the <code>BreakerException</code> I get
+     * @return the {@link Exception} I want thrown instead
+     */
+    public T map(Breaker breaker, BreakerException e);
+    
+    
 }
