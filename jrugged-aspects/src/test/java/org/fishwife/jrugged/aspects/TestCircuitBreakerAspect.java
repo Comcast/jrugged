@@ -223,6 +223,7 @@ public class TestCircuitBreakerAspect {
             assertEquals(expected.getClass(), thrown.getClass());
         }
     }
+
     private void verifyBreakerExists(String name) {
         assertNotNull(aspect.getCircuitBreakerFactory().findCircuitBreaker(name));
     }
