@@ -134,19 +134,19 @@
         <dependency>
             <groupId>org.fishwife</groupId>
             <artifactId>jrugged-core</artifactId>
-            <version>3.2.3-SNAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.fishwife</groupId>
             <artifactId>jrugged-aspects</artifactId>
-            <version>3.2.3-SNAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.fishwife</groupId>
             <artifactId>jrugged-spring</artifactId>
-            <version>3.2.3-SNAPSHOT</version>
+            <version>4.0.0-SNAPSHOT</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
