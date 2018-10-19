@@ -35,7 +35,7 @@ public final class ExtendedPredicates {
      * @param clazz The class to see if the passed in object will be an instanceof
      * @param <S> The superclass
      * @param <C> The class
-     * @return
+     * @return The predicate
      */
     public static <S,C extends S> Predicate<S> isInstanceOf(final Class<S> superclazz, final Class<C> clazz) {
         return new Predicate<S>() {

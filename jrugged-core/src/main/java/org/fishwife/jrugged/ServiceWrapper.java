@@ -29,6 +29,7 @@ import java.util.concurrent.Callable;
 public interface ServiceWrapper {
     /** Wraps a {@link Callable} in some fashion.
      *  @param c the service call to wrap
+     *  @param <T> The callable type I am wrapping
      *  @return whatever <code>c</code> would normally return
      *  @throws Exception if <code>c</code> throws one
      */
@@ -44,6 +45,7 @@ public interface ServiceWrapper {
      *  predetermined result on success.
      *  @param r the service call/task to wrap
      *  @param result what to return on success
+     *  @param <T> The return TYPE that should emit
      *  @return result
      *  @throws Exception if <code>r</code> throws one
      */

@@ -33,6 +33,8 @@ public interface Initializable {
     /**
      * Makes an initialization attempt. If an exception is thrown, assume
      * attempt failed.
+     *
+     * @throws Exception if the attempt to init fails due to wrapped item throwing
      */
     public void tryInit() throws Exception;
 

@@ -72,14 +72,22 @@ public enum Status {
     }
 
     /** Returns the current status as an integer. Higher values are for
-     *  states of higher functionality/availability. */
+     *  states of higher functionality/availability.
+     *  @return int The value of current status
+     */
     public int getValue() { return value; }
 
     /** Returns the current GREEN/YELLOW/RED dashboard indicator
-     *  corresponding to this status. */
+     *  corresponding to this status.
+     *
+     * @return String The current signalling, RED, YELLOW, ETC.
+     */
     public String getSignal() { return signal; }
 
     /** Returns whether the status indicates a system that is able
-     *  to serve requests. */
+     *  to serve requests.
+     *
+     * @return boolean Greater than ZERO settings mean availability
+     */
     public boolean isAvailable() { return (value > 0); }
 };
