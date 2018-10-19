@@ -87,18 +87,7 @@
             <id>central</id>
             <url>http://repo1.maven.org/maven2</url>
         </repository>
-        <repository>
-            <id>appfuse</id>
-            <url>http://static.appfuse.org/repository</url>
-        </repository>
     </repositories>
-
-    <pluginRepositories>
-        <pluginRepository>
-            <id>appfuse</id>
-            <url>http://static.appfuse.org/repository</url>
-        </pluginRepository>
-    </pluginRepositories>
 
     <dependencies>
         <!-- Dependencies with scope=provided aren't picked up from dependent JARs -->
