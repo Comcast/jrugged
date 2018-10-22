@@ -30,7 +30,7 @@ Testing
 -------
 
 This project primarily utilizes JUnit based testing using
-Mockito for macking those things that can not be easily 
+Mockito for making those things that can not be easily 
 repsented or consumed directly when testing a given class.
 We love when people provide ANY tests for the work they are submitting 
 but for sure we give preference to JUnit and Mockito.
