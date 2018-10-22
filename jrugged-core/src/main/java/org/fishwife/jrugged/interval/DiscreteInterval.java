@@ -41,18 +41,26 @@ public class DiscreteInterval {
         this.max = max;
     }
 
-    /** Returns the minimum value included in the interval. */
+    /** Returns the minimum value included in the interval.
+     *
+     * @return long min value included
+     */
     public long getMin() {
         return min;
     }
 
-    /** Returns the maximum value included in the interval. */
+    /** Returns the maximum value included in the interval.
+     *
+     * @return long max value included
+     */
     public long getMax() {
         return max;
     }
 
     /** Returns the number of discrete values covered by this
      * range.
+     *
+     * @return long how many values are in my range
      */
     public long size() {
         return max - min + 1;
@@ -86,6 +94,9 @@ public class DiscreteInterval {
 
     /** Determines whether the given interval is completely
      * contained by this one.
+     *
+     * @param other Is this interval contained in my current interval
+     * @return boolean contained or not contained that is the question
      */
     public boolean contains(DiscreteInterval other) {
         return (min <= other.getMin() && max >= other.getMax());

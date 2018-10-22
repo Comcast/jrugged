@@ -44,7 +44,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      *
      * @param callback The callback to wrap
      * @param <T> The return type of the callback
-     * @return
+     * @return The callback as a Callable
      */
     public <T> Callable<T> asCallable(final RetryCallback<T, Exception> callback) {
         return new Callable<T>() {
@@ -62,7 +62,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      *
      * @param callable The callable to wrap
      * @param <T> The return type of the callback
-     * @return
+     * @return The callback as a Callable
      */
     public <T> Callable<T> asCallable(final Callable<T> callable) {
         return new Callable<T>() {
@@ -82,7 +82,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      * @param callable The callable to execute
      * @param <T> The return type of the callable
      * @return The result of the callable
-     * @throws Exception
+     * @throws Exception in the event that the callable throws
      * @throws ExhaustedRetryException If all retry attempts have been exhausted
      */
     public <T> T execute(final Callable<T> callable) throws Exception, ExhaustedRetryException {
@@ -100,7 +100,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      * @param retryState The current retryState
      * @param <T> The return type of the callable
      * @return The result of the callable
-     * @throws Exception
+     * @throws Exception in the event that the callable throws
      * @throws ExhaustedRetryException If all retry attempts have been exhausted
      */
     public <T> T execute(final Callable<T> callable, RetryState retryState) throws Exception, ExhaustedRetryException {
@@ -121,7 +121,7 @@ public class ExtendedRetryTemplate extends RetryTemplate {
      * @param retryState The current retryState
      * @param <T> The return type of the callable
      * @return The result of the callable
-     * @throws Exception
+     * @throws Exception in the event that the callable throws
      * @throws ExhaustedRetryException If all retry attempts have been exhausted
      */
     public <T> T execute(final Callable<T> callable, RecoveryCallback<T> recoveryCallback, RetryState retryState) throws Exception, ExhaustedRetryException {

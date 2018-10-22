@@ -62,6 +62,7 @@ public class ClassifierSimpleRetryPolicy
      *
      * Uses the default values for the {@link #maxAttempts}
      *
+     * @param classifier The classifier used to determine if an exception should trigger a retry
      */
     public ClassifierSimpleRetryPolicy(Classifier<Throwable, Boolean> classifier) {
         this(SimpleRetryPolicy.DEFAULT_MAX_ATTEMPTS, classifier);

@@ -13,7 +13,8 @@ public interface ResponseFailureAssessor {
      * <em>not</em> consume the response body unless they check
      * that the underlying {@link org.apache.http.HttpEntity} is
      * repeatable first.
-     * @param response
+     * @param response Is this HttpResponse a failure or not
+     * @return boolean indication of failure
      */
     boolean isFailure(HttpResponse response);
 }

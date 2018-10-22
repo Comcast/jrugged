@@ -83,6 +83,7 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
 
     /** Wrap the given service call with the {@link AsyncCircuitBreaker} protection logic.
      *  @param callable the {@link java.util.concurrent.Callable} to attempt
+     *  @param <T> The result of a future call
      *  @return {@link ListenableFuture} of whatever callable would return
      *  @throws org.fishwife.jrugged.CircuitBreakerException if the
      *    breaker was OPEN or HALF_CLOSED and this attempt wasn't the

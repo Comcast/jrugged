@@ -15,13 +15,13 @@ import java.lang.annotation.Target;
 public @interface RetryTemplate {
     /***
      * The name of the spring bean where the appropriate retryTemplate can be found.
-     * @return
+     * @return String the name of the template
      */
     String name() default "retryTemplate";
 
     /***
      * The name of the spring bean where a recovery callback method can be found.
-     * @return
+     * @return String the callback name or ""
      */
     String recoveryCallbackName() default "";
 }
