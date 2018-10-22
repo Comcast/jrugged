@@ -54,7 +54,7 @@ Commit messages
 ---------------
 
 Please follow the advice of the
-[Phonegap guys](https://github.com/phonegap/phonegap/wiki/Git-Commit-Message-Format)
+[Phonegap team](https://github.com/phonegap/phonegap/wiki/Git-Commit-Message-Format)
 when crafting commit messages. The advice basically comes down to:
 
 * First line should be maximum 50 characters long
