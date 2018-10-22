@@ -18,6 +18,7 @@ import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.BreakerExceptionMapper;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.fishwife.jrugged.FailureInterpreter;
+import org.fishwife.jrugged.SkepticBreaker;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 import org.springframework.jmx.export.annotation.ManagedOperation;
@@ -29,7 +30,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
  * doesn't have to depend on spring-context.
  */
 @ManagedResource
-public class CircuitBreakerBean extends CircuitBreaker implements InitializingBean {
+public class SkepticBreakerBean extends SkepticBreaker implements InitializingBean {
 
     private boolean disabledAtStart = false;
 
@@ -41,42 +42,42 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
     }
 
     /**
-     * Creates a {@link CircuitBreakerBean} with a
+     * Creates a {@link SkepticBreakerBean} with a
      * {@link DefaultFailureInterpreter} and the default "tripped" exception
      * behavior (throwing a {@link org.fishwife.jrugged.BreakerException}).
      */
-    public CircuitBreakerBean() { super(); }
+    public SkepticBreakerBean() { super(); }
 
     /**
-     * Creates a {@link CircuitBreakerBean} with a
+     * Creates a {@link SkepticBreakerBean} with a
      * {@link DefaultFailureInterpreter} and the default "tripped" exception
      * behavior (throwing a {@link org.fishwife.jrugged.BreakerException}).
-     *  @param name the name for the {@link CircuitBreakerBean}
+     *  @param name the name for the {@link SkepticBreakerBean}
      */
-    public CircuitBreakerBean(String name) { super(name); }
+    public SkepticBreakerBean(String name) { super(name); }
 
     /**
-     * Creates a {@link CircuitBreakerBean} with the specified
+     * Creates a {@link SkepticBreakerBean} with the specified
      * {@link FailureInterpreter} and the default "tripped" exception
      * behavior (throwing a {@link org.fishwife.jrugged.BreakerException}).
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
      */
-    public CircuitBreakerBean(FailureInterpreter fi) {
+    public SkepticBreakerBean(FailureInterpreter fi) {
       super(fi);
     }
 
     /**
-     * Creates a {@link CircuitBreakerBean} with the specified
+     * Creates a {@link SkepticBreakerBean} with the specified
      * {@link FailureInterpreter} and the default "tripped" exception
      * behavior (throwing a {@link org.fishwife.jrugged.BreakerException}).
-     *  @param name the name for the {@link CircuitBreakerBean}
+     *  @param name the name for the {@link SkepticBreakerBean}
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
      */
-    public CircuitBreakerBean(String name, FailureInterpreter fi) {
+    public SkepticBreakerBean(String name, FailureInterpreter fi) {
       super(name, fi);
     }
 
@@ -85,11 +86,11 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
      *  DefaultFailureInterpreter} and using the supplied {@link
      *  BreakerExceptionMapper} when client calls are made
      *  while the breaker is tripped.
-     *  @param name the name for the {@link CircuitBreakerBean}
+     *  @param name the name for the {@link SkepticBreakerBean}
      *  @param mapper helper used to translate a {@link
      *    org.fishwife.jrugged.BreakerException} into an application-specific one
      */
-    public CircuitBreakerBean(String name, BreakerExceptionMapper<? extends Exception> mapper) {
+    public SkepticBreakerBean(String name, BreakerExceptionMapper<? extends Exception> mapper) {
       super(name, mapper);
     }
 
@@ -99,14 +100,14 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
      *  BreakerExceptionMapper} when client calls are made
      *  while the breaker is tripped.
      *
-     *  @param name the name for the {@link CircuitBreakerBean}
+     *  @param name the name for the {@link SkepticBreakerBean}
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
      *  @param mapper helper used to translate a {@link
      *    org.fishwife.jrugged.BreakerException} into an application-specific one
      */
-    public CircuitBreakerBean(String name, FailureInterpreter fi,
+    public SkepticBreakerBean(String name, FailureInterpreter fi,
             BreakerExceptionMapper<? extends Exception> mapper) {
         super(name, fi, mapper);
     }
@@ -186,27 +187,65 @@ public class CircuitBreakerBean extends CircuitBreaker implements InitializingBe
         super.reset();
     }
 
-    /**
-     * Returns the cooldown period in milliseconds.
-     *
-     * @return long
-     */
+    
     @ManagedAttribute
     @Override
-    public long getResetMillis() {
-        return super.getResetMillis();
+    public long getWaitMult() {
+        return super.getWaitMult();
     }
 
-    /** Sets the reset period to the given number of milliseconds. The
-     *  default is 15,000 (make one retry attempt every 15 seconds).
-     *
-     * @param l number of milliseconds to "cool down" after tripping
-     *   before allowing a "test request" through again
-     */
     @ManagedAttribute
     @Override
-    public void setResetMillis(long l) {
-        super.setResetMillis(l);
+    public void setWaitMult(long l) {
+        super.setWaitMult(l);
+    }
+    
+    @ManagedAttribute
+    @Override
+    public long getGoodMult() {
+        return super.getGoodMult();
+    }
+
+    @ManagedAttribute
+    @Override
+    public void setGoodMult(long l) {
+        super.setGoodMult(l);
+    }
+    
+    @ManagedAttribute
+    @Override
+    public long getWaitBase() {
+        return super.getWaitBase();
+    }
+
+    @ManagedAttribute
+    @Override
+    public void setWaitBase(long l) {
+        super.setWaitBase(l);
+    }
+    
+    @ManagedAttribute
+    @Override
+    public long getGoodBase() {
+        return super.getGoodBase();
+    }
+
+    @ManagedAttribute
+    @Override
+    public void setGoodBase(long l) {
+        super.setGoodBase(l);
+    }
+    
+    @ManagedAttribute
+    @Override
+    public long getMaxLevel() {
+        return super.getMaxLevel();
+    }
+
+    @ManagedAttribute
+    @Override
+    public void setMaxLevel(long l) {
+        super.setMaxLevel(l);
     }
 
     /**

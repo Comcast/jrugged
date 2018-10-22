@@ -10,70 +10,70 @@ import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
 import org.springframework.util.concurrent.SettableListenableFuture;
 
-public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
+public class AsyncSkepticBreaker extends org.fishwife.jrugged.SkepticBreaker {
 
-    /** Creates a {@link AsyncCircuitBreaker} with a {@link
+    /** Creates a {@link AsyncSkepticBreaker} with a {@link
      *  DefaultFailureInterpreter} and the default "tripped" exception
      *  behavior (throwing a {@link BreakerException}). */
-    public AsyncCircuitBreaker() {
+    public AsyncSkepticBreaker() {
     }
 
-    /** Creates a {@link AsyncCircuitBreaker} with a {@link
+    /** Creates a {@link AsyncSkepticBreaker} with a {@link
      *  DefaultFailureInterpreter} and the default "tripped" exception
      *  behavior (throwing a {@link BreakerException}).
-     *  @param name the name for the {@link AsyncCircuitBreaker}.
+     *  @param name the name for the {@link AsyncSkepticBreaker}.
      */
-    public AsyncCircuitBreaker(String name) {
+    public AsyncSkepticBreaker(String name) {
         this.name = name;
     }
 
-    /** Creates a {@link AsyncCircuitBreaker} with the specified {@link
+    /** Creates a {@link AsyncSkepticBreaker} with the specified {@link
      *    FailureInterpreter} and the default "tripped" exception
      *    behavior (throwing a {@link BreakerException}).
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
      */
-    public AsyncCircuitBreaker(FailureInterpreter fi) {
+    public AsyncSkepticBreaker(FailureInterpreter fi) {
         failureInterpreter = fi;
     }
 
-    /** Creates a {@link AsyncCircuitBreaker} with the specified {@link
+    /** Creates a {@link AsyncSkepticBreaker} with the specified {@link
      *    FailureInterpreter} and the default "tripped" exception
      *    behavior (throwing a {@link BreakerException}).
-     *  @param name the name for the {@link AsyncCircuitBreaker}.
+     *  @param name the name for the {@link AsyncSkepticBreaker}.
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
      */
-    public AsyncCircuitBreaker(String name, FailureInterpreter fi) {
+    public AsyncSkepticBreaker(String name, FailureInterpreter fi) {
         this.name = name;
         failureInterpreter = fi;
     }
 
-    /** Creates a {@link AsyncCircuitBreaker} with a {@link
+    /** Creates a {@link AsyncSkepticBreaker} with a {@link
      *  DefaultFailureInterpreter} and using the supplied {@link
      *  BreakerExceptionMapper} when client calls are made
      *  while the breaker is tripped.
-     *  @param name the name for the {@link AsyncCircuitBreaker}.
+     *  @param name the name for the {@link AsyncSkepticBreaker}.
      *  @param mapper helper used to translate a {@link
      *    BreakerException} into an application-specific one */
-    public AsyncCircuitBreaker(String name, BreakerExceptionMapper<? extends Exception> mapper) {
+    public AsyncSkepticBreaker(String name, BreakerExceptionMapper<? extends Exception> mapper) {
         this.name = name;
         exceptionMapper = mapper;
     }
 
-    /** Creates a {@link AsyncCircuitBreaker} with the provided {@link
+    /** Creates a {@link AsyncSkepticBreaker} with the provided {@link
      *  FailureInterpreter} and using the provided {@link
      *  BreakerExceptionMapper} when client calls are made
      *  while the breaker is tripped.
-     *  @param name the name for the {@link AsyncCircuitBreaker}.
+     *  @param name the name for the {@link AsyncSkepticBreaker}.
      *  @param fi the <code>FailureInterpreter</code> to use when
      *    determining whether a specific failure ought to cause the
      *    breaker to trip
      *  @param mapper helper used to translate a {@link
      *    BreakerException} into an application-specific one */
-    public AsyncCircuitBreaker(String name,
+    public AsyncSkepticBreaker(String name,
         FailureInterpreter fi,
         BreakerExceptionMapper<? extends Exception> mapper) {
         this.name = name;
@@ -81,9 +81,8 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
         exceptionMapper = mapper;
     }
 
-    /** Wrap the given service call with the {@link AsyncCircuitBreaker} protection logic.
+    /** Wrap the given service call with the {@link AsyncSkepticBreaker} protection logic.
      *  @param callable the {@link java.util.concurrent.Callable} to attempt
-     *  @param <T> The result of a future call
      *  @return {@link ListenableFuture} of whatever callable would return
      *  @throws org.fishwife.jrugged.BreakerException if the
      *    breaker was OPEN or HALF_CLOSED and this attempt wasn't the
@@ -116,7 +115,6 @@ public class AsyncCircuitBreaker extends org.fishwife.jrugged.CircuitBreaker {
             }
 
             try {
-                isAttemptLive = true;
                 callable.call().addCallback(callback);
                 return response;
             } catch (Throwable cause) {

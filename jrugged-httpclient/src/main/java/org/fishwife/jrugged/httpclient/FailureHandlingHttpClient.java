@@ -23,7 +23,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.protocol.HttpContext;
-import org.fishwife.jrugged.CircuitBreakerException;
+import org.fishwife.jrugged.BreakerException;
 
 public class FailureHandlingHttpClient extends AbstractHttpClientDecorator {
 
@@ -37,7 +37,7 @@ public class FailureHandlingHttpClient extends AbstractHttpClientDecorator {
             return backend.execute(host, req, ctx);
         } catch (UnsuccessfulResponseException ure) {
             return ure.getResponse();
-        } catch (CircuitBreakerException cbe) {
+        } catch (BreakerException cbe) {
             throw new IOException(cbe);
         }
     }

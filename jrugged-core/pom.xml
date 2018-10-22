@@ -26,4 +26,12 @@
     <packaging>jar</packaging>
     <name>jrugged-core</name>
     <url>https://github.com/Comcast/jrugged</url>
+    
+    <dependencies>
+    	<dependency>
+    		<groupId>org.easymock</groupId>
+    		<artifactId>easymock</artifactId>
+    		<version>3.4</version>
+    	</dependency>
+    </dependencies>
 </project>

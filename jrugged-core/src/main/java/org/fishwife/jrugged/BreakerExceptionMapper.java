@@ -15,21 +15,22 @@
 package org.fishwife.jrugged;
 
 /**
- * Allows the user to map the standard {@link CircuitBreakerException}
+ * Allows the user to map the standard {@link BreakerException}
  * thrown by a tripped {@link CircuitBreaker} into an application
  * specific exception.
  *
  * @param <T> is the application specific exception type.
  */
-public interface CircuitBreakerExceptionMapper<T extends Exception> {
+public interface BreakerExceptionMapper<T extends Exception> {
 
     /**
-     * Turns a {@link CircuitBreakerException} into the desired exception (T)
+     * Turns a {@link BreakerException} into the desired exception (T)
      *
      * @param breaker the {@link CircuitBreaker}
-     * @param e the <code>CircuitBreakerException</code> I get
+     * @param e the <code>BreakerException</code> I get
      * @return the {@link Exception} I want thrown instead
      */
-    public T map(CircuitBreaker breaker, CircuitBreakerException e);
-
+    public T map(Breaker breaker, BreakerException e);
+    
+    
 }

@@ -1,4 +1,4 @@
-/* InterceptCircuitBreakerExample.java
+/* InterceptSkepticBreakerExample.java
  *
  * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
@@ -17,7 +17,7 @@
 package org.fishwife.jrugged.examples.webapp;
 
 import org.fishwife.jrugged.examples.BreakerResponseTweaker;
-import org.fishwife.jrugged.spring.CircuitBreakerBean;
+import org.fishwife.jrugged.spring.SkepticBreakerBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,14 +28,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
 
 @Controller()
-public class InterceptCircuitBreakerExample {
-    @Autowired
-    private CircuitBreakerBean circuitBreakerBean;
-    public CircuitBreakerBean getCircuitBreakerBean() {
-        return circuitBreakerBean;
+public class InterceptSkepticBreakerExample {
+    
+	@Autowired
+    private SkepticBreakerBean skepticBreakerBean;
+    public SkepticBreakerBean getSkepticBreakerBean() {
+        return skepticBreakerBean;
     }
-    public void setCircuitBreakerBean(CircuitBreakerBean circuitBreakerBean) {
-        this.circuitBreakerBean = circuitBreakerBean;
+    public void setSkepticBreakerBean(SkepticBreakerBean skepticBreakerBean) {
+        this.skepticBreakerBean = skepticBreakerBean;
     }
 
     @Autowired
@@ -47,28 +48,28 @@ public class InterceptCircuitBreakerExample {
         this.breakerResponseTweaker = breakerResponseTweaker;
     }
 
-    @RequestMapping("/interceptCircuitBreaker")
+    @RequestMapping("/interceptSkepticBreaker")
     public ModelAndView viewMain(HttpServletRequest request, HttpServletResponse response) throws Exception {
         int delayedFor = breakerResponseTweaker.delay();
-        ModelAndView view = new ModelAndView("interceptCircuitBreaker");
+        ModelAndView view = new ModelAndView("interceptSkepticBreaker");
         view.addObject("delay", new Integer(delayedFor));
         return view;
     }
 
-    @RequestMapping("/interceptCircuitBreaker/stats")
+    @RequestMapping("/interceptSkepticBreaker/stats")
     public ModelAndView viewPerformanceMonitor(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
         final StringBuilder sb = new StringBuilder();
 
         // Go through all methods and invoke those with ManagedAttribute
         // marker annotations
-        Method[] methods = circuitBreakerBean.getClass().getMethods();
+        Method[] methods = skepticBreakerBean.getClass().getMethods();
         for (Method monitorMethod : methods) {
             if (monitorMethod.getName().startsWith("get")) {
                 sb.append(
                     String.format("\t%s: %s\n",
                         monitorMethod.getName().substring(3),
-                        monitorMethod.invoke(circuitBreakerBean, new Object[] {})
+                        monitorMethod.invoke(skepticBreakerBean, new Object[] {})
                     )
                 );
             }

@@ -15,19 +15,17 @@
 -->
 <html>
     <head>
-       <title>JRugged Examples</title>
+       <title>JRugged Examples - Interceptor SkepticBreaker</title>
     </head>
 
     <body>
 
-    <h1>JRugged Examples</h1>
+    <h1>JRugged Examples - Interceptor SkepticBreaker</h1>
 
-    <ul>
-        <li><a href="./aspectPerformanceMonitor">Aspect Performance Monitor</a></li>
-        <li><a href="./interceptCircuitBreaker">Interceptor Circuit Breaker</a></li>
-        <li><a href="./interceptSkepticBreaker">Interceptor Skeptic Breaker</a></li>
-        <li><a href="./interceptPerformanceMonitor">Interceptor Performance Monitor</a></li>
-    </ul>
+    <p>The response for this page was delayed by <%= request.getAttribute("delay") %> ms.</p>
+
+    <p>After loading this page a few times take a look at the <a href="./interceptSkepticBreaker/stats">breaker stats</a>.</p>
+
 
     </body>
 </html>

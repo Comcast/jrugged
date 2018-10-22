@@ -18,7 +18,7 @@ package org.fishwife.jrugged;
  * The CircuitBreakerConfig class holds a
  * {@link org.fishwife.jrugged.CircuitBreaker} configuration.
  */
-public class CircuitBreakerConfig {
+public class CircuitBreakerConfig implements BreakerConfig{
 
     private FailureInterpreter failureInterpreter;
     private long resetMillis;

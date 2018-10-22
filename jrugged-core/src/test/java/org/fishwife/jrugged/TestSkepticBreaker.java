@@ -1,4 +1,4 @@
-/* TestCircuitBreaker.java
+/* TestSkepticBreaker.java
  *
  * Copyright 2009-2015 Comcast Interactive Media, LLC.
  *
@@ -19,6 +19,7 @@ package org.fishwife.jrugged;
 import java.util.concurrent.Callable;
 
 import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -27,15 +28,14 @@ import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-public class TestCircuitBreaker {
-    private CircuitBreaker impl;
+public class TestSkepticBreaker {
+    private SkepticBreaker impl;
     private Callable<Object> mockCallable;
     private Runnable mockRunnable;
 
@@ -44,7 +44,7 @@ public class TestCircuitBreaker {
     @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        impl = new CircuitBreaker();
+        impl = new SkepticBreaker();
         mockCallable = createMock(Callable.class);
         mockRunnable = createMock(Runnable.class);
     }
@@ -125,7 +125,7 @@ public class TestCircuitBreaker {
 
     @Test
     public void testStaysClosedOnSuccess() throws Exception {
-        impl.state = CircuitBreaker.BreakerState.CLOSED;
+        impl.state = SkepticBreaker.BreakerState.CLOSED;
         final Object obj = new Object();
         expect(mockCallable.call()).andReturn(obj);
         replay(mockCallable);
@@ -134,13 +134,14 @@ public class TestCircuitBreaker {
 
         verify(mockCallable);
         assertSame(obj, result);
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.CLOSED, impl.state);
     }
 
     @Test
+    //Add check on timers here as well
     public void testOpensOnFailure() throws Exception {
         long start = System.currentTimeMillis();
-        impl.state = CircuitBreaker.BreakerState.OPEN;
+        impl.state = SkepticBreaker.BreakerState.OPEN;
         expect(mockCallable.call()).andThrow(new RuntimeException());
         replay(mockCallable);
 
@@ -153,7 +154,7 @@ public class TestCircuitBreaker {
         long end = System.currentTimeMillis();
 
         verify(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.OPEN, impl.state);
         assertTrue(impl.lastFailure.get() >= start);
         assertTrue(impl.lastFailure.get() <= end);
     }
@@ -162,7 +163,7 @@ public class TestCircuitBreaker {
     public void testOpenDuringCooldownThrowsCBException()
             throws Exception {
 
-        impl.state = CircuitBreaker.BreakerState.OPEN;
+        impl.state = SkepticBreaker.BreakerState.OPEN;
         impl.lastFailure.set(System.currentTimeMillis());
         replay(mockCallable);
 
@@ -173,27 +174,26 @@ public class TestCircuitBreaker {
         }
 
         verify(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.OPEN, impl.state);
     }
 
     @Test
-    public void testOpenAfterCooldownGoesHalfClosed()
+    public void testClosedAfterWaitTimeExpires() //testOpenAfterCooldownGoesClosed()
             throws Exception {
-
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        impl.resetMillis.set(1000);
+        impl.state = SkepticBreaker.BreakerState.OPEN;
+        impl.waitTime.set(1000);// waitTime is 1100 by default. set to 1000 in case default changes
         impl.lastFailure.set(System.currentTimeMillis() - 2000);
 
-        assertEquals(Status.DEGRADED, impl.getStatus());
-        assertEquals(CircuitBreaker.BreakerState.HALF_CLOSED, impl.state);
+        assertEquals(Status.UP, impl.getStatus());
+        assertEquals(SkepticBreaker.BreakerState.CLOSED, impl.state);
     }
 
     @Test
-    public void testHalfClosedFailureOpensAgain()
+    public void testOpenFailureOpensAgain()
             throws Exception {
 
-        impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
-        impl.resetMillis.set(1000);
+        impl.state = SkepticBreaker.BreakerState.OPEN;
+        impl.waitTime.set(1000);
         impl.lastFailure.set(System.currentTimeMillis() - 2000);
 
         long start = System.currentTimeMillis();
@@ -210,29 +210,14 @@ public class TestCircuitBreaker {
         long end = System.currentTimeMillis();
 
         verify(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.OPEN, impl.state);
         assertTrue(impl.lastFailure.get() >= start);
         assertTrue(impl.lastFailure.get() <= end);
     }
 
     @Test
-    public void testGetStatusNotUpdatingIsAttemptLive() throws Exception {
-
-        impl.resetMillis.set(50);
-        impl.trip();
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
-        assertEquals(false, impl.isAttemptLive);
-
-        Thread.sleep(200);
-
-        // The getStatus()->canAttempt() call also updated isAttemptLive to true
-        assertEquals(Status.DEGRADED.getValue(), impl.getStatus().getValue());
-        assertEquals(false, impl.isAttemptLive);
-    }
-
-    @Test
     public void testManualTripAndReset() throws Exception {
-        impl.state = CircuitBreaker.BreakerState.OPEN;
+        impl.state = SkepticBreaker.BreakerState.OPEN;
         final Object obj = new Object();
         expect(mockCallable.call()).andReturn(obj);
         replay(mockCallable);
@@ -250,7 +235,7 @@ public class TestCircuitBreaker {
 
         verify(mockCallable);
         assertSame(obj, result);
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.CLOSED, impl.state);
     }
 
     @Test
@@ -262,14 +247,14 @@ public class TestCircuitBreaker {
         impl.tripHard();
         try {
             impl.invoke(mockCallable);
-            fail("exception expected after CircuitBreaker.tripHard()");
+            fail("exception expected after SkepticBreaker.tripHard()");
         } catch (BreakerException e) {
         }
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.OPEN, impl.state);
 
         impl.reset();
         impl.invoke(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.CLOSED, impl.state);
 
         verify(mockCallable);
     }
@@ -288,38 +273,33 @@ public class TestCircuitBreaker {
 
     @Test
     public void testGetStatusWhenOpen() {
-        impl.state = CircuitBreaker.BreakerState.OPEN;
+        impl.state = SkepticBreaker.BreakerState.OPEN;
         Assert.assertEquals(Status.DOWN, impl.getStatus());
     }
 
     @Test
-    public void testGetStatusWhenHalfClosed() {
-        impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
-        assertEquals(Status.DEGRADED, impl.getStatus());
-    }
-
-    @Test
-    public void testGetStatusWhenOpenBeforeReset() {
-        impl.state = CircuitBreaker.BreakerState.CLOSED;
-        impl.resetMillis.set(1000);
+    //CHANGED THIS (title), must change test to reflect
+    public void testGetStatusWhenClosedBeforeReset() {
+        impl.state = SkepticBreaker.BreakerState.CLOSED;
+        impl.waitTime.set(1000);
         impl.lastFailure.set(System.currentTimeMillis() - 50);
 
         assertEquals(Status.UP, impl.getStatus());
     }
 
     @Test
-    public void testGetStatusWhenOpenAfterReset() {
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        impl.resetMillis.set(1000);
+    public void testGetStatusWhenOpenAfterExpiration() {
+        impl.state = SkepticBreaker.BreakerState.OPEN;
+        impl.waitTime.set(1000);
         impl.lastFailure.set(System.currentTimeMillis() - 2000);
 
-        assertEquals(Status.DEGRADED, impl.getStatus());
+        assertEquals(Status.UP, impl.getStatus());
     }
 
     @Test
     public void testGetStatusAfterHardTrip() {
         impl.tripHard();
-        impl.resetMillis.set(1000);
+        impl.waitTime.set(1000);
         impl.lastFailure.set(System.currentTimeMillis() - 2000);
 
         assertEquals(Status.DOWN, impl.getStatus());
@@ -333,7 +313,7 @@ public class TestCircuitBreaker {
 
     @Test
     public void testByPassIgnoresCurrentBreakerStateWhenSet() {
-        impl.state = CircuitBreaker.BreakerState.OPEN;
+        impl.state = SkepticBreaker.BreakerState.OPEN;
         assertEquals(Status.DOWN, impl.getStatus());
 
         impl.setByPassState(true);
@@ -355,15 +335,15 @@ public class TestCircuitBreaker {
         try {
             impl.invoke(mockCallable);
         } catch (BreakerException e) {
-            fail("exception not expected when CircuitBreaker is bypassed.");
+            fail("exception not expected when SkepticBreaker is bypassed.");
         }
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.OPEN, impl.state);
         assertEquals(Status.DEGRADED, impl.getStatus());
 
         impl.reset();
         impl.setByPassState(false);
         impl.invoke(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+        assertEquals(SkepticBreaker.BreakerState.CLOSED, impl.state);
 
         verify(mockCallable);
     }
@@ -385,7 +365,7 @@ public class TestCircuitBreaker {
     }
 
     @Test(expected = Throwable.class)
-    public void circuitBreakerKeepsExceptionThatTrippedIt() throws Throwable {
+    public void SkepticBreakerKeepsExceptionThatTrippedIt() throws Throwable {
 
         try {
             impl.invoke(new FailingCallable("broken"));
@@ -399,7 +379,7 @@ public class TestCircuitBreaker {
     }
 
     @Test(expected = Throwable.class)
-    public void resetCircuitBreakerStillHasTripException() throws Throwable {
+    public void resetSkepticBreakerStillHasTripException() throws Throwable {
 
         try {
             impl.invoke(new FailingCallable("broken"));
@@ -414,7 +394,7 @@ public class TestCircuitBreaker {
     }
 
     @Test
-    public void circuitBreakerReturnsExceptionAsString() {
+    public void skepticBreakerReturnsExceptionAsString() {
 
         try {
             impl.invoke(new FailingCallable("broken"));
@@ -422,17 +402,14 @@ public class TestCircuitBreaker {
 
         }
 
-        Throwable tripException = impl.getTripException();
-
         String s = impl.getTripExceptionAsString();
-
-        assertTrue(impl.getTripExceptionAsString().startsWith("java.lang.Exception: broken\n"));
-        assertTrue(impl.getTripExceptionAsString().contains("at org.fishwife.jrugged.TestCircuitBreaker$FailingCallable.call"));
-        assertTrue(impl.getTripExceptionAsString().contains("Caused by: java.lang.Exception: The Cause\n"));
+        assertTrue(s.startsWith("java.lang.Exception: broken"));
+        assertTrue(s.contains("at org.fishwife.jrugged.TestSkepticBreaker$FailingCallable.call"));
+        assertTrue(s.contains("Caused by: java.lang.Exception: The Cause"));
     }
 
     @Test
-    public void neverTrippedCircuitBreakerReturnsNullForTripException() throws Exception {
+    public void neverTrippedSkepticBreakerReturnsNullForTripException() throws Exception {
 
         impl.invoke(mockCallable);
 
@@ -440,6 +417,113 @@ public class TestCircuitBreaker {
 
         assertNull(tripException);
     }
+    
+    @Test
+    public void testResetsToInitialTimerValues() throws Exception {
+    	long expectedWaitTime = impl.getWaitTime();
+    	long expectedGoodTime = impl.getGoodTime();
+    	long expectedSkepticLevel = impl.getSkepticLevel();
+    	
+    	try {
+            impl.invoke(new FailingCallable("broken"));
+        } catch (Exception e) {
+
+        }
+        impl.reset();
+        
+        assertEquals(expectedWaitTime, impl.getWaitTime());
+        assertEquals(expectedGoodTime, impl.getGoodTime());
+        assertEquals(expectedSkepticLevel, impl.getSkepticLevel());
+    }
+    
+    @Test
+    public void testTimerValuesAndSkepticLevelAfterOneTrip() throws Exception {
+    	long expectedWaitTime = (long) (impl.getWaitBase() + 
+        		impl.getWaitMult() * Math.pow(2, impl.getSkepticLevel() + 1));
+    	long expectedGoodTime = (long) (impl.getGoodBase() + 
+        		impl.getGoodMult() * Math.pow(2, impl.getSkepticLevel() + 1));
+    	long expectedSkepticLevel = impl.getSkepticLevel() + 1;
+    	
+    	try {
+            impl.invoke(new FailingCallable("broken"));
+        } catch (Exception e) {
+
+        }
+        
+        assertEquals(expectedWaitTime, impl.getWaitTime());
+        assertEquals(expectedGoodTime, impl.getGoodTime());
+        assertEquals(expectedSkepticLevel, impl.getSkepticLevel());
+    }
+    
+    @Test
+    public void testTimerValuesAndSkepticLevelAfterThreeTrips() throws Exception {
+    	int numTrips = 3;
+    	long expectedWaitTime = (long) (impl.getWaitBase() + 
+        		impl.getWaitMult() * Math.pow(2, impl.getSkepticLevel() + numTrips));
+    	long expectedGoodTime = (long) (impl.getGoodBase() + 
+        		impl.getGoodMult() * Math.pow(2, impl.getSkepticLevel() + numTrips));
+    	long expectedSkepticLevel = impl.getSkepticLevel() + numTrips;
+    	
+    	for (int i = 0; i < numTrips; i++) {
+    		try {
+                impl.invoke(new FailingCallable("broken"));
+            } catch (Exception e) {
+
+            }
+    		Thread.sleep(impl.getWaitTime() + 100);
+    	}
+        
+        assertEquals(expectedWaitTime, impl.getWaitTime());
+        assertEquals(expectedGoodTime, impl.getGoodTime());
+        assertEquals(expectedSkepticLevel, impl.getSkepticLevel());
+    }
+    
+    @Test
+    public void testSkepticLevelStopsAtMaxLevel() throws Exception {
+    	long expectedWaitTime = (long) (impl.getWaitBase() + 
+        		impl.getWaitMult() * Math.pow(2, impl.getMaxLevel()));
+    	long expectedGoodTime = (long) (impl.getGoodBase() + 
+        		impl.getGoodMult() * Math.pow(2, impl.getMaxLevel()));
+    	long expectedSkepticLevel = impl.getMaxLevel();
+    	impl.skepticLevel.set(impl.getMaxLevel());
+    	impl.updateTimers();
+    	
+		try {
+            impl.invoke(new FailingCallable("broken"));
+        } catch (Exception e) {
+
+        }
+		
+        assertEquals(expectedWaitTime, impl.getWaitTime());
+        assertEquals(expectedGoodTime, impl.getGoodTime());
+        assertEquals(expectedSkepticLevel, impl.getSkepticLevel());
+    }
+    
+    @Test
+    public void testDecreaseSkepticLevel() throws Exception {
+    	impl.setGoodBase(100L);
+    	impl.setWaitBase(100L);
+    	impl.updateTimers();
+    	
+    	long expectedWaitTime = impl.getWaitTime();
+    	long expectedGoodTime = impl.getGoodTime();
+    	long expectedSkepticLevel = impl.getSkepticLevel();
+    	
+    	try {
+            impl.invoke(new FailingCallable("broken"));
+        } catch (Exception e) {
+
+        }
+    	Thread.sleep(impl.getWaitTime() + 100);
+    	Thread.sleep(impl.getGoodTime() + 100);
+    	
+    	assertEquals(Status.UP, impl.getStatus());
+    	assertEquals(expectedWaitTime, impl.getWaitTime());
+        assertEquals(expectedGoodTime, impl.getGoodTime());
+        assertEquals(expectedSkepticLevel, impl.getSkepticLevel());
+    }
+    
+    // test bad ping - not sure how?
 
     private class FailingCallable implements Callable<Object> {
 

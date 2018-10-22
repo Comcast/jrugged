@@ -22,7 +22,7 @@ package org.fishwife.jrugged;
  * the listeners to then take action based on what the state change
  * was.
  */
-public abstract class CircuitBreakerNotificationCallback {
+public abstract class BreakerNotificationCallback {
 
     /**
      * The method needing an application specific implementation

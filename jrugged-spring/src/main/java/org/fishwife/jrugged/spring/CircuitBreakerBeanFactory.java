@@ -21,7 +21,7 @@ import javax.management.ObjectName;
 
 import org.fishwife.jrugged.CircuitBreaker;
 import org.fishwife.jrugged.CircuitBreakerConfig;
-import org.fishwife.jrugged.CircuitBreakerFactory;
+import org.fishwife.jrugged.BreakerFactory;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ import org.springframework.jmx.export.MBeanExporter;
  * them. If a {@link MBeanExportOperations} is set, then the CircuitBreakerBean will be
  * automatically exported as a JMX MBean.
  */
-public class CircuitBreakerBeanFactory extends CircuitBreakerFactory implements InitializingBean {
+public class CircuitBreakerBeanFactory extends BreakerFactory implements InitializingBean {
 
     @Autowired(required = false)
     private MBeanExportOperations mBeanExportOperations;

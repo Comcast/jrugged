@@ -18,7 +18,8 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.DeclarePrecedence;
-import org.fishwife.jrugged.CircuitBreakerConfig;
+import org.fishwife.jrugged.FailureInterpreter;
+import org.fishwife.jrugged.SkepticBreakerConfig;
 import org.fishwife.jrugged.BreakerFactory;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.slf4j.Logger;
@@ -27,88 +28,89 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Callable;
 
 /**
- * Surrounds methods decorated with the CircuitBreaker annotation with a named
- * {@link org.fishwife.jrugged.CircuitBreaker}.
+ * Surrounds methods decorated with the SkepticBreaker annotation with a named
+ * {@link org.fishwife.jrugged.SkepticBreaker}.
  */
 @Aspect
-public class CircuitBreakerAspect {
+public class SkepticBreakerAspect {
 
     private static final Logger logger =
-            LoggerFactory.getLogger(CircuitBreakerAspect.class);
+            LoggerFactory.getLogger(SkepticBreakerAspect.class);
 
     /**
-     * Maps names to CircuitBreakers.
+     * Maps names to SkepticBreakers.
      */
-    private BreakerFactory circuitBreakerFactory;
+    private BreakerFactory skepticBreakerFactory;
 
     /** Default constructor. */
-    public CircuitBreakerAspect() {
-        circuitBreakerFactory = new BreakerFactory();
+    public SkepticBreakerAspect() {
+        skepticBreakerFactory = new BreakerFactory();
     }
 
     /**
      * Sets the {@link org.fishwife.jrugged.BreakerFactory} to use when creating new
-     * {@link org.fishwife.jrugged.CircuitBreaker} instances.
-     * @param circuitBreakerFactory the {@link org.fishwife.jrugged.BreakerFactory} to
+     * {@link org.fishwife.jrugged.SkepticBreaker} instances.
+     * @param skepticBreakerFactory the {@link org.fishwife.jrugged.BreakerFactory} to
      *   use.
      */
-    public void setCircuitBreakerFactory(
-            BreakerFactory circuitBreakerFactory) {
-        this.circuitBreakerFactory = circuitBreakerFactory;
+    public void setSkepticBreakerFactory(
+            BreakerFactory skepticBreakerFactory) {
+        this.skepticBreakerFactory = skepticBreakerFactory;
     }
 
     /**
      * Get the {@link org.fishwife.jrugged.BreakerFactory} that is being used to create
-     * new {@link org.fishwife.jrugged.CircuitBreaker} instances.
+     * new {@link org.fishwife.jrugged.SkepticBreaker} instances.
      * @return the {@link org.fishwife.jrugged.BreakerFactory}.
      */
-    public BreakerFactory getCircuitBreakerFactory() {
-        return circuitBreakerFactory;
+    public BreakerFactory getSkepticBreakerFactory() {
+        return skepticBreakerFactory;
     }
 
     /** Runs a method call through the configured
-     * {@link org.fishwife.jrugged.CircuitBreaker}.
+     * {@link org.fishwife.jrugged.SkepticBreaker}.
      * @param pjp a {@link ProceedingJoinPoint} representing an annotated
      * method call.
-     * @param circuitBreakerAnnotation the {@link org.fishwife.jrugged.CircuitBreaker} annotation
+     * @param skepticBreakerAnnotation the {@link org.fishwife.jrugged.SkepticBreaker} annotation
      * that wrapped the method.
      * @throws Throwable if the method invocation itself or the wrapping
-     * {@link org.fishwife.jrugged.CircuitBreaker} throws one during execution.
+     * {@link org.fishwife.jrugged.SkepticBreaker} throws one during execution.
      * @return The return value from the method call.
      */
-    @Around("@annotation(circuitBreakerAnnotation)")
+    @Around("@annotation(skepticBreakerAnnotation)")
     public Object monitor(final ProceedingJoinPoint pjp,
-              CircuitBreaker circuitBreakerAnnotation) throws Throwable {
-        final String name = circuitBreakerAnnotation.name();
+              SkepticBreaker skepticBreakerAnnotation) throws Throwable {
+        final String name = skepticBreakerAnnotation.name();
 
-        org.fishwife.jrugged.CircuitBreaker circuitBreaker =
-                circuitBreakerFactory.findCircuitBreaker(name);
+        org.fishwife.jrugged.SkepticBreaker skepticBreaker =
+                skepticBreakerFactory.findSkepticBreaker(name);
 
-        if (circuitBreaker == null) {
+        if (skepticBreaker == null) {
             DefaultFailureInterpreter dfi =
                     new DefaultFailureInterpreter(
-                            circuitBreakerAnnotation.ignore(),
-                            circuitBreakerAnnotation.limit(),
-                            circuitBreakerAnnotation.windowMillis());
+                            skepticBreakerAnnotation.ignore(),
+                            skepticBreakerAnnotation.limit(),
+                            skepticBreakerAnnotation.windowMillis());
 
-            CircuitBreakerConfig config = new CircuitBreakerConfig(
-                    circuitBreakerAnnotation.resetMillis(), dfi);
+            SkepticBreakerConfig config = new SkepticBreakerConfig(skepticBreakerAnnotation.goodBase(), 
+            		skepticBreakerAnnotation.goodMult(), skepticBreakerAnnotation.waitBase(), 
+            		skepticBreakerAnnotation.waitMult(), skepticBreakerAnnotation.maxLevel(), dfi);
 
-            circuitBreaker =
-                    circuitBreakerFactory.createCircuitBreaker(name, config);
+            skepticBreaker =
+                    skepticBreakerFactory.createSkepticBreaker(name, config);
         }
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Have @CircuitBreaker method with breaker name {}, " +
+            logger.debug("Have @SkepticBreaker method with breaker name {}, " +
                     "wrapping call on method {} of target object {} with status {}",
                     new Object[]{
                             name,
                             pjp.getSignature().getName(),
                             pjp.getTarget(),
-                            circuitBreaker.getStatus()});
+                            skepticBreaker.getStatus()});
         }
 
-        return circuitBreaker.invoke(new Callable<Object>() {
+        return skepticBreaker.invoke(new Callable<Object>() {
             public Object call() throws Exception {
                 try {
                     return pjp.proceed();
