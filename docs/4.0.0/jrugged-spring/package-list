@@ -1,0 +1,5 @@
+org.fishwife.jrugged.spring
+org.fishwife.jrugged.spring.aspects
+org.fishwife.jrugged.spring.config
+org.fishwife.jrugged.spring.jmx
+org.fishwife.jrugged.spring.retry
