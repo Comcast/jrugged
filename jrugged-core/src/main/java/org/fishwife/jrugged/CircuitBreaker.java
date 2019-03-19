@@ -116,6 +116,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
     /** How long the cooldown period is in milliseconds. */
     protected AtomicLong resetMillis = new AtomicLong(15 * 1000L);
 
+
     /** The {@link FailureInterpreter} to use to determine whether a
         given failure should cause the breaker to trip. */
     protected FailureInterpreter failureInterpreter =
