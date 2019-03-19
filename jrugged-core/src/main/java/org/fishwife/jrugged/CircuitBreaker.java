@@ -220,6 +220,14 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
         exceptionMapper = mapper;
     }
 
+    public void setClock(Clock clock) {
+        this.clock = clock;
+    }
+
+    public Clock getClock() {
+        return clock;
+    }
+
     /** Wrap the given service call with the {@link CircuitBreaker}
      *  protection logic.
      *  @param c the {@link Callable} to attempt
