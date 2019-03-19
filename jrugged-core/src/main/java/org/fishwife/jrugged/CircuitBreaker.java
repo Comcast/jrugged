@@ -465,8 +465,10 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
      *  CircuitBreaker} by default.
      *  @see DefaultFailureInterpreter
      *  @param limit the number of tolerated failures in a window
+     *
+     *  Deprecated methods will be removed in the 4.0 release
      */
-    public void setLimit(int limit) {
+    @Deprecated public void setLimit(int limit) {
         FailureInterpreter fi = getFailureInterpreter();
         if (!(fi instanceof DefaultFailureInterpreter)) {
             throw new IllegalStateException("setLimit() not supported: this CircuitBreaker's FailureInterpreter isn't a DefaultFailureInterpreter.");
@@ -480,8 +482,10 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
      *  @see DefaultFailureInterpreter
      *  @param ignore a {@link java.util.Collection} of {@link Throwable}
      *  classes
+     *
+     *  Deprecated methods will be removed in the 4.0 release
      */
-    public void setIgnore(Collection<Class<? extends Throwable>> ignore) {
+    @Deprecated public void setIgnore(Collection<Class<? extends Throwable>> ignore) {
         FailureInterpreter fi = getFailureInterpreter();
         if (!(fi instanceof DefaultFailureInterpreter)) {
             throw new IllegalStateException("setIgnore() not supported: this CircuitBreaker's FailureInterpreter isn't a DefaultFailureInterpreter.");
@@ -503,8 +507,10 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
      *  CircuitBreaker} by default.
      *  @see DefaultFailureInterpreter
      *  @param windowMillis length of the window in milliseconds
+     *
+     *  Deprecated methods will be removed in the 4.0 release
      */
-    public void setWindowMillis(long windowMillis) {
+    @Deprecated public void setWindowMillis(long windowMillis) {
         FailureInterpreter fi = getFailureInterpreter();
         if (!(fi instanceof DefaultFailureInterpreter)) {
             throw new IllegalStateException("setWindowMillis() not supported: this CircuitBreaker's FailureInterpreter isn't a DefaultFailureInterpreter.");
