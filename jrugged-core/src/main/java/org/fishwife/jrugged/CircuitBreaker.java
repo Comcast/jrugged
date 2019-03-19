@@ -116,6 +116,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
     /** How long the cooldown period is in milliseconds. */
     protected AtomicLong resetMillis = new AtomicLong(15 * 1000L);
 
+    protected Clock clock = new SystemClock();
 
     /** The {@link FailureInterpreter} to use to determine whether a
         given failure should cause the breaker to trip. */
@@ -345,7 +346,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
             openCount.getAndIncrement();
         }
         state = BreakerState.OPEN;
-        lastFailure.set(System.currentTimeMillis());
+        lastFailure.set(clock.currentTimeMillis());
         isAttemptLive = false;
 
         notifyBreakerStateChange(getStatus());
@@ -640,7 +641,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
         }
 
         if (BreakerState.OPEN == state &&
-            System.currentTimeMillis() - lastFailure.get() >= resetMillis.get()) {
+                clock.currentTimeMillis() - lastFailure.get() >= resetMillis.get()) {
             state = BreakerState.HALF_CLOSED;
         }
 
