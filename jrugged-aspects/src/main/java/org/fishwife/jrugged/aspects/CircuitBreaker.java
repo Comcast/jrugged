@@ -66,4 +66,10 @@ public @interface CircuitBreaker {
      * @return the amount of time in milliseconds.
      */
     long resetMillis() default -1;
+
+    /**
+     * Clock type: fully qualified class name of Clock implementation class (implementing interface Clock)
+     * @return the fully qualified class name of Clock
+     */
+    String clockType() default "";
 }
