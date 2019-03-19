@@ -444,7 +444,7 @@ public class TestCircuitBreaker {
     }
 
     @Test
-    public void testSetClock() {
+    public void testSettingClockReturnsSameClockWhenRequested() {
 
         assertNotNull(impl.getClock());
 

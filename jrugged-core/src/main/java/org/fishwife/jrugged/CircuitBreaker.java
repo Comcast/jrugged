@@ -116,6 +116,7 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
     /** How long the cooldown period is in milliseconds. */
     protected AtomicLong resetMillis = new AtomicLong(15 * 1000L);
 
+    /** The clock of the breaker is default to a SystemClock. */
     protected Clock clock = new SystemClock();
 
     /** The {@link FailureInterpreter} to use to determine whether a
@@ -220,10 +221,17 @@ public class CircuitBreaker implements MonitoredService, ServiceWrapper {
         exceptionMapper = mapper;
     }
 
+    /** Set clock
+     * It gives the caller a chance to override the default clock to a custom clock for the breaker.
+     * @param clock
+     */
     public void setClock(Clock clock) {
         this.clock = clock;
     }
 
+    /** Get clock
+     * @return the clock of the breaker
+     */
     public Clock getClock() {
         return clock;
     }
