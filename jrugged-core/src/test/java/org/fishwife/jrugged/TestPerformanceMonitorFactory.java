@@ -27,55 +27,55 @@ import static junit.framework.Assert.assertSame;
 
 public class TestPerformanceMonitorFactory {
 
-    private PerformanceMonitorFactory factory;
+	private PerformanceMonitorFactory factory;
 
-    @Before
-    public void setUp() {
-        factory = new PerformanceMonitorFactory();
-    }
+	@Before
+	public void setUp() {
+		factory = new PerformanceMonitorFactory();
+	}
 
-    @Test
-    public void testCreatePerformanceMonitor() {
-        PerformanceMonitor createdMonitor = factory.createPerformanceMonitor("testCreate");
-        assertNotNull(createdMonitor);
-    }
+	@Test
+	public void testCreatePerformanceMonitor() {
+		PerformanceMonitor createdMonitor = factory.createPerformanceMonitor("testCreate");
+		assertNotNull(createdMonitor);
+	}
 
-    @Test
-    public void testCreateDuplicatePerformanceMonitor() {
-        String name = "testCreate";
-        PerformanceMonitor createdMonitor = factory.createPerformanceMonitor(name);
-        PerformanceMonitor secondMonitor = factory.createPerformanceMonitor(name);
-        assertSame(createdMonitor, secondMonitor);
-    }
+	@Test
+	public void testCreateDuplicatePerformanceMonitor() {
+		String name = "testCreate";
+		PerformanceMonitor createdMonitor = factory.createPerformanceMonitor(name);
+		PerformanceMonitor secondMonitor = factory.createPerformanceMonitor(name);
+		assertSame(createdMonitor, secondMonitor);
+	}
 
-    @Test
-    public void testFindPerformanceMonitor() {
-        String monitorName = "testFind";
-        PerformanceMonitor createdMonitor = factory.createPerformanceMonitor(monitorName);
-        PerformanceMonitor foundMonitor = factory.findPerformanceMonitor(monitorName);
-        assertNotNull(foundMonitor);
-        assertEquals(createdMonitor, foundMonitor);
-    }
+	@Test
+	public void testFindPerformanceMonitor() {
+		String monitorName = "testFind";
+		PerformanceMonitor createdMonitor = factory.createPerformanceMonitor(monitorName);
+		PerformanceMonitor foundMonitor = factory.findPerformanceMonitor(monitorName);
+		assertNotNull(foundMonitor);
+		assertEquals(createdMonitor, foundMonitor);
+	}
 
-    @Test
-    public void testFindNonExistentPerformanceMonitor() {
-        PerformanceMonitor foundMonitor = factory.findPerformanceMonitor("testNonExistent");
-        assertNull(foundMonitor);
-    }
+	@Test
+	public void testFindNonExistentPerformanceMonitor() {
+		PerformanceMonitor foundMonitor = factory.findPerformanceMonitor("testNonExistent");
+		assertNull(foundMonitor);
+	}
 
-    @Test
-    public void testGetPerformanceMonitorNames() {
-        Set<String> testSet = new HashSet<String>();
-        testSet.add("one");
-        testSet.add("two");
-        testSet.add("three");
-        testSet.add("four");
+	@Test
+	public void testGetPerformanceMonitorNames() {
+		Set<String> testSet = new HashSet<String>();
+		testSet.add("one");
+		testSet.add("two");
+		testSet.add("three");
+		testSet.add("four");
 
-        factory.createPerformanceMonitor("one");
-        factory.createPerformanceMonitor("two");
-        factory.createPerformanceMonitor("three");
-        factory.createPerformanceMonitor("four");
-        Set<String> monitorNames = factory.getPerformanceMonitorNames();
-        assertEquals(testSet, monitorNames);
-    }
+		factory.createPerformanceMonitor("one");
+		factory.createPerformanceMonitor("two");
+		factory.createPerformanceMonitor("three");
+		factory.createPerformanceMonitor("four");
+		Set<String> monitorNames = factory.getPerformanceMonitorNames();
+		assertEquals(testSet, monitorNames);
+	}
 }

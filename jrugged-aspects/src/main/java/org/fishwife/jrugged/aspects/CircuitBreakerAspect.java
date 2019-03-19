@@ -33,95 +33,90 @@ import java.util.concurrent.Callable;
 @Aspect
 public class CircuitBreakerAspect {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(CircuitBreakerAspect.class);
+	private static final Logger logger = LoggerFactory.getLogger(CircuitBreakerAspect.class);
 
-    /**
-     * Maps names to CircuitBreakers.
-     */
-    private CircuitBreakerFactory circuitBreakerFactory;
+	/**
+	 * Maps names to CircuitBreakers.
+	 */
+	private CircuitBreakerFactory circuitBreakerFactory;
 
-    /** Default constructor. */
-    public CircuitBreakerAspect() {
-        circuitBreakerFactory = new CircuitBreakerFactory();
-    }
+	/** Default constructor. */
+	public CircuitBreakerAspect() {
+		circuitBreakerFactory = new CircuitBreakerFactory();
+	}
 
-    /**
-     * Sets the {@link org.fishwife.jrugged.CircuitBreakerFactory} to use when creating new
-     * {@link org.fishwife.jrugged.CircuitBreaker} instances.
-     * @param circuitBreakerFactory the {@link org.fishwife.jrugged.CircuitBreakerFactory} to
-     *   use.
-     */
-    public void setCircuitBreakerFactory(
-            CircuitBreakerFactory circuitBreakerFactory) {
-        this.circuitBreakerFactory = circuitBreakerFactory;
-    }
+	/**
+	 * Sets the {@link org.fishwife.jrugged.CircuitBreakerFactory} to use when
+	 * creating new {@link org.fishwife.jrugged.CircuitBreaker} instances.
+	 * 
+	 * @param circuitBreakerFactory the
+	 *                              {@link org.fishwife.jrugged.CircuitBreakerFactory}
+	 *                              to use.
+	 */
+	public void setCircuitBreakerFactory(CircuitBreakerFactory circuitBreakerFactory) {
+		this.circuitBreakerFactory = circuitBreakerFactory;
+	}
 
-    /**
-     * Get the {@link org.fishwife.jrugged.CircuitBreakerFactory} that is being used to create
-     * new {@link org.fishwife.jrugged.CircuitBreaker} instances.
-     * @return the {@link org.fishwife.jrugged.CircuitBreakerFactory}.
-     */
-    public CircuitBreakerFactory getCircuitBreakerFactory() {
-        return circuitBreakerFactory;
-    }
+	/**
+	 * Get the {@link org.fishwife.jrugged.CircuitBreakerFactory} that is being used
+	 * to create new {@link org.fishwife.jrugged.CircuitBreaker} instances.
+	 * 
+	 * @return the {@link org.fishwife.jrugged.CircuitBreakerFactory}.
+	 */
+	public CircuitBreakerFactory getCircuitBreakerFactory() {
+		return circuitBreakerFactory;
+	}
 
-    /** Runs a method call through the configured
-     * {@link org.fishwife.jrugged.CircuitBreaker}.
-     * @param pjp a {@link ProceedingJoinPoint} representing an annotated
-     * method call.
-     * @param circuitBreakerAnnotation the {@link org.fishwife.jrugged.CircuitBreaker} annotation
-     * that wrapped the method.
-     * @throws Throwable if the method invocation itself or the wrapping
-     * {@link org.fishwife.jrugged.CircuitBreaker} throws one during execution.
-     * @return The return value from the method call.
-     */
-    @Around("@annotation(circuitBreakerAnnotation)")
-    public Object monitor(final ProceedingJoinPoint pjp,
-              CircuitBreaker circuitBreakerAnnotation) throws Throwable {
-        final String name = circuitBreakerAnnotation.name();
+	/**
+	 * Runs a method call through the configured
+	 * {@link org.fishwife.jrugged.CircuitBreaker}.
+	 * 
+	 * @param pjp                      a {@link ProceedingJoinPoint} representing an
+	 *                                 annotated method call.
+	 * @param circuitBreakerAnnotation the
+	 *                                 {@link org.fishwife.jrugged.CircuitBreaker}
+	 *                                 annotation that wrapped the method.
+	 * @throws Throwable if the method invocation itself or the wrapping
+	 *                   {@link org.fishwife.jrugged.CircuitBreaker} throws one
+	 *                   during execution.
+	 * @return The return value from the method call.
+	 */
+	@Around("@annotation(circuitBreakerAnnotation)")
+	public Object monitor(final ProceedingJoinPoint pjp, CircuitBreaker circuitBreakerAnnotation) throws Throwable {
+		final String name = circuitBreakerAnnotation.name();
 
-        org.fishwife.jrugged.CircuitBreaker circuitBreaker =
-                circuitBreakerFactory.findCircuitBreaker(name);
+		org.fishwife.jrugged.CircuitBreaker circuitBreaker = circuitBreakerFactory.findCircuitBreaker(name);
 
-        if (circuitBreaker == null) {
-            DefaultFailureInterpreter dfi =
-                    new DefaultFailureInterpreter(
-                            circuitBreakerAnnotation.ignore(),
-                            circuitBreakerAnnotation.limit(),
-                            circuitBreakerAnnotation.windowMillis());
+		if (circuitBreaker == null) {
+			DefaultFailureInterpreter dfi = new DefaultFailureInterpreter(circuitBreakerAnnotation.ignore(),
+					circuitBreakerAnnotation.limit(), circuitBreakerAnnotation.windowMillis());
 
-            CircuitBreakerConfig config = new CircuitBreakerConfig(
-                    circuitBreakerAnnotation.resetMillis(), dfi);
+			CircuitBreakerConfig config = new CircuitBreakerConfig(circuitBreakerAnnotation.resetMillis(), dfi);
 
-            circuitBreaker =
-                    circuitBreakerFactory.createCircuitBreaker(name, config);
-        }
+			circuitBreaker = circuitBreakerFactory.createCircuitBreaker(name, config);
+		}
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Have @CircuitBreaker method with breaker name {}, " +
-                    "wrapping call on method {} of target object {} with status {}",
-                    new Object[]{
-                            name,
-                            pjp.getSignature().getName(),
-                            pjp.getTarget(),
-                            circuitBreaker.getStatus()});
-        }
+		if (logger.isDebugEnabled()) {
+			logger.debug(
+					"Have @CircuitBreaker method with breaker name {}, "
+							+ "wrapping call on method {} of target object {} with status {}",
+					new Object[] { name, pjp.getSignature().getName(), pjp.getTarget(), circuitBreaker.getStatus() });
+		}
 
-        return circuitBreaker.invoke(new Callable<Object>() {
-            public Object call() throws Exception {
-                try {
-                    return pjp.proceed();
-                } catch (Throwable e) {
-                    if (e instanceof Exception) {
-                        throw (Exception) e;
-                    } else if (e instanceof Error) {
-                        throw (Error) e;
-                    } else {
-                        throw new RuntimeException(e);
-                    }
-                }
-            }
-        });
-    }
+		return circuitBreaker.invoke(new Callable<Object>() {
+			public Object call() throws Exception {
+				try {
+					return pjp.proceed();
+				} catch (Throwable e) {
+					if (e instanceof Exception) {
+						throw (Exception) e;
+					} else if (e instanceof Error) {
+						throw (Error) e;
+					} else {
+						throw new RuntimeException(e);
+					}
+				}
+			}
+		});
+	}
 }

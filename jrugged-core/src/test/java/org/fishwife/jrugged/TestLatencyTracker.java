@@ -27,45 +27,44 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestLatencyTracker {
-    private LatencyTracker impl;
+	private LatencyTracker impl;
 
-    @Before
-    public void setUp() {
-        impl = new LatencyTracker();
-    }
+	@Before
+	public void setUp() {
+		impl = new LatencyTracker();
+	}
 
-    @Test
-    public void testCallableSuccess() throws Exception {
-        final Object o = new Object();
+	@Test
+	public void testCallableSuccess() throws Exception {
+		final Object o = new Object();
 
-        Object result = impl.invoke(new Callable<Object>() {
-            public Object call() throws Exception {
-                Thread.sleep(1);
-                return o;
-            }
-            });
+		Object result = impl.invoke(new Callable<Object>() {
+			public Object call() throws Exception {
+				Thread.sleep(1);
+				return o;
+			}
+		});
 
-        assertSame(result, o);
-        assertTrue(impl.getLastSuccessMillis() > 0);
-        assertEquals(0, impl.getLastFailureMillis());
-    }
+		assertSame(result, o);
+		assertTrue(impl.getLastSuccessMillis() > 0);
+		assertEquals(0, impl.getLastFailureMillis());
+	}
 
-    @Test
-    public void testCallableFailure() throws Exception {
+	@Test
+	public void testCallableFailure() throws Exception {
 
-        try {
-            impl.invoke(new Callable<Object>() {
-                public Object call() throws Exception {
-                Thread.sleep(1);
-                throw new Exception();
-                }
-            });
-            fail("should have thrown exception");
-        }
-        catch (Exception expected) {
-        }
+		try {
+			impl.invoke(new Callable<Object>() {
+				public Object call() throws Exception {
+					Thread.sleep(1);
+					throw new Exception();
+				}
+			});
+			fail("should have thrown exception");
+		} catch (Exception expected) {
+		}
 
-        assertTrue(impl.getLastFailureMillis() > 0);
-        assertEquals(0, impl.getLastSuccessMillis());
-    }
+		assertTrue(impl.getLastFailureMillis() > 0);
+		assertEquals(0, impl.getLastSuccessMillis());
+	}
 }

@@ -20,25 +20,25 @@ import org.fishwife.jrugged.ConstantFlowRegulator;
 import org.springframework.jmx.export.annotation.ManagedAttribute;
 
 public class FlowRegulatorBean extends ConstantFlowRegulator {
-    public FlowRegulatorBean() {
-        super();
-    }
+	public FlowRegulatorBean() {
+		super();
+	}
 
-    @ManagedAttribute
-    @Override
-    /**
-     * {@inheritDoc}
-     */
-    public void setRequestPerSecondThreshold(int i) {
-        super.setRequestPerSecondThreshold(i);
-    }
+	@ManagedAttribute
+	@Override
+	/**
+	 * {@inheritDoc}
+	 */
+	public void setRequestPerSecondThreshold(int i) {
+		super.setRequestPerSecondThreshold(i);
+	}
 
-    @ManagedAttribute
-    @Override
-    /**
-     * {@inheritDoc}
-     */
-    public int getRequestPerSecondThreshold() {
-        return super.getRequestPerSecondThreshold();
-    }
+	@ManagedAttribute
+	@Override
+	/**
+	 * {@inheritDoc}
+	 */
+	public int getRequestPerSecondThreshold() {
+		return super.getRequestPerSecondThreshold();
+	}
 }

@@ -27,20 +27,19 @@ import org.w3c.dom.Element;
  * PerformanceMonitorBean class. Spring already provides an
  * AbstractSingleBeanDefinitionParser that handles most of the work to do this.
  */
-public class PerformanceMonitorBeanDefinitionParser extends
-    AbstractSingleBeanDefinitionParser {
+public class PerformanceMonitorBeanDefinitionParser extends AbstractSingleBeanDefinitionParser {
 
-    /**
-     * Return the class to instantiate. In this case it is PerformanceMonitorBean.
-     */
-    protected Class getBeanClass(Element element) {
-        return PerformanceMonitorBean.class;
-    }
+	/**
+	 * Return the class to instantiate. In this case it is PerformanceMonitorBean.
+	 */
+	protected Class getBeanClass(Element element) {
+		return PerformanceMonitorBean.class;
+	}
 
-    /**
-     * Disables lazy loading of the bean.
-     */
-    protected void doParse(Element element, BeanDefinitionBuilder bean) {
-        bean.setLazyInit(false);
-    }
+	/**
+	 * Disables lazy loading of the bean.
+	 */
+	protected void doParse(Element element, BeanDefinitionBuilder bean) {
+		bean.setLazyInit(false);
+	}
 }

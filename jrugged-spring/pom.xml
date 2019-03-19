@@ -28,10 +28,10 @@
     <url>https://github.com/Comcast/jrugged</url>
 
     <properties>
-        <spring.version>4.3.20.RELEASE</spring.version>
-        <guava.version>18.0</guava.version>
+        <spring.version>5.1.5.RELEASE</spring.version>
+        <guava.version>19.0</guava.version>
         <mockito.version>1.10.19</mockito.version>
-        <hamcrest.version>1.2.1</hamcrest.version>
+        <hamcrest.version>2.1</hamcrest.version>
     </properties>
 
     <dependencies>

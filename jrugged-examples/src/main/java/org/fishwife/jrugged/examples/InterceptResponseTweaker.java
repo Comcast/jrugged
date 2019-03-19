@@ -18,18 +18,19 @@ import java.util.Random;
 
 public class InterceptResponseTweaker {
 
-    public int delay() throws Exception {
-        Random r = new Random();
-        int count = r.nextInt(2001);
+	public int delay() throws Exception {
+		Random r = new Random();
+		int count = r.nextInt(2001);
 
-        if (count > 1650) {
-            throw new Exception("Count was over the limit.");
-        }
+		if (count > 1650) {
+			throw new Exception("Count was over the limit.");
+		}
 
-        try {
-            Thread.sleep(count);
-        } catch (InterruptedException e) { }
-        return count;
-    }
+		try {
+			Thread.sleep(count);
+		} catch (InterruptedException e) {
+		}
+		return count;
+	}
 
 }

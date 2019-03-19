@@ -22,89 +22,86 @@ import static org.junit.Assert.assertEquals;
 
 public class TestPerformanceMonitor {
 
-    @Test
-    public void testSuccessAndFailureCounts() {
-        int numberOfTimesToTryAMethodCall = 500;
-        int numberOfAttemptsBeforeThrowingException = 5;
-        int expectedNumberOfFailures =
-            numberOfTimesToTryAMethodCall
-            / numberOfAttemptsBeforeThrowingException;
+	@Test
+	public void testSuccessAndFailureCounts() {
+		int numberOfTimesToTryAMethodCall = 500;
+		int numberOfAttemptsBeforeThrowingException = 5;
+		int expectedNumberOfFailures = numberOfTimesToTryAMethodCall / numberOfAttemptsBeforeThrowingException;
 
-        int expectedNumberOfSuccess = numberOfTimesToTryAMethodCall
-            - expectedNumberOfFailures;
+		int expectedNumberOfSuccess = numberOfTimesToTryAMethodCall - expectedNumberOfFailures;
 
-        PerformanceMonitor perfMon = new PerformanceMonitor();
+		PerformanceMonitor perfMon = new PerformanceMonitor();
 
-        final OccasionalExceptionPerformer performer =
-            new OccasionalExceptionPerformer(numberOfAttemptsBeforeThrowingException);
+		final OccasionalExceptionPerformer performer = new OccasionalExceptionPerformer(
+				numberOfAttemptsBeforeThrowingException);
 
-        for(int i=0; i<numberOfTimesToTryAMethodCall; i++) {
-            try {
-                perfMon.invoke(performer);
-            } catch (Exception e) {
-                //ignore me.
-            }
-        }
+		for (int i = 0; i < numberOfTimesToTryAMethodCall; i++) {
+			try {
+				perfMon.invoke(performer);
+			} catch (Exception e) {
+				// ignore me.
+			}
+		}
 
-        for(int i=0;i<numberOfTimesToTryAMethodCall;i++) {
-            try {
-                performer.run();
-            } catch (Exception e) {
-                //ignore me.
-            }
-        }
+		for (int i = 0; i < numberOfTimesToTryAMethodCall; i++) {
+			try {
+				performer.run();
+			} catch (Exception e) {
+				// ignore me.
+			}
+		}
 
-        assertEquals(expectedNumberOfFailures, perfMon.getFailureCount());
-        assertEquals(expectedNumberOfSuccess, perfMon.getSuccessCount());
-    }
+		assertEquals(expectedNumberOfFailures, perfMon.getFailureCount());
+		assertEquals(expectedNumberOfSuccess, perfMon.getSuccessCount());
+	}
 
-    @Test
-    public void testRunnableWithResultReturnsResultOnSuccess() throws Exception {
-        PerformanceMonitor perfMon = new PerformanceMonitor();
-        Integer returnResult = 21;
+	@Test
+	public void testRunnableWithResultReturnsResultOnSuccess() throws Exception {
+		PerformanceMonitor perfMon = new PerformanceMonitor();
+		Integer returnResult = 21;
 
-        Integer callResult = perfMon.invoke(new ConstantSuccessPerformer(5), returnResult);
+		Integer callResult = perfMon.invoke(new ConstantSuccessPerformer(5), returnResult);
 
-        assertEquals(returnResult, callResult);
-    }
+		assertEquals(returnResult, callResult);
+	}
 
-    @Test(expected=Exception.class)
-    public void testRunnableWithResultReturnsExceptionOnFailure() throws Exception {
-        PerformanceMonitor perfMon = new PerformanceMonitor();
-        Integer returnResult = 21;
+	@Test(expected = Exception.class)
+	public void testRunnableWithResultReturnsExceptionOnFailure() throws Exception {
+		PerformanceMonitor perfMon = new PerformanceMonitor();
+		Integer returnResult = 21;
 
-        perfMon.invoke(new OccasionalExceptionPerformer(1), returnResult);
-    }
+		perfMon.invoke(new OccasionalExceptionPerformer(1), returnResult);
+	}
 
-    public class ConstantSuccessPerformer implements Runnable {
+	public class ConstantSuccessPerformer implements Runnable {
 
-        private int _totalNumberOfTimesToLoop;
+		private int _totalNumberOfTimesToLoop;
 
-        public  ConstantSuccessPerformer(int howManyTimesToLoop) {
-            _totalNumberOfTimesToLoop = howManyTimesToLoop;
-        }
+		public ConstantSuccessPerformer(int howManyTimesToLoop) {
+			_totalNumberOfTimesToLoop = howManyTimesToLoop;
+		}
 
-        public void run() {
-            for (long i = 0; i < _totalNumberOfTimesToLoop; i++) {
+		public void run() {
+			for (long i = 0; i < _totalNumberOfTimesToLoop; i++) {
 
-            }
-        }
-    }
+			}
+		}
+	}
 
-    public class OccasionalExceptionPerformer implements Runnable {
+	public class OccasionalExceptionPerformer implements Runnable {
 
-        private int _callsPerException;
-        private int _loopCounter;
+		private int _callsPerException;
+		private int _loopCounter;
 
-        public  OccasionalExceptionPerformer(int callsPerException) {
-            _callsPerException = callsPerException;
-        }
+		public OccasionalExceptionPerformer(int callsPerException) {
+			_callsPerException = callsPerException;
+		}
 
-        public void run() {
-            _loopCounter++;
-            if (_loopCounter % _callsPerException == 0) {
-                throw new IllegalStateException("Duh");
-            }
-        }
-    }
+		public void run() {
+			_loopCounter++;
+			if (_loopCounter % _callsPerException == 0) {
+				throw new IllegalStateException("Duh");
+			}
+		}
+	}
 }

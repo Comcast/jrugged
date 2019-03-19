@@ -15,16 +15,19 @@
 package org.fishwife.jrugged;
 
 /**
- * A {@link FailureInterpreter} is a helper class that can be used by
- * a {@link CircuitBreaker} to determine whether a given failure
- * should cause the breaker to trip.
+ * A {@link FailureInterpreter} is a helper class that can be used by a
+ * {@link CircuitBreaker} to determine whether a given failure should cause the
+ * breaker to trip.
  */
 public interface FailureInterpreter {
 
-    /** Returns whether the governed {@link CircuitBreaker} should
-     * trip OPEN as a result of this failure.
-     * @param oops the {@link Throwable} failure that occurred
-     * @return boolean <code>true</code> iff the circuit should trip */
-    boolean shouldTrip(Throwable oops);
+	/**
+	 * Returns whether the governed {@link CircuitBreaker} should trip OPEN as a
+	 * result of this failure.
+	 * 
+	 * @param oops the {@link Throwable} failure that occurred
+	 * @return boolean <code>true</code> iff the circuit should trip
+	 */
+	boolean shouldTrip(Throwable oops);
 
 }

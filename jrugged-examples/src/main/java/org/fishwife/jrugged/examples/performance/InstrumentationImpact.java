@@ -18,105 +18,94 @@ package org.fishwife.jrugged.examples.performance;
 
 import org.fishwife.jrugged.PerformanceMonitor;
 
-/** This is an example driver program that measures the amount of
- * overhead introduced by wrapping a method call with a
- * {@link PerformanceMonitor}. */
+/**
+ * This is an example driver program that measures the amount of overhead
+ * introduced by wrapping a method call with a {@link PerformanceMonitor}.
+ */
 public class InstrumentationImpact {
 
-    public static void main (String[] args) throws Exception {
-        InstrumentationImpact ii = new InstrumentationImpact();
-        ii.examplePerformanceImpact();
-        ii.exampleExceptionCountsImpact();
-        ii.exampleRunningSuccessRPS();
-    }
+	public static void main(String[] args) throws Exception {
+		InstrumentationImpact ii = new InstrumentationImpact();
+		ii.examplePerformanceImpact();
+		ii.exampleExceptionCountsImpact();
+		ii.exampleRunningSuccessRPS();
+	}
 
-    public void examplePerformanceImpact() throws Exception {
-        PerformanceMonitor perfMon = new PerformanceMonitor();
-        final FixedDelayPerformer performer = new FixedDelayPerformer(50L);
+	public void examplePerformanceImpact() throws Exception {
+		PerformanceMonitor perfMon = new PerformanceMonitor();
+		final FixedDelayPerformer performer = new FixedDelayPerformer(50L);
 
-        long startDelay = System.currentTimeMillis();
-        for(int i=0; i<500; i++) {
-            perfMon.invoke(performer);
-        }
-        long endDelay = System.currentTimeMillis();
+		long startDelay = System.currentTimeMillis();
+		for (int i = 0; i < 500; i++) {
+			perfMon.invoke(performer);
+		}
+		long endDelay = System.currentTimeMillis();
 
-        long start = System.currentTimeMillis();
-        for(int i=0; i<500; i++) {
-            performer.run();
-        }
-        long end = System.currentTimeMillis();
+		long start = System.currentTimeMillis();
+		for (int i = 0; i < 500; i++) {
+			performer.run();
+		}
+		long end = System.currentTimeMillis();
 
-        long deltaDelay = endDelay - startDelay;
-        long delta = end - start;
-        long difference = deltaDelay - delta;
-        long percentEffect = (difference/delta) * 100;
+		long deltaDelay = endDelay - startDelay;
+		long delta = end - start;
+		long difference = deltaDelay - delta;
+		long percentEffect = (difference / delta) * 100;
 
-        System.out.println("PerfMon Runtime Total: " + deltaDelay);
-        System.out.println("Plain Runtime Total: " + delta);
-        System.out.println(String.format("Instrumentation Effect: %s, Difference Percent: %s",
-                difference, percentEffect));
-    }
+		System.out.println("PerfMon Runtime Total: " + deltaDelay);
+		System.out.println("Plain Runtime Total: " + delta);
+		System.out.println(
+				String.format("Instrumentation Effect: %s, Difference Percent: %s", difference, percentEffect));
+	}
 
-    public void exampleExceptionCountsImpact() {
-        int numberOfTimesToTryAMethodCall = 500;
-        int numberOfAttemptsBeforeThrowingException = 5;
-        int expectedNumberOfFailures =
-            numberOfTimesToTryAMethodCall /
-            numberOfAttemptsBeforeThrowingException;
-        int expectedNumberOfSuccess = numberOfTimesToTryAMethodCall -
-            expectedNumberOfFailures;
+	public void exampleExceptionCountsImpact() {
+		int numberOfTimesToTryAMethodCall = 500;
+		int numberOfAttemptsBeforeThrowingException = 5;
+		int expectedNumberOfFailures = numberOfTimesToTryAMethodCall / numberOfAttemptsBeforeThrowingException;
+		int expectedNumberOfSuccess = numberOfTimesToTryAMethodCall - expectedNumberOfFailures;
 
-        PerformanceMonitor perfMon = new PerformanceMonitor();
-        final OccasionalExceptionPerformer performer =
-                new OccasionalExceptionPerformer(numberOfAttemptsBeforeThrowingException);
+		PerformanceMonitor perfMon = new PerformanceMonitor();
+		final OccasionalExceptionPerformer performer = new OccasionalExceptionPerformer(
+				numberOfAttemptsBeforeThrowingException);
 
-        for(int i=0; i<numberOfTimesToTryAMethodCall; i++) {
-            try {
-                perfMon.invoke(performer);
-            } catch (Exception e) {
-                //ignore me.
-            }
-        }
+		for (int i = 0; i < numberOfTimesToTryAMethodCall; i++) {
+			try {
+				perfMon.invoke(performer);
+			} catch (Exception e) {
+				// ignore me.
+			}
+		}
 
-        for(int i=0; i<numberOfTimesToTryAMethodCall; i++) {
-            try {
-                performer.run();
-            }
-            catch (Exception e) {
-                //ignore me.
-            }
-        }
+		for (int i = 0; i < numberOfTimesToTryAMethodCall; i++) {
+			try {
+				performer.run();
+			} catch (Exception e) {
+				// ignore me.
+			}
+		}
 
-        System.out.println("Performance Counter Failures: "
-                           + perfMon.getFailureCount()
-                           + " Expected Failure Count is: "
-                           + expectedNumberOfFailures);
-        System.out.println("Performance Counter Success: "
-                           + perfMon.getSuccessCount()
-                           + " Expected Success Count is: "
-                           + expectedNumberOfSuccess);
-    }
+		System.out.println("Performance Counter Failures: " + perfMon.getFailureCount() + " Expected Failure Count is: "
+				+ expectedNumberOfFailures);
+		System.out.println("Performance Counter Success: " + perfMon.getSuccessCount() + " Expected Success Count is: "
+				+ expectedNumberOfSuccess);
+	}
 
-    public void exampleRunningSuccessRPS() throws Exception {
-        PerformanceMonitor perfMon = new PerformanceMonitor();
-        final FixedDelayPerformer performer = new FixedDelayPerformer(10L);
+	public void exampleRunningSuccessRPS() throws Exception {
+		PerformanceMonitor perfMon = new PerformanceMonitor();
+		final FixedDelayPerformer performer = new FixedDelayPerformer(10L);
 
-        long begin = System.currentTimeMillis();
-        int counter = 0;
-        // 60 seconds
-        while (System.currentTimeMillis() - begin < 60000) {
-            counter++;
-            perfMon.invoke(performer);
-        }
+		long begin = System.currentTimeMillis();
+		int counter = 0;
+		// 60 seconds
+		while (System.currentTimeMillis() - begin < 60000) {
+			counter++;
+			perfMon.invoke(performer);
+		}
 
-        System.out.println("Counter: " + counter);
-        System.out.println("Success rate last minute: "
-                           + perfMon.getSuccessRequestsPerSecondLastMinute());
-        System.out.println("Success rate last hour: "
-                           + perfMon.getSuccessRequestsPerSecondLastHour());
-        System.out.println("Success rate last day: "
-                           + perfMon.getSuccessRequestsPerSecondLastDay());
-        System.out.println("Success rate last lifetime: "
-                           + perfMon.getSuccessRequestsPerSecondLifetime());
-    }
+		System.out.println("Counter: " + counter);
+		System.out.println("Success rate last minute: " + perfMon.getSuccessRequestsPerSecondLastMinute());
+		System.out.println("Success rate last hour: " + perfMon.getSuccessRequestsPerSecondLastHour());
+		System.out.println("Success rate last day: " + perfMon.getSuccessRequestsPerSecondLastDay());
+		System.out.println("Success rate last lifetime: " + perfMon.getSuccessRequestsPerSecondLifetime());
+	}
 }

@@ -16,39 +16,41 @@
  */
 package org.fishwife.jrugged;
 
-/** Clients who use the {@link Initializer} should implement this interface.
- *  This lets them do, for example:
- *  <pre>
- *    new Initializer(this).initialize();
- *  </pre>
- *  and the Initializer will take care of retrying an initialization.
+/**
+ * Clients who use the {@link Initializer} should implement this interface. This
+ * lets them do, for example:
+ * 
+ * <pre>
+ * new Initializer(this).initialize();
+ * </pre>
+ * 
+ * and the Initializer will take care of retrying an initialization.
  *
- *  This pattern is good for subsystems that need to talk to something
- *  that is currently down at startup time. For example, if your database
- *  is down when your app server starts up, this can let your app server
- *  keep trying to connect without getting wedged or needing to restart.
+ * This pattern is good for subsystems that need to talk to something that is
+ * currently down at startup time. For example, if your database is down when
+ * your app server starts up, this can let your app server keep trying to
+ * connect without getting wedged or needing to restart.
  */
 public interface Initializable {
 
-    /**
-     * Makes an initialization attempt. If an exception is thrown, assume
-     * attempt failed.
-     *
-     * @throws Exception if the attempt to init fails due to wrapped item throwing
-     */
-    public void tryInit() throws Exception;
+	/**
+	 * Makes an initialization attempt. If an exception is thrown, assume attempt
+	 * failed.
+	 *
+	 * @throws Exception if the attempt to init fails due to wrapped item throwing
+	 */
+	public void tryInit() throws Exception;
 
-    /**
-     * Called by the initializer after background initialization succeeds.
-     *  Can be used to mark the client as "ready to serve" or "active",
-     *  etc.
-     */
-    public void afterInit();
+	/**
+	 * Called by the initializer after background initialization succeeds. Can be
+	 * used to mark the client as "ready to serve" or "active", etc.
+	 */
+	public void afterInit();
 
-    /**
-     * In the event that I have attempted to initialize, but I fail having
-     * exceeded my max number of retries to succeed, I will get a callback
-     * into this method indicating I have met or Exceeded my attempts to start
-     */
-    public void configuredRetriesMetOrExceededWithoutSuccess();
+	/**
+	 * In the event that I have attempted to initialize, but I fail having exceeded
+	 * my max number of retries to succeed, I will get a callback into this method
+	 * indicating I have met or Exceeded my attempts to start
+	 */
+	public void configuredRetriesMetOrExceededWithoutSuccess();
 }

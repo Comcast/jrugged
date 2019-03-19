@@ -22,5 +22,7 @@ import javax.management.JMException;
  * Thrown when an unhandled parameter type is found.
  */
 public class UnhandledParameterTypeException extends JMException {
-    public UnhandledParameterTypeException(String reason) { super(reason); }
+	public UnhandledParameterTypeException(String reason) {
+		super(reason);
+	}
 }

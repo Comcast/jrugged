@@ -24,10 +24,10 @@ import org.springframework.web.servlet.ModelAndView;
 @Controller
 public class RootController {
 
-    @RequestMapping("/")
-    public ModelAndView viewIndex(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView view = new ModelAndView("index");
-        return view;
-    }
+	@RequestMapping("/")
+	public ModelAndView viewIndex(HttpServletRequest request, HttpServletResponse response) throws Exception {
+		ModelAndView view = new ModelAndView("index");
+		return view;
+	}
 
 }

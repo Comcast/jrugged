@@ -28,47 +28,44 @@ import static junit.framework.Assert.assertNotNull;
 
 public class SpringHandlerTest {
 
-    ClassPathXmlApplicationContext context;
+	ClassPathXmlApplicationContext context;
 
-    @Before
-    public void setUp() {
-        String[] config = new String[] {"applicationContext.xml"};
-        context = new ClassPathXmlApplicationContext(config);
-    }
+	@Before
+	public void setUp() {
+		String[] config = new String[] { "applicationContext.xml" };
+		context = new ClassPathXmlApplicationContext(config);
+	}
 
-    @After
-    public void tearDown() {
-        context.close();
-    }
+	@After
+	public void tearDown() {
+		context.close();
+	}
 
-    @Test
-    public void testAttributesCreatePerfMon() {
+	@Test
+	public void testAttributesCreatePerfMon() {
 
-        DummyService service = (DummyService)context.getBean("dummyService");
-        assertNotNull(service);
+		DummyService service = (DummyService) context.getBean("dummyService");
+		assertNotNull(service);
 
-        PerformanceMonitor monitor =
-            (PerformanceMonitor)context.getBean("dummyServicePerformanceMonitor");
-        assertNotNull(monitor);
+		PerformanceMonitor monitor = (PerformanceMonitor) context.getBean("dummyServicePerformanceMonitor");
+		assertNotNull(monitor);
 
-        service.foo();
-        assertEquals(1, monitor.getRequestCount());
+		service.foo();
+		assertEquals(1, monitor.getRequestCount());
 
-        service.bar();
-        assertEquals(2, monitor.getRequestCount());
+		service.bar();
+		assertEquals(2, monitor.getRequestCount());
 
-        service.baz();
-        assertEquals(2, monitor.getRequestCount());
+		service.baz();
+		assertEquals(2, monitor.getRequestCount());
 
-        MethodInterceptor wrapper =
-            (MethodInterceptor)context.getBean("dummyServicePerformanceMonitorInterceptor");
-        assertNotNull(wrapper);
-    }
+		MethodInterceptor wrapper = (MethodInterceptor) context.getBean("dummyServicePerformanceMonitorInterceptor");
+		assertNotNull(wrapper);
+	}
 
-    @Test
-    public void testPerfMonElementCreatedPerfMon() {
-        PerformanceMonitor monitor =
-            (PerformanceMonitor)context.getBean("performanceMonitor");
-        assertNotNull(monitor);
-    }
+	@Test
+	public void testPerfMonElementCreatedPerfMon() {
+		PerformanceMonitor monitor = (PerformanceMonitor) context.getBean("performanceMonitor");
+		assertNotNull(monitor);
+	}
 }

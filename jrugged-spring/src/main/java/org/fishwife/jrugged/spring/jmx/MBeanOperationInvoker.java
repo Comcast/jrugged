@@ -27,47 +27,50 @@ import java.util.Map;
  * The MBeanOperationInvoker is used to invoke an operation on an MBean.
  */
 public class MBeanOperationInvoker {
-    MBeanServer mBeanServer;
-    ObjectName objectName;
-    MBeanOperationInfo operationInfo;
+	MBeanServer mBeanServer;
+	ObjectName objectName;
+	MBeanOperationInfo operationInfo;
 
-    /**
-     * Constructor.
-     * @param mBeanServer the {@link MBeanServer}.
-     * @param objectName the {@link ObjectName} for the MBean.
-     * @param operationInfo the {@link MBeanOperationInfo} for the Operation to invoke.
-     */
-    public MBeanOperationInvoker(MBeanServer mBeanServer, ObjectName objectName, MBeanOperationInfo operationInfo) {
-        this.mBeanServer = mBeanServer;
-        this.objectName = objectName;
-        this.operationInfo = operationInfo;
-    }
+	/**
+	 * Constructor.
+	 * 
+	 * @param mBeanServer   the {@link MBeanServer}.
+	 * @param objectName    the {@link ObjectName} for the MBean.
+	 * @param operationInfo the {@link MBeanOperationInfo} for the Operation to
+	 *                      invoke.
+	 */
+	public MBeanOperationInvoker(MBeanServer mBeanServer, ObjectName objectName, MBeanOperationInfo operationInfo) {
+		this.mBeanServer = mBeanServer;
+		this.objectName = objectName;
+		this.operationInfo = operationInfo;
+	}
 
-    /**
-     * Invoke the operation.
-     * @param parameterMap the {@link Map} of parameter names to value arrays.
-     * @return the {@link Object} return value from the operation.
-     * @throws JMException Java Management Exception
-     */
-    public Object invokeOperation(Map<String, String[]> parameterMap) throws JMException {
-        MBeanParameterInfo[] parameterInfoArray = operationInfo.getSignature();
+	/**
+	 * Invoke the operation.
+	 * 
+	 * @param parameterMap the {@link Map} of parameter names to value arrays.
+	 * @return the {@link Object} return value from the operation.
+	 * @throws JMException Java Management Exception
+	 */
+	public Object invokeOperation(Map<String, String[]> parameterMap) throws JMException {
+		MBeanParameterInfo[] parameterInfoArray = operationInfo.getSignature();
 
-        Object[] values = new Object[parameterInfoArray.length];
-        String[] types = new String[parameterInfoArray.length];
+		Object[] values = new Object[parameterInfoArray.length];
+		String[] types = new String[parameterInfoArray.length];
 
-        MBeanValueConverter valueConverter = createMBeanValueConverter(parameterMap);
+		MBeanValueConverter valueConverter = createMBeanValueConverter(parameterMap);
 
-        for (int parameterNum = 0; parameterNum < parameterInfoArray.length; parameterNum++) {
-            MBeanParameterInfo parameterInfo = parameterInfoArray[parameterNum];
-            String type = parameterInfo.getType();
-            types[parameterNum] = type;
-            values[parameterNum] = valueConverter.convertParameterValue(parameterInfo.getName(), type);
-        }
+		for (int parameterNum = 0; parameterNum < parameterInfoArray.length; parameterNum++) {
+			MBeanParameterInfo parameterInfo = parameterInfoArray[parameterNum];
+			String type = parameterInfo.getType();
+			types[parameterNum] = type;
+			values[parameterNum] = valueConverter.convertParameterValue(parameterInfo.getName(), type);
+		}
 
-        return mBeanServer.invoke(objectName, operationInfo.getName(), values, types);
-    }
+		return mBeanServer.invoke(objectName, operationInfo.getName(), values, types);
+	}
 
-    MBeanValueConverter createMBeanValueConverter(Map<String, String[]> parameterMap) {
-        return new MBeanValueConverter(parameterMap);
-    }
+	MBeanValueConverter createMBeanValueConverter(Map<String, String[]> parameterMap) {
+		return new MBeanValueConverter(parameterMap);
+	}
 }

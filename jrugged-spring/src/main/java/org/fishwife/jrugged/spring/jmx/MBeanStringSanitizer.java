@@ -22,28 +22,30 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 
 /**
- * The MBeanStringSanitizer is used to turn MBean object, attribute, and operation names and values
- * into web-friendly Strings.
+ * The MBeanStringSanitizer is used to turn MBean object, attribute, and
+ * operation names and values into web-friendly Strings.
  */
 public class MBeanStringSanitizer {
 
-    /**
-     * Convert a URL Encoded name back to the original form.
-     * @param name the name to URL urlDecode.
-     * @param encoding the string encoding to be used (i.e. UTF-8)
-     * @return the name in original form.
-     * @throws UnsupportedEncodingException if the encoding is not supported.
-     */
-    String urlDecode(String name, String encoding) throws UnsupportedEncodingException {
-        return URLDecoder.decode(name, encoding);
-    }
+	/**
+	 * Convert a URL Encoded name back to the original form.
+	 * 
+	 * @param name     the name to URL urlDecode.
+	 * @param encoding the string encoding to be used (i.e. UTF-8)
+	 * @return the name in original form.
+	 * @throws UnsupportedEncodingException if the encoding is not supported.
+	 */
+	String urlDecode(String name, String encoding) throws UnsupportedEncodingException {
+		return URLDecoder.decode(name, encoding);
+	}
 
-    /**
-     * Escape a value to be HTML friendly.
-     * @param value the Object value.
-     * @return the HTML-escaped String, or <null> if the value is null.
-     */
-    String escapeValue(Object value) {
-        return HtmlUtils.htmlEscape(value != null ? value.toString() : "<null>");
-    }
+	/**
+	 * Escape a value to be HTML friendly.
+	 * 
+	 * @param value the Object value.
+	 * @return the HTML-escaped String, or <null> if the value is null.
+	 */
+	String escapeValue(Object value) {
+		return HtmlUtils.htmlEscape(value != null ? value.toString() : "<null>");
+	}
 }

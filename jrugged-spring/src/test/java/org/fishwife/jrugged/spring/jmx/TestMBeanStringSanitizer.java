@@ -25,34 +25,34 @@ import static junit.framework.Assert.assertEquals;
 
 public class TestMBeanStringSanitizer {
 
-    private MBeanStringSanitizer sanitizer;
+	private MBeanStringSanitizer sanitizer;
 
-    @Before
-    public void setUp() {
-        sanitizer = new MBeanStringSanitizer();
-    }
+	@Before
+	public void setUp() {
+		sanitizer = new MBeanStringSanitizer();
+	}
 
-    @Test
-    public void testUrlDecodeDecodesSlashes() throws Exception {
-        String testString = "this%2Fhas%2Fslashes";
-        String sanitizedString = sanitizer.urlDecode(testString, "UTF-8");
-        assertEquals("this/has/slashes", sanitizedString);
-    }
+	@Test
+	public void testUrlDecodeDecodesSlashes() throws Exception {
+		String testString = "this%2Fhas%2Fslashes";
+		String sanitizedString = sanitizer.urlDecode(testString, "UTF-8");
+		assertEquals("this/has/slashes", sanitizedString);
+	}
 
-    @Test(expected= UnsupportedEncodingException.class)
-    public void testUrlDecodeThrowsUnsupportedEncodingException() throws Exception {
-        sanitizer.urlDecode("some_string_with_encoding_%2F", "unsupported_encoding");
-    }
+	@Test(expected = UnsupportedEncodingException.class)
+	public void testUrlDecodeThrowsUnsupportedEncodingException() throws Exception {
+		sanitizer.urlDecode("some_string_with_encoding_%2F", "unsupported_encoding");
+	}
 
-    @Test
-    public void testEscapeValueEscapesValues() {
-        String testString = "this<contains>evil&characters";
-        String escapedString = sanitizer.escapeValue(testString);
-        assertEquals("this&lt;contains&gt;evil&amp;characters", escapedString);
-    }
+	@Test
+	public void testEscapeValueEscapesValues() {
+		String testString = "this<contains>evil&characters";
+		String escapedString = sanitizer.escapeValue(testString);
+		assertEquals("this&lt;contains&gt;evil&amp;characters", escapedString);
+	}
 
-    @Test
-    public void testEscapeValueEscapesNulls() {
-        assertEquals("&lt;null&gt;", sanitizer.escapeValue(null));
-    }
+	@Test
+	public void testEscapeValueEscapesNulls() {
+		assertEquals("&lt;null&gt;", sanitizer.escapeValue(null));
+	}
 }

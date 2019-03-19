@@ -22,86 +22,89 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 /**
  * This class implements a way to get percentiles from a list of samples within
- * a given time range using the algorithm described at
- * <a href="http://cnx.org/content/m10805/latest/">http://cnx.org/content/m10805/latest/</a>.
- * The percentile does not sample itself; it merely computes the asked for percentile
- * when called.
+ * a given time range using the algorithm described at <a href=
+ * "http://cnx.org/content/m10805/latest/">http://cnx.org/content/m10805/latest/</a>.
+ * The percentile does not sample itself; it merely computes the asked for
+ * percentile when called.
  */
 public class PercentileTracker {
-    private long windowMillis;
+	private long windowMillis;
 
-    protected ConcurrentSkipListMap<Long, Double> cslm = new ConcurrentSkipListMap<Long, Double>();
+	protected ConcurrentSkipListMap<Long, Double> cslm = new ConcurrentSkipListMap<Long, Double>();
 
-    public PercentileTracker(long windowMillis) {
-        this.windowMillis = windowMillis;
-    }
+	public PercentileTracker(long windowMillis) {
+		this.windowMillis = windowMillis;
+	}
 
-    /** Updates the average with the latest measurement.
-     *  @param sample the latest measurement in the rolling average */
-    public synchronized void update(double sample) {
-        long now = System.currentTimeMillis();
+	/**
+	 * Updates the average with the latest measurement.
+	 * 
+	 * @param sample the latest measurement in the rolling average
+	 */
+	public synchronized void update(double sample) {
+		long now = System.currentTimeMillis();
 
-        removeOutOfTimeWindowEntries();
-        cslm.put(now, sample);
-    }
+		removeOutOfTimeWindowEntries();
+		cslm.put(now, sample);
+	}
 
-    /**
-     * Returns a computed percentile value.
-     *
-     * @param requestedPercentile Which whole number percentile value needs to be calculated and returned
-     * @return double the percentile
-     */
-    public double getPercentile(int requestedPercentile) {
-        return getPercentile(requestedPercentile, new ArrayList<Double>(cslm.values()));
-    }
+	/**
+	 * Returns a computed percentile value.
+	 *
+	 * @param requestedPercentile Which whole number percentile value needs to be
+	 *                            calculated and returned
+	 * @return double the percentile
+	 */
+	public double getPercentile(int requestedPercentile) {
+		return getPercentile(requestedPercentile, new ArrayList<Double>(cslm.values()));
+	}
 
-    protected double getPercentile(int requestedPercentile, ArrayList<Double> values) {
-        if (values == null || values.size() == 0) {
-            return 0d;
-        }
+	protected double getPercentile(int requestedPercentile, ArrayList<Double> values) {
+		if (values == null || values.size() == 0) {
+			return 0d;
+		}
 
-        Collections.sort(values);
-        Double[] mySampleSet = values.toArray(new Double[values.size()]);
+		Collections.sort(values);
+		Double[] mySampleSet = values.toArray(new Double[values.size()]);
 
-        //This is the Excel Percentile Rank
-        double rank = (((double) requestedPercentile / 100d) * (values.size() - 1)) + 1;
+		// This is the Excel Percentile Rank
+		double rank = (((double) requestedPercentile / 100d) * (values.size() - 1)) + 1;
 
-        //This is the Weighted Percentile Rank
-        //double rank = ((double) requestedPercentile / 100d) * (values.size() + 1);
+		// This is the Weighted Percentile Rank
+		// double rank = ((double) requestedPercentile / 100d) * (values.size() + 1);
 
-        double returnPercentile;
+		double returnPercentile;
 
-        int integerRank = (int) rank;
-        double remainder = rank - integerRank;
+		int integerRank = (int) rank;
+		double remainder = rank - integerRank;
 
-        if (remainder > 0) {
-            //Interpolate the percentile
-            double valueAtRankIr = mySampleSet[integerRank - 1];
-            double valueAtRankIrPlusOne = mySampleSet[integerRank];
-            returnPercentile = remainder * (valueAtRankIrPlusOne - valueAtRankIr) + valueAtRankIr;
-        }
-        else {
-            // Use the rank to find the 'exact' percentile.
-            returnPercentile = mySampleSet[integerRank - 1];
-        }
-        return returnPercentile;
+		if (remainder > 0) {
+			// Interpolate the percentile
+			double valueAtRankIr = mySampleSet[integerRank - 1];
+			double valueAtRankIrPlusOne = mySampleSet[integerRank];
+			returnPercentile = remainder * (valueAtRankIrPlusOne - valueAtRankIr) + valueAtRankIr;
+		} else {
+			// Use the rank to find the 'exact' percentile.
+			returnPercentile = mySampleSet[integerRank - 1];
+		}
+		return returnPercentile;
 
-    }
+	}
 
-    private void removeOutOfTimeWindowEntries() {
-        if (cslm.isEmpty()) {
-            return;
-        }
+	private void removeOutOfTimeWindowEntries() {
+		if (cslm.isEmpty()) {
+			return;
+		}
 
-        // Optimization - if the last entry is also outside
-        // the time window, all items in the list can be cleared.
-        if (System.currentTimeMillis() - cslm.lastKey() > windowMillis) {
-            cslm.clear();
-            return;
-        }
+		// Optimization - if the last entry is also outside
+		// the time window, all items in the list can be cleared.
+		if (System.currentTimeMillis() - cslm.lastKey() > windowMillis) {
+			cslm.clear();
+			return;
+		}
 
-        while ((cslm.lastKey() - cslm.firstKey()) > windowMillis) {
-            cslm.pollFirstEntry(); //The first entry is now too old, remove it
-        }
-    }
+		while ((cslm.lastKey() - cslm.firstKey()) > windowMillis) {
+			cslm.pollFirstEntry(); // The first entry is now too old, remove it
+		}
+	}
 }

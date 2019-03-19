@@ -15,21 +15,23 @@
 package org.fishwife.jrugged;
 
 /**
- * Allows the user to map the standard {@link org.fishwife.jrugged.FlowRateExceededException}
- * thrown by a {@link org.fishwife.jrugged.ConstantFlowRegulator} into an application
+ * Allows the user to map the standard
+ * {@link org.fishwife.jrugged.FlowRateExceededException} thrown by a
+ * {@link org.fishwife.jrugged.ConstantFlowRegulator} into an application
  * specific exception.
  *
  * @param <T> is the application specific exception type.
  */
 public interface ConstantFlowRegulatorExceptionMapper<T extends Exception> {
 
-    /**
-     * Turns a {@link org.fishwife.jrugged.FlowRateExceededException} into the desired exception (T)
-     *
-     * @param flowRegulator the {@link org.fishwife.jrugged.ConstantFlowRegulator}
-     * @param e the <code>FlowRateExceededException</code> I get
-     * @return the {@link Exception} I want thrown instead
-     */
-    public T map(ConstantFlowRegulator flowRegulator, FlowRateExceededException e);
+	/**
+	 * Turns a {@link org.fishwife.jrugged.FlowRateExceededException} into the
+	 * desired exception (T)
+	 *
+	 * @param flowRegulator the {@link org.fishwife.jrugged.ConstantFlowRegulator}
+	 * @param e             the <code>FlowRateExceededException</code> I get
+	 * @return the {@link Exception} I want thrown instead
+	 */
+	public T map(ConstantFlowRegulator flowRegulator, FlowRateExceededException e);
 
 }

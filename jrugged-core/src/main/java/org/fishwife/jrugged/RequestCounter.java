@@ -18,96 +18,99 @@ package org.fishwife.jrugged;
 
 import java.util.concurrent.Callable;
 
-/** This is a statistics wrapper that counts total requests, as well
- *  as how many succeed and how many fail. This class can be polled
- *  periodically to measure request rates, success rates, and failure
- *  rates.
+/**
+ * This is a statistics wrapper that counts total requests, as well as how many
+ * succeed and how many fail. This class can be polled periodically to measure
+ * request rates, success rates, and failure rates.
  */
 public class RequestCounter implements ServiceWrapper {
-    private long numRequests = 0L;
-    private long numSuccesses = 0L;
-    private long numFailures = 0L;
+	private long numRequests = 0L;
+	private long numSuccesses = 0L;
+	private long numFailures = 0L;
 
-    /** Default constructor. */
-    public RequestCounter() { }
+	/** Default constructor. */
+	public RequestCounter() {
+	}
 
-    protected synchronized void succeed() {
-        numRequests++;
-        numSuccesses++;
-    }
+	protected synchronized void succeed() {
+		numRequests++;
+		numSuccesses++;
+	}
 
-    protected synchronized void fail() {
-        numRequests++;
-        numFailures++;
-    }
+	protected synchronized void fail() {
+		numRequests++;
+		numFailures++;
+	}
 
-    /** Wrap the given service call with the {@link RequestCounter}
-     *  to count the number of calls made.
-     *  @param c the {@link Callable} to attempt
-     *
-     *  @return whatever c would return on success
-     *
-     *  @throws Exception if <code>c</code> throws one during
-     *    execution
-     */
-    public <T> T invoke(Callable<T> c) throws Exception {
-        try {
-            T result = c.call();
-            succeed();
-            return result;
-        } catch (Exception e) {
-            fail();
-            throw e;
-        }
-    }
+	/**
+	 * Wrap the given service call with the {@link RequestCounter} to count the
+	 * number of calls made.
+	 * 
+	 * @param c the {@link Callable} to attempt
+	 *
+	 * @return whatever c would return on success
+	 *
+	 * @throws Exception if <code>c</code> throws one during execution
+	 */
+	public <T> T invoke(Callable<T> c) throws Exception {
+		try {
+			T result = c.call();
+			succeed();
+			return result;
+		} catch (Exception e) {
+			fail();
+			throw e;
+		}
+	}
 
-    /** Wrap the given service call with the {@link RequestCounter}
-     *  to count the number of calls made.
-     *  @param r the {@link Runnable} to attempt
-     *
-     *  @throws Exception if <code>c</code> throws one during
-     *    execution
-     */
-    public void invoke(Runnable r) throws Exception {
-        try {
-            r.run();
-            succeed();
-        } catch (Exception e) {
-            fail();
-            throw e;
-        }
-    }
+	/**
+	 * Wrap the given service call with the {@link RequestCounter} to count the
+	 * number of calls made.
+	 * 
+	 * @param r the {@link Runnable} to attempt
+	 *
+	 * @throws Exception if <code>c</code> throws one during execution
+	 */
+	public void invoke(Runnable r) throws Exception {
+		try {
+			r.run();
+			succeed();
+		} catch (Exception e) {
+			fail();
+			throw e;
+		}
+	}
 
-    /** Wrap the given service call with the {@link RequestCounter}
-     *  to count the number of calls made.
-     *  @param r the {@link Runnable} to attempt
-     *  @param result what to return after <code>r</code> succeeds
-     *
-     *  @return result
-     *
-     *  @throws Exception if <code>c</code> throws one during
-     *    execution
-     */
-    public <T> T invoke(Runnable r, T result) throws Exception {
-        try {
-            r.run();
-            succeed();
-            return result;
-        } catch (Exception e) {
-            fail();
-            throw e;
-        }
-    }
+	/**
+	 * Wrap the given service call with the {@link RequestCounter} to count the
+	 * number of calls made.
+	 * 
+	 * @param r      the {@link Runnable} to attempt
+	 * @param result what to return after <code>r</code> succeeds
+	 *
+	 * @return result
+	 *
+	 * @throws Exception if <code>c</code> throws one during execution
+	 */
+	public <T> T invoke(Runnable r, T result) throws Exception {
+		try {
+			r.run();
+			succeed();
+			return result;
+		} catch (Exception e) {
+			fail();
+			throw e;
+		}
+	}
 
-    /**
-     * Samples the current counts.
-     *
-     * @return an array of three <code>longs</code>: the total
-     *    number of requests, the number of successful requests,
-     *    and the number of failed requests.
-     */
-    public synchronized long[] sample() {
-        return new long[]{numRequests, numSuccesses, numFailures};
-    }
+	/**
+	 * Samples the current counts.
+	 *
+	 * @return an array of three <code>longs</code>: the total number of requests,
+	 *         the number of successful requests, and the number of failed requests.
+	 */
+	public synchronized long[] sample() {
+		return new long[] { numRequests, numSuccesses, numFailures };
+	}
 
 }

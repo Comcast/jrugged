@@ -17,46 +17,54 @@
 package org.fishwife.jrugged;
 
 /**
- * This class implements an exponential moving average, using the
- *  algorithm described at <a href="http://en.wikipedia.org/wiki/Moving_average">http://en.wikipedia.org/wiki/Moving_average</a>. The average does not
- *  sample itself; it merely computes the new average when updated with
- *  a sample by an external mechanism.
+ * This class implements an exponential moving average, using the algorithm
+ * described at <a href=
+ * "http://en.wikipedia.org/wiki/Moving_average">http://en.wikipedia.org/wiki/Moving_average</a>.
+ * The average does not sample itself; it merely computes the new average when
+ * updated with a sample by an external mechanism.
  */
 public class MovingAverage {
-    private long windowMillis;
-    private long lastMillis;
-    private double average;
+	private long windowMillis;
+	private long lastMillis;
+	private double average;
 
-    /** Construct a {@link MovingAverage}, providing the time window
-     *  we want the average over. For example, providing a value of
-     *  3,600,000 provides a moving average over the last hour.
-     *  @param windowMillis the length of the sliding window in
-     *    milliseconds */
-    public MovingAverage(long windowMillis) {
-        this.windowMillis = windowMillis;
-    }
+	/**
+	 * Construct a {@link MovingAverage}, providing the time window we want the
+	 * average over. For example, providing a value of 3,600,000 provides a moving
+	 * average over the last hour.
+	 * 
+	 * @param windowMillis the length of the sliding window in milliseconds
+	 */
+	public MovingAverage(long windowMillis) {
+		this.windowMillis = windowMillis;
+	}
 
-    /** Updates the average with the latest measurement.
-     *  @param sample the latest measurement in the rolling average */
-    public synchronized void update(double sample) {
-        long now = System.currentTimeMillis();
+	/**
+	 * Updates the average with the latest measurement.
+	 * 
+	 * @param sample the latest measurement in the rolling average
+	 */
+	public synchronized void update(double sample) {
+		long now = System.currentTimeMillis();
 
-        if (lastMillis == 0) {    // first sample
-            average = sample;
-            lastMillis = now;
-            return;
-        }
-        long deltaTime = now - lastMillis;
-        double coeff = Math.exp(-1.0 * ((double)deltaTime / windowMillis));
-        average = (1.0 - coeff) * sample + coeff * average;
+		if (lastMillis == 0) { // first sample
+			average = sample;
+			lastMillis = now;
+			return;
+		}
+		long deltaTime = now - lastMillis;
+		double coeff = Math.exp(-1.0 * ((double) deltaTime / windowMillis));
+		average = (1.0 - coeff) * sample + coeff * average;
 
-        lastMillis = now;
-    }
+		lastMillis = now;
+	}
 
-    /**
-     * Returns the last computed average value.
-     *
-     * @return double The calculated avg.
-     */
-    public double getAverage() { return average; }
+	/**
+	 * Returns the last computed average value.
+	 *
+	 * @return double The calculated avg.
+	 */
+	public double getAverage() {
+		return average;
+	}
 }

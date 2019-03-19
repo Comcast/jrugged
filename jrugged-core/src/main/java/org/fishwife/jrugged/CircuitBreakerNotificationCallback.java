@@ -17,18 +17,17 @@
 package org.fishwife.jrugged;
 
 /**
- * Allows outside interested parties to register their interest in
- * the state changes of a {@link CircuitBreaker}.  The callback allows
- * the listeners to then take action based on what the state change
- * was.
+ * Allows outside interested parties to register their interest in the state
+ * changes of a {@link CircuitBreaker}. The callback allows the listeners to
+ * then take action based on what the state change was.
  */
 public abstract class CircuitBreakerNotificationCallback {
 
-    /**
-     * The method needing an application specific implementation
-     * to deal with a change in {@link CircuitBreaker} state.
-     *
-     * @param s The new status of the {@link CircuitBreaker}
-     */
-    public abstract void notify(Status s);
+	/**
+	 * The method needing an application specific implementation to deal with a
+	 * change in {@link CircuitBreaker} state.
+	 *
+	 * @param s The new status of the {@link CircuitBreaker}
+	 */
+	public abstract void notify(Status s);
 }

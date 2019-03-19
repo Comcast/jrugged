@@ -25,64 +25,64 @@ import java.util.Map;
 
 public class TestMBeanValueConverter {
 
-    private MBeanValueConverter converter;
+	private MBeanValueConverter converter;
 
-    @Before
-    public void setUp() {
+	@Before
+	public void setUp() {
 
-        Map<String, String[]> parameterMap = new HashMap<String, String[]>();
-        parameterMap.put("nullString", new String[] { "<null>" });
-        parameterMap.put("stringValue", new String[] { "some_string" });
-        parameterMap.put("booleanValue", new String[] { "true" });
-        parameterMap.put("intValue", new String[] { "123" });
-        parameterMap.put("longValue", new String[] { "456" });
-        parameterMap.put("floatValue", new String[] { "123.45" });
-        parameterMap.put("doubleValue", new String[] { "456.78" });
-        converter = new MBeanValueConverter(parameterMap);
-    }
+		Map<String, String[]> parameterMap = new HashMap<String, String[]>();
+		parameterMap.put("nullString", new String[] { "<null>" });
+		parameterMap.put("stringValue", new String[] { "some_string" });
+		parameterMap.put("booleanValue", new String[] { "true" });
+		parameterMap.put("intValue", new String[] { "123" });
+		parameterMap.put("longValue", new String[] { "456" });
+		parameterMap.put("floatValue", new String[] { "123.45" });
+		parameterMap.put("doubleValue", new String[] { "456.78" });
+		converter = new MBeanValueConverter(parameterMap);
+	}
 
-    @Test
-    public void testNonProvidedValue() throws Exception {
-       assertEquals(null, converter.convertParameterValue("not_in_the_map", ""));
-    }
+	@Test
+	public void testNonProvidedValue() throws Exception {
+		assertEquals(null, converter.convertParameterValue("not_in_the_map", ""));
+	}
 
-    @Test
-    public void testNullString() throws Exception {
-       assertEquals(null, converter.convertParameterValue("nullString", "any_type_will_do"));
-    }
+	@Test
+	public void testNullString() throws Exception {
+		assertEquals(null, converter.convertParameterValue("nullString", "any_type_will_do"));
+	}
 
-    @Test
-    public void testStringValue() throws Exception {
-        assertEquals("some_string", converter.convertParameterValue("stringValue", "java.lang.String"));
-    }
+	@Test
+	public void testStringValue() throws Exception {
+		assertEquals("some_string", converter.convertParameterValue("stringValue", "java.lang.String"));
+	}
 
-    @Test
-    public void testBooleanValue() throws Exception {
-        assertEquals(true, converter.convertParameterValue("booleanValue", "boolean"));
-    }
+	@Test
+	public void testBooleanValue() throws Exception {
+		assertEquals(true, converter.convertParameterValue("booleanValue", "boolean"));
+	}
 
-    @Test
-    public void testIntValue() throws Exception {
-        assertEquals(123, converter.convertParameterValue("intValue", "int"));
-    }
+	@Test
+	public void testIntValue() throws Exception {
+		assertEquals(123, converter.convertParameterValue("intValue", "int"));
+	}
 
-    @Test
-    public void testLongValue() throws Exception {
-        assertEquals((long)456, converter.convertParameterValue("longValue", "long"));
-    }
+	@Test
+	public void testLongValue() throws Exception {
+		assertEquals((long) 456, converter.convertParameterValue("longValue", "long"));
+	}
 
-    @Test
-    public void testFloatValue() throws Exception {
-        assertEquals((float)123.45, converter.convertParameterValue("floatValue", "float"));
-    }
+	@Test
+	public void testFloatValue() throws Exception {
+		assertEquals((float) 123.45, converter.convertParameterValue("floatValue", "float"));
+	}
 
-    @Test
-    public void testDoubleValue() throws Exception {
-        assertEquals(456.78, converter.convertParameterValue("doubleValue", "double"));
-    }
+	@Test
+	public void testDoubleValue() throws Exception {
+		assertEquals(456.78, converter.convertParameterValue("doubleValue", "double"));
+	}
 
-    @Test(expected=UnhandledParameterTypeException.class)
-    public void testUnhandledType() throws Exception {
-        converter.convertParameterValue("stringValue", "unknown_type");
-    }
+	@Test(expected = UnhandledParameterTypeException.class)
+	public void testUnhandledType() throws Exception {
+		converter.convertParameterValue("stringValue", "unknown_type");
+	}
 }

@@ -33,28 +33,28 @@ import org.fishwife.jrugged.ServiceWrapper;
  */
 public class ServiceWrappedHttpClientDecorator extends AbstractHttpClientDecorator {
 
-    private ServiceWrapper wrapper;
+	private ServiceWrapper wrapper;
 
-    public ServiceWrappedHttpClientDecorator(HttpClient backend, ServiceWrapper wrapper) {
-        super(backend);
-        this.wrapper = wrapper;
-    }
+	public ServiceWrappedHttpClientDecorator(HttpClient backend, ServiceWrapper wrapper) {
+		super(backend);
+		this.wrapper = wrapper;
+	}
 
-    public HttpResponse execute(final HttpHost host, final HttpRequest req, final HttpContext ctx)
-            throws IOException, ClientProtocolException {
-        try {
-            return wrapper.invoke(new Callable<HttpResponse>() {
-                public HttpResponse call() throws Exception {
-                    return backend.execute(host, req, ctx);
-                }
-            });
-        } catch (IOException ioe) {
-            throw(ioe);
-        } catch (RuntimeException re) {
-            throw(re);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
+	public HttpResponse execute(final HttpHost host, final HttpRequest req, final HttpContext ctx)
+			throws IOException, ClientProtocolException {
+		try {
+			return wrapper.invoke(new Callable<HttpResponse>() {
+				public HttpResponse call() throws Exception {
+					return backend.execute(host, req, ctx);
+				}
+			});
+		} catch (IOException ioe) {
+			throw (ioe);
+		} catch (RuntimeException re) {
+			throw (re);
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
 
 }

@@ -23,29 +23,29 @@ import java.io.IOException;
 
 public class ExtendedPredicatesTest {
 
-    @Test
-    public void test_isInstanceOf() {
-        Predicate<Throwable> t = ExtendedPredicates.isInstanceOf(Throwable.class, RuntimeException.class);
-        Assert.assertTrue(t.apply(new RuntimeException()));
-        Assert.assertFalse(t.apply(new IOException()));
-    }
+	@Test
+	public void test_isInstanceOf() {
+		Predicate<Throwable> t = ExtendedPredicates.isInstanceOf(Throwable.class, RuntimeException.class);
+		Assert.assertTrue(t.apply(new RuntimeException()));
+		Assert.assertFalse(t.apply(new IOException()));
+	}
 
-    @Test
-    public void test_throwableContainsMessage_sensitive() {
-        Predicate<Throwable> t = ExtendedPredicates.throwableContainsMessage("foo", true);
-        Assert.assertTrue(t.apply(new RuntimeException("foo")));
-        Assert.assertFalse(t.apply(new RuntimeException("Foo")));
-        Assert.assertFalse(t.apply(new RuntimeException("bar")));
-        Assert.assertFalse(t.apply(new RuntimeException("Bar")));
-    }
+	@Test
+	public void test_throwableContainsMessage_sensitive() {
+		Predicate<Throwable> t = ExtendedPredicates.throwableContainsMessage("foo", true);
+		Assert.assertTrue(t.apply(new RuntimeException("foo")));
+		Assert.assertFalse(t.apply(new RuntimeException("Foo")));
+		Assert.assertFalse(t.apply(new RuntimeException("bar")));
+		Assert.assertFalse(t.apply(new RuntimeException("Bar")));
+	}
 
-    @Test
-    public void test_throwableContainsMessage_insensitive() {
-        Predicate<Throwable> t = ExtendedPredicates.throwableContainsMessage("foo", false);
-        Assert.assertTrue(t.apply(new RuntimeException("Foo")));
-        Assert.assertTrue(t.apply(new RuntimeException("foo")));
-        Assert.assertFalse(t.apply(new RuntimeException("bar")));
-        Assert.assertFalse(t.apply(new RuntimeException("Bar")));
-    }
+	@Test
+	public void test_throwableContainsMessage_insensitive() {
+		Predicate<Throwable> t = ExtendedPredicates.throwableContainsMessage("foo", false);
+		Assert.assertTrue(t.apply(new RuntimeException("Foo")));
+		Assert.assertTrue(t.apply(new RuntimeException("foo")));
+		Assert.assertFalse(t.apply(new RuntimeException("bar")));
+		Assert.assertFalse(t.apply(new RuntimeException("Bar")));
+	}
 
 }

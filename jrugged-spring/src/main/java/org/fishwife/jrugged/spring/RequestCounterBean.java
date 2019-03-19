@@ -20,17 +20,17 @@ import org.fishwife.jrugged.RequestCounter;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 
 public class RequestCounterBean extends RequestCounter {
-    public RequestCounterBean() {
-        super();
-    }
+	public RequestCounterBean() {
+		super();
+	}
 
-    @ManagedOperation
-    @Override
-    /**
-     * {@inheritDoc}
-     */
-    public synchronized long[] sample() {
-        return super.sample();
-    }
+	@ManagedOperation
+	@Override
+	/**
+	 * {@inheritDoc}
+	 */
+	public synchronized long[] sample() {
+		return super.sample();
+	}
 
 }

@@ -28,97 +28,97 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class TestInitializer {
-    private Initializable mockClient;
-    private Initializer impl;
+	private Initializable mockClient;
+	private Initializer impl;
 
-    @Before
-    public void setUp() {
-        mockClient = createMock(Initializable.class);
-        impl = new Initializer(mockClient);
-    }
+	@Before
+	public void setUp() {
+		mockClient = createMock(Initializable.class);
+		impl = new Initializer(mockClient);
+	}
 
-    @Test
-    public void testFirstTimeTrial() throws Exception {
-        mockClient.tryInit();
-        mockClient.afterInit();
-        replay(mockClient);
+	@Test
+	public void testFirstTimeTrial() throws Exception {
+		mockClient.tryInit();
+		mockClient.afterInit();
+		replay(mockClient);
 
-        impl.initialize();
-        Thread.sleep(5);
+		impl.initialize();
+		Thread.sleep(5);
 
-        verify(mockClient);
-        assertTrue(impl.isInitialized());
-        assertFalse(impl.isCancelled());
-        assertEquals(1, impl.getNumAttempts());
-    }
+		verify(mockClient);
+		assertTrue(impl.isInitialized());
+		assertFalse(impl.isCancelled());
+		assertEquals(1, impl.getNumAttempts());
+	}
 
-    public void testThirdTimesACharm() throws Exception {
-        mockClient.tryInit();
-        expectLastCall().andThrow(new RuntimeException()).times(2);
-        mockClient.tryInit();
-        mockClient.afterInit();
-        replay(mockClient);
+	public void testThirdTimesACharm() throws Exception {
+		mockClient.tryInit();
+		expectLastCall().andThrow(new RuntimeException()).times(2);
+		mockClient.tryInit();
+		mockClient.afterInit();
+		replay(mockClient);
 
-        impl.setRetryMillis(1);
-        impl.initialize();
-        Thread.sleep(5);
+		impl.setRetryMillis(1);
+		impl.initialize();
+		Thread.sleep(5);
 
-        assertTrue(impl.isInitialized());
-        assertFalse(impl.isCancelled());
-        assertEquals(3, impl.getNumAttempts());
-        verify(mockClient);
-    }
+		assertTrue(impl.isInitialized());
+		assertFalse(impl.isCancelled());
+		assertEquals(3, impl.getNumAttempts());
+		verify(mockClient);
+	}
 
-    @Test
-    public void testExceededRetries() throws Exception {
-        mockClient.tryInit();
-        expectLastCall().andThrow(new RuntimeException()).times(2);
-        replay(mockClient);
+	@Test
+	public void testExceededRetries() throws Exception {
+		mockClient.tryInit();
+		expectLastCall().andThrow(new RuntimeException()).times(2);
+		replay(mockClient);
 
-        impl.setMaxRetries(2);
-        impl.setRetryMillis(30);
-        impl.initialize();
-        Thread.sleep(100);
+		impl.setMaxRetries(2);
+		impl.setRetryMillis(30);
+		impl.initialize();
+		Thread.sleep(100);
 
-        assertFalse(impl.isInitialized());
-        assertFalse(impl.isCancelled());
-        assertEquals(2, impl.getNumAttempts());
-        verify(mockClient);
-    }
+		assertFalse(impl.isInitialized());
+		assertFalse(impl.isCancelled());
+		assertEquals(2, impl.getNumAttempts());
+		verify(mockClient);
+	}
 
-    @Test
-    public void testExceededRetriesAndCallbackTriggeredSuccessfully() throws Exception {
-        mockClient.tryInit();
-        expectLastCall().andThrow(new RuntimeException()).times(2);
+	@Test
+	public void testExceededRetriesAndCallbackTriggeredSuccessfully() throws Exception {
+		mockClient.tryInit();
+		expectLastCall().andThrow(new RuntimeException()).times(2);
 
-        mockClient.configuredRetriesMetOrExceededWithoutSuccess();
-        replay(mockClient);
+		mockClient.configuredRetriesMetOrExceededWithoutSuccess();
+		replay(mockClient);
 
-        impl.setMaxRetries(2);
-        impl.setRetryMillis(3);
-        impl.initialize();
-        Thread.sleep(10);
+		impl.setMaxRetries(2);
+		impl.setRetryMillis(3);
+		impl.initialize();
+		Thread.sleep(10);
 
-        assertFalse(impl.isInitialized());
-        assertFalse(impl.isCancelled());
-        assertEquals(2, impl.getNumAttempts());
-        verify(mockClient);
-    }
+		assertFalse(impl.isInitialized());
+		assertFalse(impl.isCancelled());
+		assertEquals(2, impl.getNumAttempts());
+		verify(mockClient);
+	}
 
-    @Test
-    public void testCancellation() throws Exception {
-        mockClient.tryInit();
-        expectLastCall().andThrow(new RuntimeException());
-        replay(mockClient);
+	@Test
+	public void testCancellation() throws Exception {
+		mockClient.tryInit();
+		expectLastCall().andThrow(new RuntimeException());
+		replay(mockClient);
 
-        impl.initialize();
-        Thread.sleep(1);
-        impl.destroy();
+		impl.initialize();
+		Thread.sleep(1);
+		impl.destroy();
 
-        assertFalse(impl.isInitialized());
-        assertTrue(impl.isCancelled());
-        assertEquals(1, impl.getNumAttempts());
-        verify(mockClient);
-    }
+		assertFalse(impl.isInitialized());
+		assertTrue(impl.isCancelled());
+		assertEquals(1, impl.getNumAttempts());
+		verify(mockClient);
+	}
 
 }

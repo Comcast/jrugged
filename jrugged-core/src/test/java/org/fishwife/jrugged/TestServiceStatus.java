@@ -28,81 +28,81 @@ import static org.junit.Assert.assertTrue;
 
 public class TestServiceStatus {
 
-    private ServiceStatus serviceStatus;
+	private ServiceStatus serviceStatus;
 
-    @Test
-    public void testServiceStatus() {
+	@Test
+	public void testServiceStatus() {
 
-        String name = "name";
-        Status status = Status.UP;
+		String name = "name";
+		Status status = Status.UP;
 
-        serviceStatus = new ServiceStatus(name, status);
+		serviceStatus = new ServiceStatus(name, status);
 
-        assertEquals(name, serviceStatus.getName());
-        assertEquals(status, serviceStatus.getStatus());
-        assertNotNull(serviceStatus.getReasons());
-        assertTrue(serviceStatus.getReasons().isEmpty());
-    }
+		assertEquals(name, serviceStatus.getName());
+		assertEquals(status, serviceStatus.getStatus());
+		assertNotNull(serviceStatus.getReasons());
+		assertTrue(serviceStatus.getReasons().isEmpty());
+	}
 
-    @Test
-    public void testServiceStatusWithNullReason() {
+	@Test
+	public void testServiceStatusWithNullReason() {
 
-        String name = "name";
-        Status status = Status.UP;
+		String name = "name";
+		Status status = Status.UP;
 
-        serviceStatus = new ServiceStatus(name, status, (String)null);
+		serviceStatus = new ServiceStatus(name, status, (String) null);
 
-        assertEquals(name, serviceStatus.getName());
-        assertEquals(status, serviceStatus.getStatus());
-        assertNotNull(serviceStatus.getReasons());
-        assertTrue(serviceStatus.getReasons().isEmpty());
-    }
+		assertEquals(name, serviceStatus.getName());
+		assertEquals(status, serviceStatus.getStatus());
+		assertNotNull(serviceStatus.getReasons());
+		assertTrue(serviceStatus.getReasons().isEmpty());
+	}
 
-    @Test
-    public void testServiceStatusWithNullReasons() {
+	@Test
+	public void testServiceStatusWithNullReasons() {
 
-        String name = "name";
-        Status status = Status.UP;
+		String name = "name";
+		Status status = Status.UP;
 
-        serviceStatus = new ServiceStatus(name, status, (List<String>)null);
+		serviceStatus = new ServiceStatus(name, status, (List<String>) null);
 
-        assertEquals(name, serviceStatus.getName());
-        assertEquals(status, serviceStatus.getStatus());
-        assertNotNull(serviceStatus.getReasons());
-        assertTrue(serviceStatus.getReasons().isEmpty());
-    }
+		assertEquals(name, serviceStatus.getName());
+		assertEquals(status, serviceStatus.getStatus());
+		assertNotNull(serviceStatus.getReasons());
+		assertTrue(serviceStatus.getReasons().isEmpty());
+	}
 
-    @Test
-    public void testServiceStatusWithReason() {
+	@Test
+	public void testServiceStatusWithReason() {
 
-        String name = "name";
-        Status status = Status.UP;
-        String reason = "reason";
+		String name = "name";
+		Status status = Status.UP;
+		String reason = "reason";
 
-        serviceStatus = new ServiceStatus(name, status, reason);
+		serviceStatus = new ServiceStatus(name, status, reason);
 
-        assertEquals(name, serviceStatus.getName());
-        assertEquals(status, serviceStatus.getStatus());
-        assertNotNull(serviceStatus.getReasons());
-        assertTrue(serviceStatus.getReasons().contains(reason));
-    }
+		assertEquals(name, serviceStatus.getName());
+		assertEquals(status, serviceStatus.getStatus());
+		assertNotNull(serviceStatus.getReasons());
+		assertTrue(serviceStatus.getReasons().contains(reason));
+	}
 
-    @Test
-    public void testServiceStatusWithReasons() {
-                String name = "name";
-        Status status = Status.UP;
-        String reason1 = "reason1";
-        String reason2 = "reason2";
-        List<String> reasonList = new ArrayList<String>();
-        reasonList.add(reason1);
-        reasonList.add(reason2);
+	@Test
+	public void testServiceStatusWithReasons() {
+		String name = "name";
+		Status status = Status.UP;
+		String reason1 = "reason1";
+		String reason2 = "reason2";
+		List<String> reasonList = new ArrayList<String>();
+		reasonList.add(reason1);
+		reasonList.add(reason2);
 
-        serviceStatus = new ServiceStatus(name, status, reasonList);
-        assertEquals(name, serviceStatus.getName());
-        assertEquals(status, serviceStatus.getStatus());
-        assertNotNull(serviceStatus.getReasons());
-        assertTrue(serviceStatus.getReasons().contains(reason1));
-        assertTrue(serviceStatus.getReasons().contains(reason2));
-        assertNotSame(serviceStatus.getReasons(), reasonList);
-    }
+		serviceStatus = new ServiceStatus(name, status, reasonList);
+		assertEquals(name, serviceStatus.getName());
+		assertEquals(status, serviceStatus.getStatus());
+		assertNotNull(serviceStatus.getReasons());
+		assertTrue(serviceStatus.getReasons().contains(reason1));
+		assertTrue(serviceStatus.getReasons().contains(reason2));
+		assertNotSame(serviceStatus.getReasons(), reasonList);
+	}
 }

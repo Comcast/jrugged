@@ -35,425 +35,423 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestCircuitBreaker {
-    private CircuitBreaker impl;
-    private Callable<Object> mockCallable;
-    private Runnable mockRunnable;
+	private CircuitBreaker impl;
+	private Callable<Object> mockCallable;
+	private Runnable mockRunnable;
 
-    Status theStatus;
+	Status theStatus;
 
-    @SuppressWarnings("unchecked")
-    @Before
-    public void setUp() {
-        impl = new CircuitBreaker();
-        mockCallable = createMock(Callable.class);
-        mockRunnable = createMock(Runnable.class);
-    }
+	@SuppressWarnings("unchecked")
+	@Before
+	public void setUp() {
+		impl = new CircuitBreaker();
+		mockCallable = createMock(Callable.class);
+		mockRunnable = createMock(Runnable.class);
+	}
 
-    @Test
-    public void testInvokeWithRunnableResultAndResultReturnsResult() throws Exception {
-        final Object result = new Object();
+	@Test
+	public void testInvokeWithRunnableResultAndResultReturnsResult() throws Exception {
+		final Object result = new Object();
 
-        mockRunnable.run();
-        replay(mockRunnable);
+		mockRunnable.run();
+		replay(mockRunnable);
 
-        Object theReturned = impl.invoke(mockRunnable, result);
+		Object theReturned = impl.invoke(mockRunnable, result);
 
-        verify(mockRunnable);
-        assertSame(result, theReturned);
-    }
+		verify(mockRunnable);
+		assertSame(result, theReturned);
+	}
 
-    @Test
-    public void testInvokeWithRunnableResultAndByPassReturnsResult() throws Exception {
-        final Object result = new Object();
-        impl.setByPassState(true);
+	@Test
+	public void testInvokeWithRunnableResultAndByPassReturnsResult() throws Exception {
+		final Object result = new Object();
+		impl.setByPassState(true);
 
-        mockRunnable.run();
-        replay(mockRunnable);
+		mockRunnable.run();
+		replay(mockRunnable);
 
-        Object theReturned = impl.invoke(mockRunnable, result);
+		Object theReturned = impl.invoke(mockRunnable, result);
 
-        verify(mockRunnable);
-        assertSame(result, theReturned);
-    }
+		verify(mockRunnable);
+		assertSame(result, theReturned);
+	}
 
-    @Test(expected = CircuitBreakerException.class)
-    public void testInvokeWithRunnableResultAndTripHardReturnsException() throws Exception {
-        final Object result = new Object();
-        impl.tripHard();
+	@Test(expected = CircuitBreakerException.class)
+	public void testInvokeWithRunnableResultAndTripHardReturnsException() throws Exception {
+		final Object result = new Object();
+		impl.tripHard();
 
-        mockRunnable.run();
-        replay(mockRunnable);
+		mockRunnable.run();
+		replay(mockRunnable);
 
-        impl.invoke(mockRunnable, result);
+		impl.invoke(mockRunnable, result);
 
-        verify(mockRunnable);
-    }
+		verify(mockRunnable);
+	}
 
-    @Test
-    public void testInvokeWithRunnableDoesNotError() throws Exception {
-        mockRunnable.run();
-        replay(mockRunnable);
+	@Test
+	public void testInvokeWithRunnableDoesNotError() throws Exception {
+		mockRunnable.run();
+		replay(mockRunnable);
 
-        impl.invoke(mockRunnable);
+		impl.invoke(mockRunnable);
 
-        verify(mockRunnable);
-    }
+		verify(mockRunnable);
+	}
 
-    @Test
-    public void testInvokeWithRunnableAndByPassDoesNotError() throws Exception {
-        impl.setByPassState(true);
+	@Test
+	public void testInvokeWithRunnableAndByPassDoesNotError() throws Exception {
+		impl.setByPassState(true);
 
-        mockRunnable.run();
-        replay(mockRunnable);
+		mockRunnable.run();
+		replay(mockRunnable);
 
-        impl.invoke(mockRunnable);
+		impl.invoke(mockRunnable);
 
-        verify(mockRunnable);
-    }
+		verify(mockRunnable);
+	}
 
-    @Test(expected = CircuitBreakerException.class)
-    public void testInvokeWithRunnableAndTripHardReturnsException() throws Exception {
-        impl.tripHard();
+	@Test(expected = CircuitBreakerException.class)
+	public void testInvokeWithRunnableAndTripHardReturnsException() throws Exception {
+		impl.tripHard();
 
-        mockRunnable.run();
-        replay(mockRunnable);
+		mockRunnable.run();
+		replay(mockRunnable);
 
-        impl.invoke(mockRunnable);
+		impl.invoke(mockRunnable);
 
-        verify(mockRunnable);
-    }
+		verify(mockRunnable);
+	}
 
-    @Test
-    public void testStaysClosedOnSuccess() throws Exception {
-        impl.state = CircuitBreaker.BreakerState.CLOSED;
-        final Object obj = new Object();
-        expect(mockCallable.call()).andReturn(obj);
-        replay(mockCallable);
+	@Test
+	public void testStaysClosedOnSuccess() throws Exception {
+		impl.state = CircuitBreaker.BreakerState.CLOSED;
+		final Object obj = new Object();
+		expect(mockCallable.call()).andReturn(obj);
+		replay(mockCallable);
 
-        Object result = impl.invoke(mockCallable);
+		Object result = impl.invoke(mockCallable);
 
-        verify(mockCallable);
-        assertSame(obj, result);
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
-    }
-
-    @Test
-    public void testOpensOnFailure() throws Exception {
-        long start = System.currentTimeMillis();
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        expect(mockCallable.call()).andThrow(new RuntimeException());
-        replay(mockCallable);
-
-        try {
-            impl.invoke(mockCallable);
-            fail("should have thrown an exception");
-        } catch (RuntimeException expected) {
-        }
-
-        long end = System.currentTimeMillis();
-
-        verify(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
-        assertTrue(impl.lastFailure.get() >= start);
-        assertTrue(impl.lastFailure.get() <= end);
-    }
-
-    @Test
-    public void testOpenDuringCooldownThrowsCBException()
-            throws Exception {
-
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        impl.lastFailure.set(System.currentTimeMillis());
-        replay(mockCallable);
-
-        try {
-            impl.invoke(mockCallable);
-            fail("should have thrown an exception");
-        } catch (CircuitBreakerException expected) {
-        }
-
-        verify(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
-    }
-
-    @Test
-    public void testOpenAfterCooldownGoesHalfClosed()
-            throws Exception {
-
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        impl.resetMillis.set(1000);
-        impl.lastFailure.set(System.currentTimeMillis() - 2000);
-
-        assertEquals(Status.DEGRADED, impl.getStatus());
-        assertEquals(CircuitBreaker.BreakerState.HALF_CLOSED, impl.state);
-    }
-
-    @Test
-    public void testHalfClosedFailureOpensAgain()
-            throws Exception {
-
-        impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
-        impl.resetMillis.set(1000);
-        impl.lastFailure.set(System.currentTimeMillis() - 2000);
-
-        long start = System.currentTimeMillis();
-
-        expect(mockCallable.call()).andThrow(new RuntimeException());
-        replay(mockCallable);
-
-        try {
-            impl.invoke(mockCallable);
-            fail("should have thrown exception");
-        } catch (RuntimeException expected) {
-        }
-
-        long end = System.currentTimeMillis();
-
-        verify(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
-        assertTrue(impl.lastFailure.get() >= start);
-        assertTrue(impl.lastFailure.get() <= end);
-    }
-
-    @Test
-    public void testGetStatusNotUpdatingIsAttemptLive() throws Exception {
-
-        impl.resetMillis.set(50);
-        impl.trip();
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
-        assertEquals(false, impl.isAttemptLive);
-
-        Thread.sleep(200);
-
-        // The getStatus()->canAttempt() call also updated isAttemptLive to true
-        assertEquals(Status.DEGRADED.getValue(), impl.getStatus().getValue());
-        assertEquals(false, impl.isAttemptLive);
-    }
-
-    @Test
-    public void testManualTripAndReset() throws Exception {
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        final Object obj = new Object();
-        expect(mockCallable.call()).andReturn(obj);
-        replay(mockCallable);
-
-        impl.trip();
-        try {
-            impl.invoke(mockCallable);
-            fail("Manual trip method failed.");
-        } catch (CircuitBreakerException e) {
-        }
-
-        impl.reset();
-
-        Object result = impl.invoke(mockCallable);
-
-        verify(mockCallable);
-        assertSame(obj, result);
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
-    }
-
-    @Test
-    public void testTripHard() throws Exception {
-        expect(mockCallable.call()).andReturn("hi");
-
-        replay(mockCallable);
-
-        impl.tripHard();
-        try {
-            impl.invoke(mockCallable);
-            fail("exception expected after CircuitBreaker.tripHard()");
-        } catch (CircuitBreakerException e) {
-        }
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
-
-        impl.reset();
-        impl.invoke(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
-
-        verify(mockCallable);
-    }
-
-    @Test
-    public void testGetTripCount() throws Exception {
-        long tripCount1 = impl.getTripCount();
-
-        impl.tripHard();
-        long tripCount2 = impl.getTripCount();
-        assertEquals(tripCount1 + 1, tripCount2);
-
-        impl.tripHard();
-        assertEquals(tripCount2, impl.getTripCount());
-    }
-
-    @Test
-    public void testGetStatusWhenOpen() {
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        Assert.assertEquals(Status.DOWN, impl.getStatus());
-    }
-
-    @Test
-    public void testGetStatusWhenHalfClosed() {
-        impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
-        assertEquals(Status.DEGRADED, impl.getStatus());
-    }
-
-    @Test
-    public void testGetStatusWhenOpenBeforeReset() {
-        impl.state = CircuitBreaker.BreakerState.CLOSED;
-        impl.resetMillis.set(1000);
-        impl.lastFailure.set(System.currentTimeMillis() - 50);
-
-        assertEquals(Status.UP, impl.getStatus());
-    }
-
-    @Test
-    public void testGetStatusWhenOpenAfterReset() {
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        impl.resetMillis.set(1000);
-        impl.lastFailure.set(System.currentTimeMillis() - 2000);
-
-        assertEquals(Status.DEGRADED, impl.getStatus());
-    }
-
-    @Test
-    public void testGetStatusAfterHardTrip() {
-        impl.tripHard();
-        impl.resetMillis.set(1000);
-        impl.lastFailure.set(System.currentTimeMillis() - 2000);
-
-        assertEquals(Status.DOWN, impl.getStatus());
-    }
-
-    @Test
-    public void testStatusIsByPassWhenSet() {
-        impl.setByPassState(true);
-        assertEquals(Status.DEGRADED, impl.getStatus());
-    }
-
-    @Test
-    public void testByPassIgnoresCurrentBreakerStateWhenSet() {
-        impl.state = CircuitBreaker.BreakerState.OPEN;
-        assertEquals(Status.DOWN, impl.getStatus());
-
-        impl.setByPassState(true);
-        assertEquals(Status.DEGRADED, impl.getStatus());
-
-        impl.setByPassState(false);
-        assertEquals(Status.DOWN, impl.getStatus());
-    }
-
-    @Test
-    public void testByPassIgnoresBreakerStateAndCallsWrappedMethod() throws Exception {
-        expect(mockCallable.call()).andReturn("hi").anyTimes();
+		verify(mockCallable);
+		assertSame(obj, result);
+		assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+	}
+
+	@Test
+	public void testOpensOnFailure() throws Exception {
+		long start = System.currentTimeMillis();
+		impl.state = CircuitBreaker.BreakerState.OPEN;
+		expect(mockCallable.call()).andThrow(new RuntimeException());
+		replay(mockCallable);
+
+		try {
+			impl.invoke(mockCallable);
+			fail("should have thrown an exception");
+		} catch (RuntimeException expected) {
+		}
+
+		long end = System.currentTimeMillis();
+
+		verify(mockCallable);
+		assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+		assertTrue(impl.lastFailure.get() >= start);
+		assertTrue(impl.lastFailure.get() <= end);
+	}
+
+	@Test
+	public void testOpenDuringCooldownThrowsCBException() throws Exception {
+
+		impl.state = CircuitBreaker.BreakerState.OPEN;
+		impl.lastFailure.set(System.currentTimeMillis());
+		replay(mockCallable);
+
+		try {
+			impl.invoke(mockCallable);
+			fail("should have thrown an exception");
+		} catch (CircuitBreakerException expected) {
+		}
+
+		verify(mockCallable);
+		assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+	}
+
+	@Test
+	public void testOpenAfterCooldownGoesHalfClosed() throws Exception {
+
+		impl.state = CircuitBreaker.BreakerState.OPEN;
+		impl.resetMillis.set(1000);
+		impl.lastFailure.set(System.currentTimeMillis() - 2000);
+
+		assertEquals(Status.DEGRADED, impl.getStatus());
+		assertEquals(CircuitBreaker.BreakerState.HALF_CLOSED, impl.state);
+	}
+
+	@Test
+	public void testHalfClosedFailureOpensAgain() throws Exception {
+
+		impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
+		impl.resetMillis.set(1000);
+		impl.lastFailure.set(System.currentTimeMillis() - 2000);
+
+		long start = System.currentTimeMillis();
+
+		expect(mockCallable.call()).andThrow(new RuntimeException());
+		replay(mockCallable);
+
+		try {
+			impl.invoke(mockCallable);
+			fail("should have thrown exception");
+		} catch (RuntimeException expected) {
+		}
+
+		long end = System.currentTimeMillis();
+
+		verify(mockCallable);
+		assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+		assertTrue(impl.lastFailure.get() >= start);
+		assertTrue(impl.lastFailure.get() <= end);
+	}
+
+	@Test
+	public void testGetStatusNotUpdatingIsAttemptLive() throws Exception {
+
+		impl.resetMillis.set(50);
+		impl.trip();
+		assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+		assertEquals(false, impl.isAttemptLive);
+
+		Thread.sleep(200);
+
+		// The getStatus()->canAttempt() call also updated isAttemptLive to true
+		assertEquals(Status.DEGRADED.getValue(), impl.getStatus().getValue());
+		assertEquals(false, impl.isAttemptLive);
+	}
+
+	@Test
+	public void testManualTripAndReset() throws Exception {
+		impl.state = CircuitBreaker.BreakerState.OPEN;
+		final Object obj = new Object();
+		expect(mockCallable.call()).andReturn(obj);
+		replay(mockCallable);
+
+		impl.trip();
+		try {
+			impl.invoke(mockCallable);
+			fail("Manual trip method failed.");
+		} catch (CircuitBreakerException e) {
+		}
+
+		impl.reset();
+
+		Object result = impl.invoke(mockCallable);
+
+		verify(mockCallable);
+		assertSame(obj, result);
+		assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+	}
+
+	@Test
+	public void testTripHard() throws Exception {
+		expect(mockCallable.call()).andReturn("hi");
+
+		replay(mockCallable);
+
+		impl.tripHard();
+		try {
+			impl.invoke(mockCallable);
+			fail("exception expected after CircuitBreaker.tripHard()");
+		} catch (CircuitBreakerException e) {
+		}
+		assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+
+		impl.reset();
+		impl.invoke(mockCallable);
+		assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+
+		verify(mockCallable);
+	}
+
+	@Test
+	public void testGetTripCount() throws Exception {
+		long tripCount1 = impl.getTripCount();
+
+		impl.tripHard();
+		long tripCount2 = impl.getTripCount();
+		assertEquals(tripCount1 + 1, tripCount2);
+
+		impl.tripHard();
+		assertEquals(tripCount2, impl.getTripCount());
+	}
+
+	@Test
+	public void testGetStatusWhenOpen() {
+		impl.state = CircuitBreaker.BreakerState.OPEN;
+		Assert.assertEquals(Status.DOWN, impl.getStatus());
+	}
+
+	@Test
+	public void testGetStatusWhenHalfClosed() {
+		impl.state = CircuitBreaker.BreakerState.HALF_CLOSED;
+		assertEquals(Status.DEGRADED, impl.getStatus());
+	}
+
+	@Test
+	public void testGetStatusWhenOpenBeforeReset() {
+		impl.state = CircuitBreaker.BreakerState.CLOSED;
+		impl.resetMillis.set(1000);
+		impl.lastFailure.set(System.currentTimeMillis() - 50);
+
+		assertEquals(Status.UP, impl.getStatus());
+	}
+
+	@Test
+	public void testGetStatusWhenOpenAfterReset() {
+		impl.state = CircuitBreaker.BreakerState.OPEN;
+		impl.resetMillis.set(1000);
+		impl.lastFailure.set(System.currentTimeMillis() - 2000);
+
+		assertEquals(Status.DEGRADED, impl.getStatus());
+	}
+
+	@Test
+	public void testGetStatusAfterHardTrip() {
+		impl.tripHard();
+		impl.resetMillis.set(1000);
+		impl.lastFailure.set(System.currentTimeMillis() - 2000);
+
+		assertEquals(Status.DOWN, impl.getStatus());
+	}
+
+	@Test
+	public void testStatusIsByPassWhenSet() {
+		impl.setByPassState(true);
+		assertEquals(Status.DEGRADED, impl.getStatus());
+	}
+
+	@Test
+	public void testByPassIgnoresCurrentBreakerStateWhenSet() {
+		impl.state = CircuitBreaker.BreakerState.OPEN;
+		assertEquals(Status.DOWN, impl.getStatus());
+
+		impl.setByPassState(true);
+		assertEquals(Status.DEGRADED, impl.getStatus());
+
+		impl.setByPassState(false);
+		assertEquals(Status.DOWN, impl.getStatus());
+	}
 
-        replay(mockCallable);
-
-        impl.tripHard();
-        impl.setByPassState(true);
+	@Test
+	public void testByPassIgnoresBreakerStateAndCallsWrappedMethod() throws Exception {
+		expect(mockCallable.call()).andReturn("hi").anyTimes();
 
-        try {
-            impl.invoke(mockCallable);
-        } catch (CircuitBreakerException e) {
-            fail("exception not expected when CircuitBreaker is bypassed.");
-        }
-        assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
-        assertEquals(Status.DEGRADED, impl.getStatus());
+		replay(mockCallable);
 
-        impl.reset();
-        impl.setByPassState(false);
-        impl.invoke(mockCallable);
-        assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
+		impl.tripHard();
+		impl.setByPassState(true);
 
-        verify(mockCallable);
-    }
+		try {
+			impl.invoke(mockCallable);
+		} catch (CircuitBreakerException e) {
+			fail("exception not expected when CircuitBreaker is bypassed.");
+		}
+		assertEquals(CircuitBreaker.BreakerState.OPEN, impl.state);
+		assertEquals(Status.DEGRADED, impl.getStatus());
 
-    @Test
-    public void testNotificationCallback() throws Exception {
+		impl.reset();
+		impl.setByPassState(false);
+		impl.invoke(mockCallable);
+		assertEquals(CircuitBreaker.BreakerState.CLOSED, impl.state);
 
-        CircuitBreakerNotificationCallback cb = new CircuitBreakerNotificationCallback() {
-            public void notify(Status s) {
-                theStatus = s;
-            }
-        };
+		verify(mockCallable);
+	}
 
-        impl.addListener(cb);
-        impl.trip();
+	@Test
+	public void testNotificationCallback() throws Exception {
 
-        assertNotNull(theStatus);
-        assertEquals(Status.DOWN, theStatus);
-    }
+		CircuitBreakerNotificationCallback cb = new CircuitBreakerNotificationCallback() {
+			public void notify(Status s) {
+				theStatus = s;
+			}
+		};
 
-    @Test(expected = Throwable.class)
-    public void circuitBreakerKeepsExceptionThatTrippedIt() throws Throwable {
+		impl.addListener(cb);
+		impl.trip();
 
-        try {
-            impl.invoke(new FailingCallable("broken"));
-        } catch (Exception e) {
+		assertNotNull(theStatus);
+		assertEquals(Status.DOWN, theStatus);
+	}
 
-        }
+	@Test(expected = Throwable.class)
+	public void circuitBreakerKeepsExceptionThatTrippedIt() throws Throwable {
 
-        Throwable tripException = impl.getTripException();
-        assertEquals("broken", tripException.getMessage());
-        throw tripException;
-    }
+		try {
+			impl.invoke(new FailingCallable("broken"));
+		} catch (Exception e) {
 
-    @Test(expected = Throwable.class)
-    public void resetCircuitBreakerStillHasTripException() throws Throwable {
+		}
 
-        try {
-            impl.invoke(new FailingCallable("broken"));
-        } catch (Exception e) {
+		Throwable tripException = impl.getTripException();
+		assertEquals("broken", tripException.getMessage());
+		throw tripException;
+	}
 
-        }
-        impl.reset();
+	@Test(expected = Throwable.class)
+	public void resetCircuitBreakerStillHasTripException() throws Throwable {
 
-        Throwable tripException = impl.getTripException();
-        assertEquals("broken", tripException.getMessage());
-        throw tripException;
-    }
+		try {
+			impl.invoke(new FailingCallable("broken"));
+		} catch (Exception e) {
 
-    @Test
-    public void circuitBreakerReturnsExceptionAsString() {
+		}
+		impl.reset();
 
-        try {
-            impl.invoke(new FailingCallable("broken"));
-        } catch (Exception e) {
+		Throwable tripException = impl.getTripException();
+		assertEquals("broken", tripException.getMessage());
+		throw tripException;
+	}
 
-        }
+	@Test
+	public void circuitBreakerReturnsExceptionAsString() {
 
-        Throwable tripException = impl.getTripException();
+		try {
+			impl.invoke(new FailingCallable("broken"));
+		} catch (Exception e) {
 
-        String s = impl.getTripExceptionAsString();
+		}
 
-        assertTrue(impl.getTripExceptionAsString().startsWith("java.lang.Exception: broken\n"));
-        assertTrue(impl.getTripExceptionAsString().contains("at org.fishwife.jrugged.TestCircuitBreaker$FailingCallable.call"));
-        assertTrue(impl.getTripExceptionAsString().contains("Caused by: java.lang.Exception: The Cause\n"));
-    }
+		Throwable tripException = impl.getTripException();
 
-    @Test
-    public void neverTrippedCircuitBreakerReturnsNullForTripException() throws Exception {
+		String s = impl.getTripExceptionAsString();
 
-        impl.invoke(mockCallable);
+		assertTrue(impl.getTripExceptionAsString().startsWith("java.lang.Exception: broken\n"));
+		assertTrue(impl.getTripExceptionAsString()
+				.contains("at org.fishwife.jrugged.TestCircuitBreaker$FailingCallable.call"));
+		assertTrue(impl.getTripExceptionAsString().contains("Caused by: java.lang.Exception: The Cause\n"));
+	}
 
-        Throwable tripException = impl.getTripException();
+	@Test
+	public void neverTrippedCircuitBreakerReturnsNullForTripException() throws Exception {
 
-        assertNull(tripException);
-    }
+		impl.invoke(mockCallable);
 
-    private class FailingCallable implements Callable<Object> {
+		Throwable tripException = impl.getTripException();
 
-        private final String exceptionMessage;
+		assertNull(tripException);
+	}
 
-        public FailingCallable(String exceptionMessage) {
-            this.exceptionMessage = exceptionMessage;
-        }
+	private class FailingCallable implements Callable<Object> {
 
-        Exception causeException = new Exception("The Cause");
+		private final String exceptionMessage;
 
-        public Object call() throws Exception {
-            throw new Exception(exceptionMessage, causeException);
-        }
-    }
+		public FailingCallable(String exceptionMessage) {
+			this.exceptionMessage = exceptionMessage;
+		}
+
+		Exception causeException = new Exception("The Cause");
+
+		public Object call() throws Exception {
+			throw new Exception(exceptionMessage, causeException);
+		}
+	}
 
 }

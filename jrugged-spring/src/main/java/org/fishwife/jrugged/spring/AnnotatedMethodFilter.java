@@ -30,27 +30,27 @@ import org.springframework.core.type.filter.TypeFilter;
  */
 public class AnnotatedMethodFilter implements TypeFilter {
 
-    private final Class<? extends Annotation> annotatedClass;
+	private final Class<? extends Annotation> annotatedClass;
 
-    /**
-     * Create filter for classes with {@link java.lang.reflect.Method}s
-     * annotated with specified annotation.
-     *
-     * @param annotatedClass The annotated Class
-     */
-    public AnnotatedMethodFilter(Class<? extends Annotation> annotatedClass) {
-        this.annotatedClass = annotatedClass;
-    }
+	/**
+	 * Create filter for classes with {@link java.lang.reflect.Method}s annotated
+	 * with specified annotation.
+	 *
+	 * @param annotatedClass The annotated Class
+	 */
+	public AnnotatedMethodFilter(Class<? extends Annotation> annotatedClass) {
+		this.annotatedClass = annotatedClass;
+	}
 
-    /**
-     * {@inheritDoc}
-     */
-    public boolean match(MetadataReader metadataReader,
-            MetadataReaderFactory metadataReaderFactory) throws IOException {
-        AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
-        Set<MethodMetadata> annotatedMethods = annotationMetadata
-                .getAnnotatedMethods(annotatedClass.getCanonicalName());
-        return !annotatedMethods.isEmpty();
-    }
+	/**
+	 * {@inheritDoc}
+	 */
+	public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
+		AnnotationMetadata annotationMetadata = metadataReader.getAnnotationMetadata();
+		Set<MethodMetadata> annotatedMethods = annotationMetadata
+				.getAnnotatedMethods(annotatedClass.getCanonicalName());
+		return !annotatedMethods.isEmpty();
+	}
 
 }

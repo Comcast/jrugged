@@ -21,11 +21,11 @@ package org.fishwife.jrugged;
  */
 public interface Clock {
 
-    /**
-     * Returns the current time in milliseconds.
-     *
-     * @return <code>long</code>
-     */
-    long currentTimeMillis();
+	/**
+	 * Returns the current time in milliseconds.
+	 *
+	 * @return <code>long</code>
+	 */
+	long currentTimeMillis();
 
 }

@@ -14,21 +14,22 @@
  */
 package org.fishwife.jrugged.examples.performance;
 
-/** A test class that can be used to model a wrapped call that takes a
- * specific amount of time to execute.
+/**
+ * A test class that can be used to model a wrapped call that takes a specific
+ * amount of time to execute.
  */
 public class FixedDelayPerformer implements Runnable {
 
-    private final long _delayMillis;
+	private final long _delayMillis;
 
-    public FixedDelayPerformer(Long delayMillis) {
-        _delayMillis = delayMillis;
-    }
+	public FixedDelayPerformer(Long delayMillis) {
+		_delayMillis = delayMillis;
+	}
 
-    public void run() {
-        try {
-            Thread.sleep(_delayMillis);
-        } catch (Exception e) {
-        }
-    }
+	public void run() {
+		try {
+			Thread.sleep(_delayMillis);
+		} catch (Exception e) {
+		}
+	}
 }

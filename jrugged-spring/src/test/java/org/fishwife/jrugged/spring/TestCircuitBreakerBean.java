@@ -26,40 +26,40 @@ import org.junit.Test;
 
 public class TestCircuitBreakerBean {
 
-    private CircuitBreakerBean impl;
-    private final Object out = new Object();
-    private Callable<Object> call;
+	private CircuitBreakerBean impl;
+	private final Object out = new Object();
+	private Callable<Object> call;
 
-    @Before
-    public void setUp() {
-        impl = new CircuitBreakerBean();
-        call = new Callable<Object>() {
-            public Object call() throws Exception {
-                return out;
-            }
-        };
-    }
+	@Before
+	public void setUp() {
+		impl = new CircuitBreakerBean();
+		call = new Callable<Object>() {
+			public Object call() throws Exception {
+				return out;
+			}
+		};
+	}
 
-    @Test
-    public void startsEnabled() throws Exception {
-        assertSame(out, impl.invoke(call));
-    }
+	@Test
+	public void startsEnabled() throws Exception {
+		assertSame(out, impl.invoke(call));
+	}
 
-    @Test
-    public void isenabledIfConfiguredAsNotDisabled() throws Exception {
-        impl.setDisabled(false);
-        impl.afterPropertiesSet();
-        assertSame(out, impl.invoke(call));
-    }
+	@Test
+	public void isenabledIfConfiguredAsNotDisabled() throws Exception {
+		impl.setDisabled(false);
+		impl.afterPropertiesSet();
+		assertSame(out, impl.invoke(call));
+	}
 
-    @Test
-    public void canBeDisabled() throws Exception {
-        impl.setDisabled(true);
-        impl.afterPropertiesSet();
-        try {
-            impl.invoke(call);
-            fail("Should have thrown CircuitBreakerException");
-        } catch (CircuitBreakerException cbe) {
-        }
-    }
+	@Test
+	public void canBeDisabled() throws Exception {
+		impl.setDisabled(true);
+		impl.afterPropertiesSet();
+		try {
+			impl.invoke(call);
+			fail("Should have thrown CircuitBreakerException");
+		} catch (CircuitBreakerException cbe) {
+		}
+	}
 }
