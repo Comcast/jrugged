@@ -280,7 +280,7 @@
     </profiles>
 
     <properties>
-        <spring.version>4.1.3.RELEASE</spring.version>
+        <spring.version>4.3.20.RELEASE</spring.version>
         <jsp.version>2.0</jsp.version>
         <junit.version>4.4</junit.version>
         <servlet.version>3.0.1</servlet.version>
