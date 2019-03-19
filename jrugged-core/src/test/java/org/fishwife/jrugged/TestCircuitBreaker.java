@@ -38,6 +38,7 @@ public class TestCircuitBreaker {
     private CircuitBreaker impl;
     private Callable<Object> mockCallable;
     private Runnable mockRunnable;
+    private Clock mockClock;
 
     Status theStatus;
 
@@ -47,6 +48,7 @@ public class TestCircuitBreaker {
         impl = new CircuitBreaker();
         mockCallable = createMock(Callable.class);
         mockRunnable = createMock(Runnable.class);
+        mockClock = createMock(Clock.class);
     }
 
     @Test
@@ -439,6 +441,16 @@ public class TestCircuitBreaker {
         Throwable tripException = impl.getTripException();
 
         assertNull(tripException);
+    }
+
+    @Test
+    public void testSettingClockReturnsSameClockWhenRequested() {
+
+        assertNotNull(impl.getClock());
+
+        impl.setClock(mockClock);
+
+        assertSame(mockClock, impl.getClock());
     }
 
     private class FailingCallable implements Callable<Object> {
