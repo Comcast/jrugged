@@ -38,13 +38,13 @@ Getting started is easy, just check out our [Examples](https://github.com/Comcas
 
 ## Latest Stable Release
 
-- [jrugged-core-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-core-3.1.0.jar)
-- [jrugged-aspects-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-aspects-3.1.0.jar)
-- [jrugged-spring-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-spring-3.1.0.jar)
-- [jrugged-httpclient-3.1.0.jar](http://jrugged.s3.amazonaws.com/downloads/jrugged-httpclient-3.1.0.jar)
+- [jrugged-core-3.2.2.jar](https://mvnrepository.com/artifact/org.fishwife/jrugged-core/3.2.2)
+- [jrugged-aspects-3.2.2.jar](https://mvnrepository.com/artifact/org.fishwife/jrugged-aspects/3.2.2)
+- [jrugged-spring-3.2.2.jar](https://mvnrepository.com/artifact/org.fishwife/jrugged-spring/3.2.2)
+- [jrugged-httpclient-3.2.2.jar](https://mvnrepository.com/artifact/org.fishwife/jrugged-httpclient/3.2.2)
 
 ## Latest Java Doc
-- [Core 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-core-3.1.0/index.html)
-- [Aspects 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-aspects-3.1.0/index.html)
-- [Spring 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-spring-3.1.0/index.html)
-- [HTTP Client 3.1.0 Java Doc](http://jrugged.s3.amazonaws.com/jrugged-httpclient-3.1.0/index.html)
+- [Core 4.0.0 Java Doc](https://comcast.github.io/jrugged/4.0.0/jrugged-core/)
+- [Aspects 4.0.0 Java Doc](hhttps://comcast.github.io/jrugged/4.0.0/jrugged-aspects)
+- [Spring 4.0.0 Java Doc](https://comcast.github.io/jrugged/4.0.0/jrugged-spring/index.html)
+- [HTTP Client 4.0.0 Java Doc](https://comcast.github.io/jrugged/4.0.0/jrugged-httpclient/index.html)
