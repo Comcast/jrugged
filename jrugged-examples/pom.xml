@@ -280,8 +280,10 @@
     </profiles>
 
     <properties>
+
         <spring.version>5.1.5.RELEASE</spring.version>
         <jsp.version>2.2.1-b03</jsp.version>
+
         <junit.version>4.4</junit.version>
         <servlet.version>4.0.1</servlet.version>
         <wiser.version>1.2</wiser.version>

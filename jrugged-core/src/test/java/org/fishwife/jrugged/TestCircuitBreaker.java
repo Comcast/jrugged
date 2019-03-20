@@ -35,19 +35,25 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class TestCircuitBreaker {
-	private CircuitBreaker impl;
-	private Callable<Object> mockCallable;
-	private Runnable mockRunnable;
+
+    private CircuitBreaker impl;
+    private Callable<Object> mockCallable;
+    private Runnable mockRunnable;
+    private Clock mockClock;
+
 
 	Status theStatus;
 
-	@SuppressWarnings("unchecked")
-	@Before
-	public void setUp() {
-		impl = new CircuitBreaker();
-		mockCallable = createMock(Callable.class);
-		mockRunnable = createMock(Runnable.class);
-	}
+
+    @SuppressWarnings("unchecked")
+    @Before
+    public void setUp() {
+        impl = new CircuitBreaker();
+        mockCallable = createMock(Callable.class);
+        mockRunnable = createMock(Runnable.class);
+        mockClock = createMock(Clock.class);
+    }
+
 
 	@Test
 	public void testInvokeWithRunnableResultAndResultReturnsResult() throws Exception {
@@ -434,7 +440,19 @@ public class TestCircuitBreaker {
 
 		impl.invoke(mockCallable);
 
-		Throwable tripException = impl.getTripException();
+
+    @Test
+    public void testSettingClockReturnsSameClockWhenRequested() {
+
+        assertNotNull(impl.getClock());
+
+        impl.setClock(mockClock);
+
+        assertSame(mockClock, impl.getClock());
+    }
+
+    private class FailingCallable implements Callable<Object> {
+
 
 		assertNull(tripException);
 	}
