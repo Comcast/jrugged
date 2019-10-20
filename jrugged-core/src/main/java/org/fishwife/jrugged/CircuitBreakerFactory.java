@@ -119,6 +119,11 @@ public class CircuitBreakerFactory {
                   resetMillis
                 });
         }
+
+        Clock clock = config.getClock();
+        if (clock != null) {
+            circuit.setClock(clock);
+        }
     }
 
     private void configureDefaultFailureInterpreter(String name, long resetMillis, CircuitBreaker circuit) {

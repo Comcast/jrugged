@@ -14,17 +14,17 @@
  */
 package org.fishwife.jrugged.aspects;
 
+import java.util.concurrent.Callable;
+
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.DeclarePrecedence;
 import org.fishwife.jrugged.CircuitBreakerConfig;
 import org.fishwife.jrugged.CircuitBreakerFactory;
+import org.fishwife.jrugged.Clock;
 import org.fishwife.jrugged.DefaultFailureInterpreter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.Callable;
 
 /**
  * Surrounds methods decorated with the CircuitBreaker annotation with a named
@@ -91,8 +91,10 @@ public class CircuitBreakerAspect {
                             circuitBreakerAnnotation.limit(),
                             circuitBreakerAnnotation.windowMillis());
 
+            String clockType = circuitBreakerAnnotation.clockType();
+            Clock clock = createClockByType(clockType);
             CircuitBreakerConfig config = new CircuitBreakerConfig(
-                    circuitBreakerAnnotation.resetMillis(), dfi);
+                    circuitBreakerAnnotation.resetMillis(), dfi, clock);
 
             circuitBreaker =
                     circuitBreakerFactory.createCircuitBreaker(name, config);
@@ -123,5 +125,17 @@ public class CircuitBreakerAspect {
                 }
             }
         });
+    }
+
+    protected Clock createClockByType(String clockType) throws InstantiationException, IllegalAccessException,
+            java.lang.reflect.InvocationTargetException, NoSuchMethodException, ClassNotFoundException {
+        Clock clock = null;
+        if (clockType != null) {
+            clockType = clockType.trim();
+            if (!clockType.isEmpty()) {
+                clock = (Clock) (Class.forName(clockType).getConstructor().newInstance());
+            }
+        }
+        return clock;
     }
 }

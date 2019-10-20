@@ -18,16 +18,20 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
 import org.fishwife.jrugged.CircuitBreakerException;
 import org.fishwife.jrugged.CircuitBreakerFactory;
+import org.fishwife.jrugged.Clock;
+import org.fishwife.jrugged.SystemClock;
 import org.junit.Before;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertSame;
+import static junit.framework.Assert.assertTrue;
 import static org.easymock.EasyMock.createMock;
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
+import static org.junit.Assert.assertNull;
 
 public class TestCircuitBreakerAspect {
 
@@ -38,6 +42,8 @@ public class TestCircuitBreakerAspect {
     Signature mockSignature;
 
     private static final String TEST_CIRCUIT_BREAKER = "TestCircuitBreaker";
+
+    private static final String SYSTEM_CLOCK_TYPE = "org.fishwife.jrugged.SystemClock";
 
     @Before
     public void setUp() {
@@ -51,6 +57,7 @@ public class TestCircuitBreakerAspect {
         expect(mockAnnotation.limit()).andReturn(5).anyTimes();
         expect(mockAnnotation.resetMillis()).andReturn(30000L).anyTimes();
         expect(mockAnnotation.windowMillis()).andReturn(10000L).anyTimes();
+        expect(mockAnnotation.clockType()).andReturn(null);
         @SuppressWarnings("unchecked")
         Class<Throwable>[] ignores = new Class[0];
         expect(mockAnnotation.ignore()).andReturn(ignores);
@@ -81,6 +88,7 @@ public class TestCircuitBreakerAspect {
         expect(otherMockAnnotation.limit()).andReturn(5).anyTimes();
         expect(otherMockAnnotation.resetMillis()).andReturn(30000L).anyTimes();
         expect(otherMockAnnotation.windowMillis()).andReturn(10000L).anyTimes();
+        expect(otherMockAnnotation.clockType()).andReturn(SYSTEM_CLOCK_TYPE);
         @SuppressWarnings("unchecked")
         Class<Throwable>[] ignores = new Class[0];
         expect(otherMockAnnotation.ignore()).andReturn(ignores);
@@ -203,6 +211,28 @@ public class TestCircuitBreakerAspect {
         verify(mockPjp);
         verify(mockAnnotation);
         verify(mockSignature);
+    }
+
+    @Test
+    public void testCreateClockByTypeWithNullClockTypePassedIn() throws Exception {
+        assertNull(aspect.createClockByType(null));
+    }
+
+    @Test
+    public void testCreateClockByTypeWithBlankClockTypePassedIn() throws Exception {
+        assertNull(aspect.createClockByType(" "));
+    }
+
+    @Test(expected = ClassNotFoundException.class)
+    public void testCreateClockByTypeWithNonExistingClockTypePassedIn() throws Exception {
+        aspect.createClockByType("NonExistingClass");
+    }
+
+    @Test
+    public void testCreateClockByTypeWithClockTypePassedIn() throws Exception {
+        Clock clock = aspect.createClockByType(SYSTEM_CLOCK_TYPE);
+        assertNotNull(clock);
+        assertTrue(clock instanceof SystemClock);
     }
 
     private static ProceedingJoinPoint createPjpMock(Signature mockSignature, int times) {

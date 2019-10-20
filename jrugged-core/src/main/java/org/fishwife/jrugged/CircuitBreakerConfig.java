@@ -22,6 +22,14 @@ public class CircuitBreakerConfig {
 
     private FailureInterpreter failureInterpreter;
     private long resetMillis;
+    private Clock clock;
+
+    public CircuitBreakerConfig(long resetMillis,
+            FailureInterpreter failureInterpreter,
+            Clock clock) {
+        this(resetMillis, failureInterpreter);
+        this.clock = clock;
+    }
 
     public CircuitBreakerConfig(long resetMillis,
             FailureInterpreter failureInterpreter) {
@@ -35,5 +43,9 @@ public class CircuitBreakerConfig {
 
     public FailureInterpreter getFailureInterpreter() {
         return failureInterpreter;
+    }
+
+    public Clock getClock() {
+        return clock;
     }
 }
