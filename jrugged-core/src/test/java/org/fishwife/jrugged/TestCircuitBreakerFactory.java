@@ -45,7 +45,7 @@ public class TestCircuitBreakerFactory {
     @Test
     public void testCreateCircuitBreaker() {
         CircuitBreaker breaker = factory.createCircuitBreaker("testCreate", config);
-        checkBreaker(breaker, TEST_LIMIT, TEST_WINDOW_MILLIS, TEST_RESET_MILLIS);
+        checkBreakerWithDefaultFailureInterpreter(breaker, TEST_LIMIT, TEST_WINDOW_MILLIS, TEST_RESET_MILLIS);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class TestCircuitBreakerFactory {
         CircuitBreaker secondBreaker = factory.createCircuitBreaker(name, config);
 
         assertSame(createdBreaker, secondBreaker);
-        checkBreaker(createdBreaker, TEST_LIMIT, TEST_WINDOW_MILLIS, TEST_RESET_MILLIS);
+        checkBreakerWithDefaultFailureInterpreter(createdBreaker, TEST_LIMIT, TEST_WINDOW_MILLIS, TEST_RESET_MILLIS);
     }
 
     @Test
@@ -64,7 +64,7 @@ public class TestCircuitBreakerFactory {
                 new CircuitBreakerConfig(-1, new DefaultFailureInterpreter());
         CircuitBreaker breaker = factory.createCircuitBreaker("testCreateEmpty", emptyConfig);
 
-        checkBreaker(breaker, 0, 0, 15000L); // These are the CircuitBreaker Defaults.
+        checkBreakerWithDefaultFailureInterpreter(breaker, 0, 0, 15000L); // These are the CircuitBreaker Defaults.
     }
 
     @Test
@@ -74,6 +74,24 @@ public class TestCircuitBreakerFactory {
         CircuitBreaker breaker = factory.createCircuitBreaker("testCreateEmpty", emptyConfig);
 
         checkBreakerNoFailureInterpreter(breaker, 15000L); // These are the CircuitBreaker Defaults.
+    }
+
+    @Test
+    public void testCreateCircuitBreakerDefaultFailureInterpreter() {
+        CircuitBreakerConfig emptyConfig =
+                new CircuitBreakerConfig(-1, new DefaultFailureInterpreter());
+        CircuitBreaker breaker = factory.createCircuitBreaker("testDefaultFailureInterpreter", emptyConfig);
+
+        checkBreakerWithDefaultFailureInterpreter(breaker, 0, 0L, 15000L); // These are the CircuitBreaker Defaults.
+    }
+
+    @Test
+    public void testCreateCircuitBreakerPercentErrPerTimeFailureInterpreter() {
+        CircuitBreakerConfig emptyConfig =
+                new CircuitBreakerConfig(-1, new PercentErrPerTimeFailureInterpreter());
+        CircuitBreaker breaker = factory.createCircuitBreaker("testPercentErrFailureInterpreter", emptyConfig);
+
+        checkBreakerWithPercentErrPerTimeFailureInterpreter(breaker,0L, 15000L);
     }
 
     @Test
@@ -111,7 +129,7 @@ public class TestCircuitBreakerFactory {
         Properties overrideProperties = new Properties();
         factory.setProperties(overrideProperties);
         CircuitBreaker breaker = factory.createCircuitBreaker("emptyOverrides", config);
-        checkBreaker(breaker, TEST_LIMIT, TEST_WINDOW_MILLIS, TEST_RESET_MILLIS);
+        checkBreakerWithDefaultFailureInterpreter(breaker, TEST_LIMIT, TEST_WINDOW_MILLIS, TEST_RESET_MILLIS);
     }
 
     @Test
@@ -128,7 +146,7 @@ public class TestCircuitBreakerFactory {
         factory.setProperties(overrideProperties);
 
         CircuitBreaker breaker = factory.createCircuitBreaker(name, config);
-        checkBreaker(breaker, overrideLimit,  overrideWindowMillis, overrideResetMillis);
+        checkBreakerWithDefaultFailureInterpreter(breaker, overrideLimit,  overrideWindowMillis, overrideResetMillis);
     }
 
     @Test
@@ -144,14 +162,14 @@ public class TestCircuitBreakerFactory {
         CircuitBreakerConfig emptyConfig =
                 new CircuitBreakerConfig(-1, new DefaultFailureInterpreter());
         CircuitBreaker breaker = factory.createCircuitBreaker(name, emptyConfig);
-        checkBreaker(breaker, 0, 0L, 15000L); // These are the CircuitBreaker defaults.
+        checkBreakerWithDefaultFailureInterpreter(breaker, 0, 0L, 15000L); // These are the CircuitBreaker defaults.
         assertNotNull(breaker);
     }
 
-    private void checkBreaker(CircuitBreaker breaker,
-            int expectedLimit,
-            long expectedWindowMillis,
-            long expectedResetMillis) {
+    private void checkBreakerWithDefaultFailureInterpreter(CircuitBreaker breaker,
+                                                           int expectedLimit,
+                                                           long expectedWindowMillis,
+                                                           long expectedResetMillis) {
 
         assertNotNull(breaker);
 
@@ -159,6 +177,21 @@ public class TestCircuitBreakerFactory {
 
         if (failureInterpreter != null) {
             assertEquals(failureInterpreter.getLimit(), expectedLimit);
+            assertEquals(failureInterpreter.getWindowMillis(), expectedWindowMillis);
+        }
+
+        assertEquals(breaker.getResetMillis(), expectedResetMillis);
+    }
+
+    private void checkBreakerWithPercentErrPerTimeFailureInterpreter(CircuitBreaker breaker,
+                                                           long expectedWindowMillis,
+                                                           long expectedResetMillis) {
+
+        assertNotNull(breaker);
+
+        PercentErrPerTimeFailureInterpreter failureInterpreter = (PercentErrPerTimeFailureInterpreter) breaker.getFailureInterpreter();
+
+        if (failureInterpreter != null) {
             assertEquals(failureInterpreter.getWindowMillis(), expectedWindowMillis);
         }
 
