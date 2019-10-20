@@ -25,153 +25,151 @@ import java.util.concurrent.Callable;
  */
 public class ServiceRetrier implements ServiceWrapper {
 
-    public static final int DEFAULT_MAX_TRIES = 10;
-    public static final int DEFAULT_DELAY = 1000;
+	public static final int DEFAULT_MAX_TRIES = 10;
+	public static final int DEFAULT_DELAY = 1000;
 
-    private int _delay = DEFAULT_DELAY;
-    private int _maxTries = DEFAULT_MAX_TRIES;
-    private boolean _doubleDelay = false;
-    private boolean _throwCauseException = false;
-    private Class<? extends Throwable>[] _retryOn = null;
+	private int _delay = DEFAULT_DELAY;
+	private int _maxTries = DEFAULT_MAX_TRIES;
+	private boolean _doubleDelay = false;
+	private boolean _throwCauseException = false;
+	private Class<? extends Throwable>[] _retryOn = null;
 
-    public ServiceRetrier(int delay, int maxTries) {
-        setDelay(delay);
-        setMaxTries(maxTries);
-    }
+	public ServiceRetrier(int delay, int maxTries) {
+		setDelay(delay);
+		setMaxTries(maxTries);
+	}
 
-    public ServiceRetrier(int delay, int maxTries,
-            boolean doubleDelay, boolean throwCauseException, Class<? extends Throwable>[] retryOn) {
-        setDelay(delay);
-        setMaxTries(maxTries);
-        setDoubleDelay(doubleDelay);
-        setThrowCauseException(throwCauseException);
-        setRetryOn(retryOn);
-    }
+	public ServiceRetrier(int delay, int maxTries, boolean doubleDelay, boolean throwCauseException,
+			Class<? extends Throwable>[] retryOn) {
+		setDelay(delay);
+		setMaxTries(maxTries);
+		setDoubleDelay(doubleDelay);
+		setThrowCauseException(throwCauseException);
+		setRetryOn(retryOn);
+	}
 
-    public ServiceRetrier() {
-    }
+	public ServiceRetrier() {
+	}
 
-    public <V> V invoke(Callable<V> c) throws Exception {
+	public <V> V invoke(Callable<V> c) throws Exception {
 
-        int tries = 0;
-        int delay = _delay;
+		int tries = 0;
+		int delay = _delay;
 
-        while (true) {
-            try {
-                return c.call();
-            } catch (Exception cause) {
+		while (true) {
+			try {
+				return c.call();
+			} catch (Exception cause) {
 
-                // If this type of Exception should be retried...
-                if (shouldRetry(cause)) {
-                    tries++;
+				// If this type of Exception should be retried...
+				if (shouldRetry(cause)) {
+					tries++;
 
-                    // Don't delay after max tries reached.
-                    if (tries < _maxTries) {
+					// Don't delay after max tries reached.
+					if (tries < _maxTries) {
 
-                        if (delay > 0) {
-                           sleep(delay);
-                        }
+						if (delay > 0) {
+							sleep(delay);
+						}
 
-                        // Double the next delay if configured to do so.
-                        if (_doubleDelay) {
-                            delay = delay * 2;
-                        }
+						// Double the next delay if configured to do so.
+						if (_doubleDelay) {
+							delay = delay * 2;
+						}
 
-                        // Try again.
-                        continue;
-                    }
-                }
+						// Try again.
+						continue;
+					}
+				}
 
-                if (_throwCauseException) {
-                    throw cause;
-                }
-                else {
-                    throw new Exception("Call failed " + tries + " times", cause);
-                }
-            }
-        }
-    }
+				if (_throwCauseException) {
+					throw cause;
+				} else {
+					throw new Exception("Call failed " + tries + " times", cause);
+				}
+			}
+		}
+	}
 
-    private boolean shouldRetry(Throwable cause) {
-        if (_retryOn == null || _retryOn.length == 0) {
-            return true;
-        }
+	private boolean shouldRetry(Throwable cause) {
+		if (_retryOn == null || _retryOn.length == 0) {
+			return true;
+		}
 
-        for (Class<? extends Throwable> clazz : _retryOn) {
-            if (clazz.isInstance(cause)) {
-                return true;
-            }
-        }
-        return false;
-    }
+		for (Class<? extends Throwable> clazz : _retryOn) {
+			if (clazz.isInstance(cause)) {
+				return true;
+			}
+		}
+		return false;
+	}
 
-    public void invoke(Runnable r) throws Exception {
+	public void invoke(Runnable r) throws Exception {
 
-        Callable<Void> adapter = new CallableAdapter<Void>(r);
-        invoke(adapter);
-    }
+		Callable<Void> adapter = new CallableAdapter<Void>(r);
+		invoke(adapter);
+	}
 
-    public <T> T invoke(Runnable r, T result) throws Exception {
+	public <T> T invoke(Runnable r, T result) throws Exception {
 
-        Callable<T> adapter = new CallableAdapter<T>(r, result);
-        return invoke(adapter);
-    }
+		Callable<T> adapter = new CallableAdapter<T>(r, result);
+		return invoke(adapter);
+	}
 
-    public int getDelay() {
-        return _delay;
-    }
+	public int getDelay() {
+		return _delay;
+	}
 
-    public void setDelay(int delay) {
+	public void setDelay(int delay) {
 
-        if (delay < 0) {
-            throw new IllegalArgumentException("Delay cannot be negative");
-        }
+		if (delay < 0) {
+			throw new IllegalArgumentException("Delay cannot be negative");
+		}
 
-        this._delay = delay;
-    }
+		this._delay = delay;
+	}
 
-    public int getMaxTries() {
-        return _maxTries;
-    }
+	public int getMaxTries() {
+		return _maxTries;
+	}
 
-    public void setMaxTries(int maxTries) {
+	public void setMaxTries(int maxTries) {
 
-        if (maxTries < 1)
-            throw new IllegalArgumentException("Maximum number of tries must be greater than zero");
+		if (maxTries < 1)
+			throw new IllegalArgumentException("Maximum number of tries must be greater than zero");
 
-        this._maxTries = maxTries;
-    }
+		this._maxTries = maxTries;
+	}
 
-    public boolean isDoubleDelay() {
-        return _doubleDelay;
-    }
+	public boolean isDoubleDelay() {
+		return _doubleDelay;
+	}
 
-    public void setDoubleDelay(boolean doubleDelay) {
-        this._doubleDelay = doubleDelay;
-    }
+	public void setDoubleDelay(boolean doubleDelay) {
+		this._doubleDelay = doubleDelay;
+	}
 
-    public boolean isThrowCauseException() {
-        return _throwCauseException;
-    }
+	public boolean isThrowCauseException() {
+		return _throwCauseException;
+	}
 
-    public void setThrowCauseException(boolean throwCauseException) {
-        this._throwCauseException = throwCauseException;
-    }
+	public void setThrowCauseException(boolean throwCauseException) {
+		this._throwCauseException = throwCauseException;
+	}
 
-    public Class<? extends Throwable>[] getRetryOn() {
-        return _retryOn;
-    }
+	public Class<? extends Throwable>[] getRetryOn() {
+		return _retryOn;
+	}
 
-    public void setRetryOn(Class<? extends Throwable>[] retryOn) {
-        this._retryOn = retryOn;
-    }
+	public void setRetryOn(Class<? extends Throwable>[] retryOn) {
+		this._retryOn = retryOn;
+	}
 
-    protected void sleep(long millis) {
-        try {
-            Thread.sleep(millis);
-        }
-        catch (InterruptedException e) {
-            // Nothing much to do here.
-        }
-    }
+	protected void sleep(long millis) {
+		try {
+			Thread.sleep(millis);
+		} catch (InterruptedException e) {
+			// Nothing much to do here.
+		}
+	}
 }

@@ -33,115 +33,116 @@ import org.apache.http.protocol.HttpContext;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class TestFailureExposingHttpClient {
 
-    private FailureExposingHttpClient impl;
-    private StubHttpClient backend;
-    private HttpResponse resp;
-    private HttpHost host;
-    private HttpRequest req;
-    private HttpContext ctx;
+	private FailureExposingHttpClient impl;
+	private StubHttpClient backend;
+	private HttpResponse resp;
+	private HttpHost host;
+	private HttpRequest req;
+	private HttpContext ctx;
 
-    @Before
-    public void setUp() {
-        backend = new StubHttpClient();
-        impl = new FailureExposingHttpClient(backend);
-        host = new HttpHost("foo.example.com");
-        req = new HttpGet("http://foo.example.com/");
-        ctx = new BasicHttpContext();
-    }
+	@Before
+	public void setUp() {
+		backend = new StubHttpClient();
+		impl = new FailureExposingHttpClient(backend);
+		host = new HttpHost("foo.example.com");
+		req = new HttpGet("http://foo.example.com/");
+		ctx = new BasicHttpContext();
+	}
 
-    @Test
-    public void returns1XXResponseAsIs() throws Exception {
-        for(int i = 100; i <= 199; i++) {
-            resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "1XX Thingy");
-            backend.setResponse(resp);
-            assertSame(resp, impl.execute(host, req, ctx));
-        }
-    }
+	@Test
+	public void returns1XXResponseAsIs() throws Exception {
+		for (int i = 100; i <= 199; i++) {
+			resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "1XX Thingy");
+			backend.setResponse(resp);
+			assertSame(resp, impl.execute(host, req, ctx));
+		}
+	}
 
-    @Test
-    public void returns2XXResponseAsIs() throws Exception {
-        for(int i = 200; i <= 299; i++) {
-            resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "Success");
-            backend.setResponse(resp);
-            assertSame(resp, impl.execute(host, req, ctx));
-        }
-    }
+	@Test
+	public void returns2XXResponseAsIs() throws Exception {
+		for (int i = 200; i <= 299; i++) {
+			resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "Success");
+			backend.setResponse(resp);
+			assertSame(resp, impl.execute(host, req, ctx));
+		}
+	}
 
-    @Test
-    public void returns3XXResponseAsIs() throws Exception {
-        for(int i = 300; i <= 399; i++) {
-            resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "3XX Thingy");
-            backend.setResponse(resp);
-            assertSame(resp, impl.execute(host, req, ctx));
-        }
-    }
+	@Test
+	public void returns3XXResponseAsIs() throws Exception {
+		for (int i = 300; i <= 399; i++) {
+			resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "3XX Thingy");
+			backend.setResponse(resp);
+			assertSame(resp, impl.execute(host, req, ctx));
+		}
+	}
 
-    @Test
-    public void generatesFailureOn4XXResponse() throws Exception {
-        for(int i = 400; i <= 499; i++) {
-            resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "Client Error");
-            backend.setResponse(resp);
-            try {
-                impl.execute(host, req, ctx);
-                fail("should have thrown exception");
-            } catch (UnsuccessfulResponseException expected) {
-            }
-        }
-    }
+	@Test
+	public void generatesFailureOn4XXResponse() throws Exception {
+		for (int i = 400; i <= 499; i++) {
+			resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "Client Error");
+			backend.setResponse(resp);
+			try {
+				impl.execute(host, req, ctx);
+				fail("should have thrown exception");
+			} catch (UnsuccessfulResponseException expected) {
+			}
+		}
+	}
 
-    @Test
-    public void generatesFailureOn5XXResponse() throws Exception {
-        for(int i = 500; i <= 599; i++) {
-            resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "Server Error");
-            backend.setResponse(resp);
-            try {
-                impl.execute(host, req, ctx);
-                fail("should have thrown exception");
-            } catch (UnsuccessfulResponseException expected) {
-            }
-        }
-    }
+	@Test
+	public void generatesFailureOn5XXResponse() throws Exception {
+		for (int i = 500; i <= 599; i++) {
+			resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, i, "Server Error");
+			backend.setResponse(resp);
+			try {
+				impl.execute(host, req, ctx);
+				fail("should have thrown exception");
+			} catch (UnsuccessfulResponseException expected) {
+			}
+		}
+	}
 
-    @Test(expected=UnsuccessfulResponseException.class)
-    public void exposesFailureIfAssessorSaysTo() throws Exception {
-        resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK");
-        backend.setResponse(resp);
-        impl = new FailureExposingHttpClient(backend, new ResponseFailureAssessor() {
-            public boolean isFailure(HttpResponse response) {
-                return true;
-            }
-        });
-        impl.execute(host, req, ctx);
-    }
+	@Test(expected = UnsuccessfulResponseException.class)
+	public void exposesFailureIfAssessorSaysTo() throws Exception {
+		resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK");
+		backend.setResponse(resp);
+		impl = new FailureExposingHttpClient(backend, new ResponseFailureAssessor() {
+			public boolean isFailure(HttpResponse response) {
+				return true;
+			}
+		});
+		impl.execute(host, req, ctx);
+	}
 
-    @Test
-    public void doesNotExposeFailureIfAssessorSaysNotTo() throws Exception {
-        resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_INTERNAL_SERVER_ERROR, "Bork");
-        backend.setResponse(resp);
-        impl = new FailureExposingHttpClient(backend, new ResponseFailureAssessor() {
-            public boolean isFailure(HttpResponse response) {
-                return false;
-            }
-        });
-        HttpResponse result = impl.execute(host, req, ctx);
-        assertSame(result, resp);
-    }
+	@Test
+	public void doesNotExposeFailureIfAssessorSaysNotTo() throws Exception {
+		resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_INTERNAL_SERVER_ERROR, "Bork");
+		backend.setResponse(resp);
+		impl = new FailureExposingHttpClient(backend, new ResponseFailureAssessor() {
+			public boolean isFailure(HttpResponse response) {
+				return false;
+			}
+		});
+		HttpResponse result = impl.execute(host, req, ctx);
+		assertSame(result, resp);
+	}
 
-    private static class StubHttpClient extends AbstractHttpClientDecorator {
-        private HttpResponse response;
+	private static class StubHttpClient extends AbstractHttpClientDecorator {
+		private HttpResponse response;
 
-        public StubHttpClient() { super(null); }
+		public StubHttpClient() {
+			super(null);
+		}
 
-        public HttpResponse execute(HttpHost host, HttpRequest req,
-                HttpContext ctx) throws IOException, ClientProtocolException {
-            return response;
-        }
+		public HttpResponse execute(HttpHost host, HttpRequest req, HttpContext ctx)
+				throws IOException, ClientProtocolException {
+			return response;
+		}
 
-        public void setResponse(HttpResponse resp) {
-            this.response = resp;
-        }
-    }
+		public void setResponse(HttpResponse resp) {
+			this.response = resp;
+		}
+	}
 }

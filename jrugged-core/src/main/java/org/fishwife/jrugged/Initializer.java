@@ -18,14 +18,15 @@ package org.fishwife.jrugged;
 
 /**
  * An {@link Initializer} allows a client to retry failed service
- * initializations in the background. For example, the initial
- * connection to a remote service may fail; the Initializer will take
- * responsibility for continuing to retry that connection in a
- * background thread (so that other services can try to initialize
- * in the meantime). When initialization succeeds, the background
- * thread terminates and the client service can enter normal operation.
+ * initializations in the background. For example, the initial connection to a
+ * remote service may fail; the Initializer will take responsibility for
+ * continuing to retry that connection in a background thread (so that other
+ * services can try to initialize in the meantime). When initialization
+ * succeeds, the background thread terminates and the client service can enter
+ * normal operation.
  *
  * Sample usage:
+ * 
  * <pre>
  * public class Service implements Initializable, Monitorable {
  *
@@ -61,106 +62,106 @@ package org.fishwife.jrugged;
  *       ... // Do something interesting now.
  *    }
  * }
- *  </pre>
+ * </pre>
  */
 public class Initializer implements Runnable {
 
-    /**
-     * By default, keep trying to initialize forever.
-     */
-    private int maxRetries = Integer.MAX_VALUE;
+	/**
+	 * By default, keep trying to initialize forever.
+	 */
+	private int maxRetries = Integer.MAX_VALUE;
 
-    /**
-     * Number of initialization attempts we have made.
-     */
-    private int numAttempts = 0;
+	/**
+	 * Number of initialization attempts we have made.
+	 */
+	private int numAttempts = 0;
 
-    /**
-     * Retry an initialization every 60 seconds by default.
-     */
-    private long retryMillis = 60 * 1000L;
+	/**
+	 * Retry an initialization every 60 seconds by default.
+	 */
+	private long retryMillis = 60 * 1000L;
 
-    /**
-     * This is the guy we're trying to initialize.
-     */
-    private Initializable client;
+	/**
+	 * This is the guy we're trying to initialize.
+	 */
+	private Initializable client;
 
-    /**
-     * Current status.
-     */
-    private boolean initialized = false;
+	/**
+	 * Current status.
+	 */
+	private boolean initialized = false;
 
-    /**
-     * Background initializer thread.
-     */
-    private Thread thread;
+	/**
+	 * Background initializer thread.
+	 */
+	private Thread thread;
 
-    /**
-     * Set this to true and interrupt thread to cleanly shutdown.
-     */
-    private boolean cancelled = false;
+	/**
+	 * Set this to true and interrupt thread to cleanly shutdown.
+	 */
+	private boolean cancelled = false;
 
-    public Initializer(Initializable client) {
-        this.client = client;
-    }
+	public Initializer(Initializable client) {
+		this.client = client;
+	}
 
-    /**
-     * Sets up the initialization retry process.
-     */
-    public void initialize() {
-        thread = new Thread(this);
-        thread.start();
-    }
+	/**
+	 * Sets up the initialization retry process.
+	 */
+	public void initialize() {
+		thread = new Thread(this);
+		thread.start();
+	}
 
-    /**
-     * Shuts down the background retry process. If you are using the
-     * Spring framework, for example, if the client implements
-     * DisposableBean you can have the destroy() method of the client
-     * call this method to cleanly shutdown.
-     */
-    public void destroy() {
-        cancelled = true;
-        if (thread != null) thread.interrupt();
-    }
+	/**
+	 * Shuts down the background retry process. If you are using the Spring
+	 * framework, for example, if the client implements DisposableBean you can have
+	 * the destroy() method of the client call this method to cleanly shutdown.
+	 */
+	public void destroy() {
+		cancelled = true;
+		if (thread != null)
+			thread.interrupt();
+	}
 
-    public void run() {
-        while (!initialized && numAttempts < maxRetries && !cancelled) {
-            try {
-                numAttempts++;
-                client.tryInit();
-                initialized = true;
-                client.afterInit();
-            } catch (Exception e) {
-                try {
-                    Thread.sleep(retryMillis);
-                } catch (InterruptedException ie) {
-                    // nop
-                }
-            }
-        }
+	public void run() {
+		while (!initialized && numAttempts < maxRetries && !cancelled) {
+			try {
+				numAttempts++;
+				client.tryInit();
+				initialized = true;
+				client.afterInit();
+			} catch (Exception e) {
+				try {
+					Thread.sleep(retryMillis);
+				} catch (InterruptedException ie) {
+					// nop
+				}
+			}
+		}
 
-        if(!initialized && (numAttempts >= maxRetries) && !cancelled) {
-            client.configuredRetriesMetOrExceededWithoutSuccess();
-        }
-    }
+		if (!initialized && (numAttempts >= maxRetries) && !cancelled) {
+			client.configuredRetriesMetOrExceededWithoutSuccess();
+		}
+	}
 
-    public boolean isInitialized() {
-        return initialized;
-    }
+	public boolean isInitialized() {
+		return initialized;
+	}
 
-    public boolean isCancelled() {
-        return cancelled;
-    }
+	public boolean isCancelled() {
+		return cancelled;
+	}
 
-    public int getNumAttempts() {
-        return numAttempts;
-    }
+	public int getNumAttempts() {
+		return numAttempts;
+	}
 
-    public void setMaxRetries(int n) {
-        maxRetries = n;
-    }
+	public void setMaxRetries(int n) {
+		maxRetries = n;
+	}
 
-    public void setRetryMillis(long m) {
-        retryMillis = m;
-    }
+	public void setRetryMillis(long m) {
+		retryMillis = m;
+	}
 }

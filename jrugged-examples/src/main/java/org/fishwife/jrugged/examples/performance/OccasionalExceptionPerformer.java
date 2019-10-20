@@ -14,24 +14,23 @@
  */
 package org.fishwife.jrugged.examples.performance;
 
-/** A test class that will throw an exeception every <em>n</em>th
- * call. */
+/**
+ * A test class that will throw an exeception every <em>n</em>th call.
+ */
 public class OccasionalExceptionPerformer implements Runnable {
 
-    private int _callsPerException;
-    private int _loopCounter;
+	private int _callsPerException;
+	private int _loopCounter;
 
-    public  OccasionalExceptionPerformer(int callsPerException) {
-        _callsPerException = callsPerException;
-    }
+	public OccasionalExceptionPerformer(int callsPerException) {
+		_callsPerException = callsPerException;
+	}
 
-    public void run() {
-        _loopCounter++;
-        if (_loopCounter % _callsPerException == 0)
-        {
-            throw new IllegalStateException("Duh");
-        }
-    }
-
+	public void run() {
+		_loopCounter++;
+		if (_loopCounter % _callsPerException == 0) {
+			throw new IllegalStateException("Duh");
+		}
+	}
 
 }

@@ -24,55 +24,58 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class PerformanceMonitorFactory {
 
-    private final Map<String, PerformanceMonitor> performanceMonitorMap =
-            new ConcurrentHashMap<String, PerformanceMonitor>();
+	private final Map<String, PerformanceMonitor> performanceMonitorMap = new ConcurrentHashMap<String, PerformanceMonitor>();
 
-    /**
-     * Create an empty PerformanceMonitorFactory.
-     */
-    public PerformanceMonitorFactory() {
-    }
+	/**
+	 * Create an empty PerformanceMonitorFactory.
+	 */
+	public PerformanceMonitorFactory() {
+	}
 
-    /**
-     * Create a new {@link PerformanceMonitor} and map it to the provided name.
-     * If the PerformanceMonitor already exists, then the existing instance is
-     * returned.
-     * @param name the name for the {@link PerformanceMonitor}
-     * @return the created {@link PerformanceMonitor}
-     */
-    public synchronized PerformanceMonitor createPerformanceMonitor(String name) {
-        PerformanceMonitor performanceMonitor = findPerformanceMonitor(name);
+	/**
+	 * Create a new {@link PerformanceMonitor} and map it to the provided name. If
+	 * the PerformanceMonitor already exists, then the existing instance is
+	 * returned.
+	 * 
+	 * @param name the name for the {@link PerformanceMonitor}
+	 * @return the created {@link PerformanceMonitor}
+	 */
+	public synchronized PerformanceMonitor createPerformanceMonitor(String name) {
+		PerformanceMonitor performanceMonitor = findPerformanceMonitor(name);
 
-        if (performanceMonitor == null) {
-            performanceMonitor = new PerformanceMonitor();
-            addPerformanceMonitorToMap(name, performanceMonitor);
-        }
-        return performanceMonitor;
-    }
+		if (performanceMonitor == null) {
+			performanceMonitor = new PerformanceMonitor();
+			addPerformanceMonitorToMap(name, performanceMonitor);
+		}
+		return performanceMonitor;
+	}
 
-    /**
-     * Find an existing {@link PerformanceMonitor}
-     * @param name the name for the {@link PerformanceMonitor}
-     * @return the found {@link PerformanceMonitor}, or null if it is not found.
-     */
-    public PerformanceMonitor findPerformanceMonitor(String name) {
-        return performanceMonitorMap.get(name);
-    }
+	/**
+	 * Find an existing {@link PerformanceMonitor}
+	 * 
+	 * @param name the name for the {@link PerformanceMonitor}
+	 * @return the found {@link PerformanceMonitor}, or null if it is not found.
+	 */
+	public PerformanceMonitor findPerformanceMonitor(String name) {
+		return performanceMonitorMap.get(name);
+	}
 
-    /**
-     * Get the {@link Set} of created performance monitor names.
-     * @return the {@link Set} of names.
-     */
-    public Set<String> getPerformanceMonitorNames() {
-        return performanceMonitorMap.keySet();
-    }
+	/**
+	 * Get the {@link Set} of created performance monitor names.
+	 * 
+	 * @return the {@link Set} of names.
+	 */
+	public Set<String> getPerformanceMonitorNames() {
+		return performanceMonitorMap.keySet();
+	}
 
-    /**
-     * Add a {@link PerformanceMonitor} to the map.
-     * @param name the name for the {@link PerformanceMonitor}
-     * @param performanceMonitor the {@link PerformanceMonitor} to add.
-     */
-    protected void addPerformanceMonitorToMap(String name, PerformanceMonitor performanceMonitor) {
-        performanceMonitorMap.put(name, performanceMonitor);
-    }
+	/**
+	 * Add a {@link PerformanceMonitor} to the map.
+	 * 
+	 * @param name               the name for the {@link PerformanceMonitor}
+	 * @param performanceMonitor the {@link PerformanceMonitor} to add.
+	 */
+	protected void addPerformanceMonitorToMap(String name, PerformanceMonitor performanceMonitor) {
+		performanceMonitorMap.put(name, performanceMonitor);
+	}
 }

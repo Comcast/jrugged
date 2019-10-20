@@ -20,20 +20,19 @@ package org.fishwife.jrugged;
  */
 public class CircuitBreakerConfig {
 
-    private FailureInterpreter failureInterpreter;
-    private long resetMillis;
+	private FailureInterpreter failureInterpreter;
+	private long resetMillis;
 
-    public CircuitBreakerConfig(long resetMillis,
-            FailureInterpreter failureInterpreter) {
-        this.resetMillis = resetMillis;
-        this.failureInterpreter = failureInterpreter;
-    }
+	public CircuitBreakerConfig(long resetMillis, FailureInterpreter failureInterpreter) {
+		this.resetMillis = resetMillis;
+		this.failureInterpreter = failureInterpreter;
+	}
 
-    public long getResetMillis() {
-        return resetMillis;
-    }
+	public long getResetMillis() {
+		return resetMillis;
+	}
 
-    public FailureInterpreter getFailureInterpreter() {
-        return failureInterpreter;
-    }
+	public FailureInterpreter getFailureInterpreter() {
+		return failureInterpreter;
+	}
 }

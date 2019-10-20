@@ -45,253 +45,249 @@ import static org.easymock.EasyMock.verify;
 
 public class TestWebMBeanAdapter {
 
-    private MBeanServer mockMBeanServer;
-    private MBeanStringSanitizer mockSanitizer;
-    private WebMBeanAdapter webMBeanAdapter;
-    private ObjectName mockObjectName;
-    private MBeanInfo mockMBeanInfo;
-    private MBeanOperationInvoker mockMBeanOperationInvoker;
-    private static final String ENCODING = "UTF-8";
+	private MBeanServer mockMBeanServer;
+	private MBeanStringSanitizer mockSanitizer;
+	private WebMBeanAdapter webMBeanAdapter;
+	private ObjectName mockObjectName;
+	private MBeanInfo mockMBeanInfo;
+	private MBeanOperationInvoker mockMBeanOperationInvoker;
+	private static final String ENCODING = "UTF-8";
 
-    class MockWebMBeanAdapter extends WebMBeanAdapter {
-        public MockWebMBeanAdapter(MBeanServer mBeanServer, String mBeanName)
-                throws JMException, UnsupportedEncodingException {
-            super(mBeanServer, mBeanName, ENCODING);
-        }
-        @Override
-        MBeanStringSanitizer createMBeanStringSanitizer() {
-            return mockSanitizer;
-        }
-        @Override
-        ObjectName createObjectName(String name) {
-            return mockObjectName;
-        }
-        @Override
-        MBeanOperationInvoker createMBeanOperationInvoker(
-                MBeanServer mBeanServer, ObjectName objectName, MBeanOperationInfo operationInfo) {
-            return mockMBeanOperationInvoker;
-        }
-    }
+	class MockWebMBeanAdapter extends WebMBeanAdapter {
+		public MockWebMBeanAdapter(MBeanServer mBeanServer, String mBeanName)
+				throws JMException, UnsupportedEncodingException {
+			super(mBeanServer, mBeanName, ENCODING);
+		}
 
-    @Before
-    public void setUp() throws Exception {
-        mockMBeanServer = createMock(MBeanServer.class);
-        mockSanitizer = createMock(MBeanStringSanitizer.class);
-        mockMBeanInfo = createMock(MBeanInfo.class);
-        mockObjectName = createMock(ObjectName.class);
-        mockMBeanOperationInvoker = createMock(MBeanOperationInvoker.class);
+		@Override
+		MBeanStringSanitizer createMBeanStringSanitizer() {
+			return mockSanitizer;
+		}
 
-        String beanName = "some_bean_name";
+		@Override
+		ObjectName createObjectName(String name) {
+			return mockObjectName;
+		}
 
-        expect(mockSanitizer.urlDecode(beanName, ENCODING)).andReturn(beanName);
-        expect(mockMBeanServer.getMBeanInfo(mockObjectName)).andReturn(mockMBeanInfo);
-        replay(mockSanitizer, mockMBeanServer);
+		@Override
+		MBeanOperationInvoker createMBeanOperationInvoker(MBeanServer mBeanServer, ObjectName objectName,
+				MBeanOperationInfo operationInfo) {
+			return mockMBeanOperationInvoker;
+		}
+	}
 
-        webMBeanAdapter = new MockWebMBeanAdapter(mockMBeanServer, beanName);
+	@Before
+	public void setUp() throws Exception {
+		mockMBeanServer = createMock(MBeanServer.class);
+		mockSanitizer = createMock(MBeanStringSanitizer.class);
+		mockMBeanInfo = createMock(MBeanInfo.class);
+		mockObjectName = createMock(ObjectName.class);
+		mockMBeanOperationInvoker = createMock(MBeanOperationInvoker.class);
 
-        verify(mockMBeanServer, mockSanitizer);
-        reset(mockMBeanServer, mockSanitizer);
-    }
+		String beanName = "some_bean_name";
 
-    @Test
-    public void testConstructor() throws Exception {
-        assertEquals(mockMBeanServer, ReflectionTestUtils.getField(webMBeanAdapter, "mBeanServer"));
-        assertEquals(mockObjectName, ReflectionTestUtils.getField(webMBeanAdapter, "objectName"));
-        assertEquals(mockMBeanInfo,  ReflectionTestUtils.getField(webMBeanAdapter, "mBeanInfo"));
-    }
+		expect(mockSanitizer.urlDecode(beanName, ENCODING)).andReturn(beanName);
+		expect(mockMBeanServer.getMBeanInfo(mockObjectName)).andReturn(mockMBeanInfo);
+		replay(mockSanitizer, mockMBeanServer);
 
-    @Test
-    public void testGetAttributeMetadata() throws Exception {
+		webMBeanAdapter = new MockWebMBeanAdapter(mockMBeanServer, beanName);
 
-        String attributeName1 = "attribute_name_1";
-        MBeanAttributeInfo mockAttribute1 = createMock(MBeanAttributeInfo.class);
+		verify(mockMBeanServer, mockSanitizer);
+		reset(mockMBeanServer, mockSanitizer);
+	}
 
-        String attributeName2 = "attribute_name_2";
-        MBeanAttributeInfo mockAttribute2 = createMock(MBeanAttributeInfo.class);
+	@Test
+	public void testConstructor() throws Exception {
+		assertEquals(mockMBeanServer, ReflectionTestUtils.getField(webMBeanAdapter, "mBeanServer"));
+		assertEquals(mockObjectName, ReflectionTestUtils.getField(webMBeanAdapter, "objectName"));
+		assertEquals(mockMBeanInfo, ReflectionTestUtils.getField(webMBeanAdapter, "mBeanInfo"));
+	}
 
-        MBeanAttributeInfo[] attributeList = new MBeanAttributeInfo[2];
-        attributeList[0] = mockAttribute1;
-        attributeList[1] = mockAttribute2;
-        expect(mockMBeanInfo.getAttributes()).andReturn(attributeList);
-        expect(mockAttribute1.getName()).andReturn(attributeName1);
-        expect(mockAttribute2.getName()).andReturn(attributeName2);
+	@Test
+	public void testGetAttributeMetadata() throws Exception {
 
-        replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo,
-                mockAttribute1, mockAttribute2);
+		String attributeName1 = "attribute_name_1";
+		MBeanAttributeInfo mockAttribute1 = createMock(MBeanAttributeInfo.class);
 
-        Map<String, MBeanAttributeInfo> attributeMap = webMBeanAdapter.getAttributeMetadata();
+		String attributeName2 = "attribute_name_2";
+		MBeanAttributeInfo mockAttribute2 = createMock(MBeanAttributeInfo.class);
 
-        assertEquals(2, attributeMap.size());
-        assertEquals(mockAttribute1, attributeMap.get(attributeName1));
-        assertEquals(mockAttribute2, attributeMap.get(attributeName2));
+		MBeanAttributeInfo[] attributeList = new MBeanAttributeInfo[2];
+		attributeList[0] = mockAttribute1;
+		attributeList[1] = mockAttribute2;
+		expect(mockMBeanInfo.getAttributes()).andReturn(attributeList);
+		expect(mockAttribute1.getName()).andReturn(attributeName1);
+		expect(mockAttribute2.getName()).andReturn(attributeName2);
 
-        verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo,
-                mockAttribute1, mockAttribute2);
-    }
+		replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockAttribute1, mockAttribute2);
 
-    @Test
-    public void testGetOperationMetadata() throws Exception {
-        String operationName1 = "operation_name_1";
-        MBeanOperationInfo mockOperation1 = createMock(MBeanOperationInfo.class);
+		Map<String, MBeanAttributeInfo> attributeMap = webMBeanAdapter.getAttributeMetadata();
 
-        String operationName2 = "operation_name_2";
-        MBeanOperationInfo mockOperation2 = createMock(MBeanOperationInfo.class);
+		assertEquals(2, attributeMap.size());
+		assertEquals(mockAttribute1, attributeMap.get(attributeName1));
+		assertEquals(mockAttribute2, attributeMap.get(attributeName2));
 
-        MBeanOperationInfo[] operationList = new MBeanOperationInfo[2];
-        operationList[0] = mockOperation1;
-        operationList[1] = mockOperation2;
-        expect(mockMBeanInfo.getOperations()).andReturn(operationList);
-        expect(mockOperation1.getName()).andReturn(operationName1);
-        expect(mockOperation2.getName()).andReturn(operationName2);
+		verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockAttribute1, mockAttribute2);
+	}
 
-        replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo,
-                mockOperation1, mockOperation2);
+	@Test
+	public void testGetOperationMetadata() throws Exception {
+		String operationName1 = "operation_name_1";
+		MBeanOperationInfo mockOperation1 = createMock(MBeanOperationInfo.class);
 
-        Map<String, MBeanOperationInfo> operationMap = webMBeanAdapter.getOperationMetadata();
+		String operationName2 = "operation_name_2";
+		MBeanOperationInfo mockOperation2 = createMock(MBeanOperationInfo.class);
 
-        assertEquals(2, operationMap.size());
-        assertEquals(mockOperation1, operationMap.get(operationName1));
-        assertEquals(mockOperation2, operationMap.get(operationName2));
+		MBeanOperationInfo[] operationList = new MBeanOperationInfo[2];
+		operationList[0] = mockOperation1;
+		operationList[1] = mockOperation2;
+		expect(mockMBeanInfo.getOperations()).andReturn(operationList);
+		expect(mockOperation1.getName()).andReturn(operationName1);
+		expect(mockOperation2.getName()).andReturn(operationName2);
 
-        verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo,
-                mockOperation1, mockOperation2);
-    }
+		replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockOperation1, mockOperation2);
 
-    @Test
-    public void testGetOperationInfoWhenItExists() throws Exception {
-        String operationName1 = "operation_name_1";
-        MBeanOperationInfo mockOperation1 = createMock(MBeanOperationInfo.class);
+		Map<String, MBeanOperationInfo> operationMap = webMBeanAdapter.getOperationMetadata();
 
-        String operationName2 = "operation_name_2";
-        MBeanOperationInfo mockOperation2 = createMock(MBeanOperationInfo.class);
+		assertEquals(2, operationMap.size());
+		assertEquals(mockOperation1, operationMap.get(operationName1));
+		assertEquals(mockOperation2, operationMap.get(operationName2));
 
-        expect(mockSanitizer.urlDecode(operationName2, ENCODING)).andReturn(operationName2);
-        MBeanOperationInfo[] operationList = new MBeanOperationInfo[2];
-        operationList[0] = mockOperation1;
-        operationList[1] = mockOperation2;
-        expect(mockMBeanInfo.getOperations()).andReturn(operationList);
-        expect(mockOperation1.getName()).andReturn(operationName1);
-        expect(mockOperation2.getName()).andReturn(operationName2);
+		verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockOperation1, mockOperation2);
+	}
 
-        replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo,
-                mockOperation1, mockOperation2);
+	@Test
+	public void testGetOperationInfoWhenItExists() throws Exception {
+		String operationName1 = "operation_name_1";
+		MBeanOperationInfo mockOperation1 = createMock(MBeanOperationInfo.class);
 
-        MBeanOperationInfo operationInfo = webMBeanAdapter.getOperationInfo(operationName2);
+		String operationName2 = "operation_name_2";
+		MBeanOperationInfo mockOperation2 = createMock(MBeanOperationInfo.class);
 
-        assertEquals(mockOperation2, operationInfo);
+		expect(mockSanitizer.urlDecode(operationName2, ENCODING)).andReturn(operationName2);
+		MBeanOperationInfo[] operationList = new MBeanOperationInfo[2];
+		operationList[0] = mockOperation1;
+		operationList[1] = mockOperation2;
+		expect(mockMBeanInfo.getOperations()).andReturn(operationList);
+		expect(mockOperation1.getName()).andReturn(operationName1);
+		expect(mockOperation2.getName()).andReturn(operationName2);
 
-        verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo,
-                mockOperation1, mockOperation2);
-    }
+		replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockOperation1, mockOperation2);
 
-    @Test(expected=OperationNotFoundException.class)
-    public void testGetOperationInfoThrowsOperationNotFoundException() throws Exception {
-        String operationName = "nonexistent";
-        expect(mockObjectName.getCanonicalName()).andReturn("some_name");
+		MBeanOperationInfo operationInfo = webMBeanAdapter.getOperationInfo(operationName2);
 
-        MBeanOperationInfo[] operationList = new MBeanOperationInfo[0];
-        expect(mockSanitizer.urlDecode(operationName, ENCODING)).andReturn(operationName);
-        expect(mockMBeanInfo.getOperations()).andReturn(operationList);
+		assertEquals(mockOperation2, operationInfo);
 
-        replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo);
+		verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockOperation1, mockOperation2);
+	}
 
-        webMBeanAdapter.getOperationInfo(operationName);
-    }
+	@Test(expected = OperationNotFoundException.class)
+	public void testGetOperationInfoThrowsOperationNotFoundException() throws Exception {
+		String operationName = "nonexistent";
+		expect(mockObjectName.getCanonicalName()).andReturn("some_name");
 
-    @Test
-    public void testGetAttributeValues() throws Exception {
-        MBeanAttributeInfo[] attributeInfoArray = new MBeanAttributeInfo[2];
-        MBeanAttributeInfo mockAttributeInfo1 = createMock(MBeanAttributeInfo.class);
-        MBeanAttributeInfo mockAttributeInfo2 = createMock(MBeanAttributeInfo.class);
-        attributeInfoArray[0] = mockAttributeInfo1;
-        attributeInfoArray[1] = mockAttributeInfo2;
-        expect(mockMBeanInfo.getAttributes()).andReturn(attributeInfoArray);
+		MBeanOperationInfo[] operationList = new MBeanOperationInfo[0];
+		expect(mockSanitizer.urlDecode(operationName, ENCODING)).andReturn(operationName);
+		expect(mockMBeanInfo.getOperations()).andReturn(operationList);
 
-        String attributeName1 = "attribute_name_1";
-        String attributeName2 = "attribute_name_2";
-        expect(mockAttributeInfo1.getName()).andReturn(attributeName1);
-        expect(mockAttributeInfo2.getName()).andReturn(attributeName2);
+		replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo);
 
-        AttributeList mockAttributeList = createMock(AttributeList.class);
-        expect(mockMBeanServer.getAttributes(eq(mockObjectName), anyObject(String[].class))).andReturn(mockAttributeList);
+		webMBeanAdapter.getOperationInfo(operationName);
+	}
 
-        List<Attribute> attributeList = new ArrayList<Attribute>();
-        Attribute mockAttribute1 = createMock(Attribute.class);
-        Attribute mockAttribute2 = createMock(Attribute.class);
+	@Test
+	public void testGetAttributeValues() throws Exception {
+		MBeanAttributeInfo[] attributeInfoArray = new MBeanAttributeInfo[2];
+		MBeanAttributeInfo mockAttributeInfo1 = createMock(MBeanAttributeInfo.class);
+		MBeanAttributeInfo mockAttributeInfo2 = createMock(MBeanAttributeInfo.class);
+		attributeInfoArray[0] = mockAttributeInfo1;
+		attributeInfoArray[1] = mockAttributeInfo2;
+		expect(mockMBeanInfo.getAttributes()).andReturn(attributeInfoArray);
 
-        attributeList.add(mockAttribute1);
-        attributeList.add(mockAttribute2);
+		String attributeName1 = "attribute_name_1";
+		String attributeName2 = "attribute_name_2";
+		expect(mockAttributeInfo1.getName()).andReturn(attributeName1);
+		expect(mockAttributeInfo2.getName()).andReturn(attributeName2);
 
-        expect(mockAttributeList.asList()).andReturn(attributeList);
+		AttributeList mockAttributeList = createMock(AttributeList.class);
+		expect(mockMBeanServer.getAttributes(eq(mockObjectName), anyObject(String[].class)))
+				.andReturn(mockAttributeList);
 
-        String name1 = "name 1";
-        String value1 = "value 1";
-        expect(mockAttribute1.getName()).andReturn(name1);
-        expect(mockAttribute1.getValue()).andReturn(value1);
-        expect(mockSanitizer.escapeValue(value1)).andReturn(value1);
+		List<Attribute> attributeList = new ArrayList<Attribute>();
+		Attribute mockAttribute1 = createMock(Attribute.class);
+		Attribute mockAttribute2 = createMock(Attribute.class);
 
-        String name2 = "name 2";
-        String value2 = "value 2";
-        expect(mockAttribute2.getName()).andReturn(name2);
-        expect(mockAttribute2.getValue()).andReturn(value2);
-        expect(mockSanitizer.escapeValue(value2)).andReturn(value2);
+		attributeList.add(mockAttribute1);
+		attributeList.add(mockAttribute2);
 
-        replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo,
-                mockAttributeInfo1, mockAttributeInfo2, mockAttributeList,
-                mockAttribute1, mockAttribute2);
+		expect(mockAttributeList.asList()).andReturn(attributeList);
 
-        Map<String, Object> attributeValueMap = webMBeanAdapter.getAttributeValues();
+		String name1 = "name 1";
+		String value1 = "value 1";
+		expect(mockAttribute1.getName()).andReturn(name1);
+		expect(mockAttribute1.getValue()).andReturn(value1);
+		expect(mockSanitizer.escapeValue(value1)).andReturn(value1);
 
-        assertEquals(2, attributeValueMap.size());
-        assertEquals(value1, attributeValueMap.get(name1));
-        assertEquals(value2, attributeValueMap.get(name2));
+		String name2 = "name 2";
+		String value2 = "value 2";
+		expect(mockAttribute2.getName()).andReturn(name2);
+		expect(mockAttribute2.getValue()).andReturn(value2);
+		expect(mockSanitizer.escapeValue(value2)).andReturn(value2);
 
-        verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo,
-                mockAttributeInfo1, mockAttributeInfo2, mockAttributeList,
-                mockAttribute1, mockAttribute2);
-    }
+		replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockAttributeInfo1, mockAttributeInfo2,
+				mockAttributeList, mockAttribute1, mockAttribute2);
 
-    @Test
-    public void testGetAttributeValue() throws Exception {
-        String attributeName = "attribute_name";
-        expect(mockSanitizer.urlDecode(attributeName, ENCODING)).andReturn(attributeName);
+		Map<String, Object> attributeValueMap = webMBeanAdapter.getAttributeValues();
 
-        Object value = new Object();
-        String valueString = "some_string";
-        expect(mockMBeanServer.getAttribute(mockObjectName, attributeName)).andReturn(value);
-        expect(mockSanitizer.escapeValue(value)).andReturn(valueString);
+		assertEquals(2, attributeValueMap.size());
+		assertEquals(value1, attributeValueMap.get(name1));
+		assertEquals(value2, attributeValueMap.get(name2));
 
-        replay(mockMBeanServer, mockSanitizer, mockObjectName);
+		verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockAttributeInfo1, mockAttributeInfo2,
+				mockAttributeList, mockAttribute1, mockAttribute2);
+	}
 
-        String attributeValue = webMBeanAdapter.getAttributeValue(attributeName);
+	@Test
+	public void testGetAttributeValue() throws Exception {
+		String attributeName = "attribute_name";
+		expect(mockSanitizer.urlDecode(attributeName, ENCODING)).andReturn(attributeName);
 
-        assertEquals(valueString, attributeValue);
-        verify(mockMBeanServer, mockSanitizer, mockObjectName);
-    }
+		Object value = new Object();
+		String valueString = "some_string";
+		expect(mockMBeanServer.getAttribute(mockObjectName, attributeName)).andReturn(value);
+		expect(mockSanitizer.escapeValue(value)).andReturn(valueString);
 
-    @Test
-    public void testInvokeOperation() throws Exception {
-        String operationName = "operation_name";
-        expect(mockSanitizer.urlDecode(operationName, ENCODING)).andReturn(operationName);
+		replay(mockMBeanServer, mockSanitizer, mockObjectName);
 
-        MBeanOperationInfo mockOperation = createMock(MBeanOperationInfo.class);
-        MBeanOperationInfo[] operationList = new MBeanOperationInfo[1];
-        operationList[0] = mockOperation;
-        expect(mockMBeanInfo.getOperations()).andReturn(operationList);
-        expect(mockOperation.getName()).andReturn(operationName);
+		String attributeValue = webMBeanAdapter.getAttributeValue(attributeName);
 
-        Map<String, String[]> parameterMap = new HashMap<String, String[]>();
-        Object value = new Object();
-        expect(mockMBeanOperationInvoker.invokeOperation(parameterMap)).andReturn(value);
+		assertEquals(valueString, attributeValue);
+		verify(mockMBeanServer, mockSanitizer, mockObjectName);
+	}
 
-        String valueString = "some_value";
-        expect(mockSanitizer.escapeValue(value)).andReturn(valueString);
+	@Test
+	public void testInvokeOperation() throws Exception {
+		String operationName = "operation_name";
+		expect(mockSanitizer.urlDecode(operationName, ENCODING)).andReturn(operationName);
 
-        replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockOperation, mockMBeanOperationInvoker);
+		MBeanOperationInfo mockOperation = createMock(MBeanOperationInfo.class);
+		MBeanOperationInfo[] operationList = new MBeanOperationInfo[1];
+		operationList[0] = mockOperation;
+		expect(mockMBeanInfo.getOperations()).andReturn(operationList);
+		expect(mockOperation.getName()).andReturn(operationName);
 
-        String invokeResult = webMBeanAdapter.invokeOperation(operationName, parameterMap);
+		Map<String, String[]> parameterMap = new HashMap<String, String[]>();
+		Object value = new Object();
+		expect(mockMBeanOperationInvoker.invokeOperation(parameterMap)).andReturn(value);
 
-        assertEquals(valueString, invokeResult);
-        verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockOperation, mockMBeanOperationInvoker);
-    }
+		String valueString = "some_value";
+		expect(mockSanitizer.escapeValue(value)).andReturn(valueString);
+
+		replay(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockOperation, mockMBeanOperationInvoker);
+
+		String invokeResult = webMBeanAdapter.invokeOperation(operationName, parameterMap);
+
+		assertEquals(valueString, invokeResult);
+		verify(mockMBeanServer, mockSanitizer, mockObjectName, mockMBeanInfo, mockOperation, mockMBeanOperationInvoker);
+	}
 }

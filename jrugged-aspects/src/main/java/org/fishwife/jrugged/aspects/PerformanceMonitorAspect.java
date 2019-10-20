@@ -25,98 +25,94 @@ import org.slf4j.LoggerFactory;
 import java.util.concurrent.Callable;
 
 /**
- * Aspect that wraps methods annotated with {@link org.fishwife.jrugged.PerformanceMonitor} with a
- * {@link org.fishwife.jrugged.PerformanceMonitor}.  The value given to the
+ * Aspect that wraps methods annotated with
+ * {@link org.fishwife.jrugged.PerformanceMonitor} with a
+ * {@link org.fishwife.jrugged.PerformanceMonitor}. The value given to the
  * PerformanceMonitor annotation serves as a key for a PerformanceMonitor
- * instance.  Thus it is possible to have a PerformanceMonitor per method.
+ * instance. Thus it is possible to have a PerformanceMonitor per method.
  * Alternatively, PerformanceMonitor can be shared across methods and classes by
  * using the same value for the monitor key.
  */
 @Aspect
 public class PerformanceMonitorAspect {
 
-    private static final Logger logger =
-            LoggerFactory.getLogger(PerformanceMonitorAspect.class);
+	private static final Logger logger = LoggerFactory.getLogger(PerformanceMonitorAspect.class);
 
-    private volatile PerformanceMonitorFactory performanceMonitorFactory;
+	private volatile PerformanceMonitorFactory performanceMonitorFactory;
 
-    /** Default constructor. */
-    public PerformanceMonitorAspect() {
-        performanceMonitorFactory = new PerformanceMonitorFactory();
-    }
+	/** Default constructor. */
+	public PerformanceMonitorAspect() {
+		performanceMonitorFactory = new PerformanceMonitorFactory();
+	}
 
-    /**
-     * Sets the {@link org.fishwife.jrugged.PerformanceMonitorFactory} to use when creating new
-     * {@link org.fishwife.jrugged.PerformanceMonitor} instances.
-     * @param performanceMonitorFactory the {@link org.fishwife.jrugged.PerformanceMonitorFactory} to
-     *   use.
-     */
-    public void setPerformanceMonitorFactory(
-            PerformanceMonitorFactory performanceMonitorFactory) {
-        this.performanceMonitorFactory = performanceMonitorFactory;
-    }
+	/**
+	 * Sets the {@link org.fishwife.jrugged.PerformanceMonitorFactory} to use when
+	 * creating new {@link org.fishwife.jrugged.PerformanceMonitor} instances.
+	 * 
+	 * @param performanceMonitorFactory the
+	 *                                  {@link org.fishwife.jrugged.PerformanceMonitorFactory}
+	 *                                  to use.
+	 */
+	public void setPerformanceMonitorFactory(PerformanceMonitorFactory performanceMonitorFactory) {
+		this.performanceMonitorFactory = performanceMonitorFactory;
+	}
 
+	/**
+	 * Get the {@link org.fishwife.jrugged.PerformanceMonitorFactory} that is being
+	 * used to create new {@link org.fishwife.jrugged.PerformanceMonitor} instances.
+	 * 
+	 * @return the {@link org.fishwife.jrugged.PerformanceMonitorFactory}.
+	 */
+	public PerformanceMonitorFactory getPerformanceMonitorFactory() {
+		return performanceMonitorFactory;
+	}
 
-    /**
-     * Get the {@link org.fishwife.jrugged.PerformanceMonitorFactory} that is being used to create
-     * new {@link org.fishwife.jrugged.PerformanceMonitor} instances.
-     * @return the {@link org.fishwife.jrugged.PerformanceMonitorFactory}.
-     */
-    public PerformanceMonitorFactory getPerformanceMonitorFactory() {
-        return performanceMonitorFactory;
-    }
+	/**
+	 * Wraps a method annotated with the
+	 * {@link org.fishwife.jrugged.PerformanceMonitor} annotation with a
+	 * {@link org.fishwife.jrugged.PerformanceMonitor}.
+	 *
+	 * @param pjp                          Represents the method that is being
+	 *                                     executed.
+	 * @param performanceMonitorAnnotation The PerformanceMonitor annotation
+	 *                                     associated with the method being execute.
+	 * @return Value returned by the method that is being wrapped.
+	 * @throws Throwable Whatever the wrapped method throws will be thrown by this
+	 *                   method.
+	 */
+	@Around("@annotation(performanceMonitorAnnotation)")
+	public Object monitor(final ProceedingJoinPoint pjp, PerformanceMonitor performanceMonitorAnnotation)
+			throws Throwable {
+		String monitorName = performanceMonitorAnnotation.value();
 
-    /**
-     * Wraps a method annotated with the {@link org.fishwife.jrugged.PerformanceMonitor} annotation
-     * with a {@link org.fishwife.jrugged.PerformanceMonitor}.
-     *
-     * @param pjp Represents the method that is being executed.
-     * @param performanceMonitorAnnotation The PerformanceMonitor annotation
-     * associated with the method being execute.
-     * @return Value returned by the method that is being wrapped.
-     * @throws Throwable Whatever the wrapped method throws will be thrown by
-     * this method.
-     */
-    @Around("@annotation(performanceMonitorAnnotation)")
-    public Object monitor(final ProceedingJoinPoint pjp,
-            PerformanceMonitor performanceMonitorAnnotation) throws Throwable {
-        String monitorName = performanceMonitorAnnotation.value();
+		if (logger.isDebugEnabled()) {
+			logger.debug(
+					"Have @PerformanceMonitor method with monitor name {}, "
+							+ "wrapping call on method {} of target object {}",
+					new Object[] { monitorName, pjp.getSignature().getName(), pjp.getTarget() });
+		}
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("Have @PerformanceMonitor method with monitor name {}, " +
-                    "wrapping call on method {} of target object {}",
-                    new Object[]{
-                            monitorName,
-                            pjp.getSignature().getName(),
-                            pjp.getTarget()});
-        }
+		org.fishwife.jrugged.PerformanceMonitor performanceMonitor = performanceMonitorFactory
+				.findPerformanceMonitor(monitorName);
 
-        org.fishwife.jrugged.PerformanceMonitor performanceMonitor =
-                performanceMonitorFactory.findPerformanceMonitor(
-                            monitorName);
+		if (performanceMonitor == null) {
+			performanceMonitor = performanceMonitorFactory.createPerformanceMonitor(monitorName);
+		}
 
-        if (performanceMonitor == null) {
-            performanceMonitor =
-                    performanceMonitorFactory.createPerformanceMonitor(
-                            monitorName);
-        }
-
-        return performanceMonitor.invoke(
-                new Callable<Object>() {
-                    public Object call() throws Exception {
-                        Object retval;
-                        try {
-                            retval = pjp.proceed();
-                        } catch (Throwable e) {
-                            if (e instanceof Exception) {
-                                throw (Exception) e;
-                            } else {
-                                throw (Error) e;
-                            }
-                        }
-                        return retval;
-                    }
-                }
-        );
-    }
+		return performanceMonitor.invoke(new Callable<Object>() {
+			public Object call() throws Exception {
+				Object retval;
+				try {
+					retval = pjp.proceed();
+				} catch (Throwable e) {
+					if (e instanceof Exception) {
+						throw (Exception) e;
+					} else {
+						throw (Error) e;
+					}
+				}
+				return retval;
+			}
+		});
+	}
 }

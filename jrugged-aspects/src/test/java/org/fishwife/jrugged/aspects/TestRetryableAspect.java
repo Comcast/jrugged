@@ -27,106 +27,104 @@ import static org.easymock.EasyMock.verify;
 
 public class TestRetryableAspect {
 
-    private RetryableAspect aspect;
+	private RetryableAspect aspect;
 
-    private Retryable mockAnnotation;
+	private Retryable mockAnnotation;
 
-    private Signature mockSignature;
+	private Signature mockSignature;
 
+	@Before
+	public void setUp() {
+		aspect = new RetryableAspect();
 
-    @Before
-    public void setUp() {
-        aspect = new RetryableAspect();
+		mockAnnotation = createMock(Retryable.class);
+		expect(mockAnnotation.maxTries()).andReturn(1).anyTimes();
+		expect(mockAnnotation.retryDelayMillis()).andReturn(0).anyTimes();
+		@SuppressWarnings("unchecked")
+		Class<Throwable>[] retryOn = new Class[0];
+		expect(mockAnnotation.retryOn()).andReturn(retryOn);
+		expect(mockAnnotation.doubleDelay()).andReturn(true);
+		expect(mockAnnotation.throwCauseException()).andReturn(true);
+		replay(mockAnnotation);
 
-        mockAnnotation = createMock(Retryable.class);
-        expect(mockAnnotation.maxTries()).andReturn(1).anyTimes();
-        expect(mockAnnotation.retryDelayMillis()).andReturn(0).anyTimes();
-        @SuppressWarnings("unchecked")
-        Class<Throwable>[] retryOn = new Class[0];
-        expect(mockAnnotation.retryOn()).andReturn(retryOn);
-        expect(mockAnnotation.doubleDelay()).andReturn(true);
-        expect(mockAnnotation.throwCauseException()).andReturn(true);
-        replay(mockAnnotation);
+		mockSignature = createMock(Signature.class);
+		expect(mockSignature.getName()).andReturn("Signature").anyTimes();
+		replay(mockSignature);
+	}
 
-        mockSignature = createMock(Signature.class);
-        expect(mockSignature.getName()).andReturn("Signature").anyTimes();
-        replay(mockSignature);
-    }
+	@Test
+	public void testCall() throws Throwable {
+		ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
+		expect(mockPjp.proceed()).andReturn(null).times(1);
+		replay(mockPjp);
 
-    @Test
-    public void testCall() throws Throwable {
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
-        expect(mockPjp.proceed()).andReturn(null).times(1);
-        replay(mockPjp);
+		aspect.call(mockPjp, mockAnnotation);
 
-        aspect.call(mockPjp, mockAnnotation);
+		verify(mockPjp);
+		verify(mockAnnotation);
+		verify(mockSignature);
+	}
 
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-    }
+	@Test
+	public void testCall_WithException() throws Throwable {
+		Exception exception = new Exception();
 
-    @Test
-    public void testCall_WithException() throws Throwable {
-        Exception exception = new Exception();
+		ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
+		expect(mockPjp.proceed()).andThrow(exception);
+		replay(mockPjp);
 
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
-        expect(mockPjp.proceed()).andThrow(exception);
-        replay(mockPjp);
+		callCatchThrowable(mockPjp, exception);
 
-        callCatchThrowable(mockPjp, exception);
+		verify(mockPjp);
+		verify(mockAnnotation);
+		verify(mockSignature);
+	}
 
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-    }
+	@Test
+	public void testCall_WithError() throws Throwable {
+		Error error = new Error();
 
-    @Test
-    public void testCall_WithError() throws Throwable {
-        Error error = new Error();
+		ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
+		expect(mockPjp.proceed()).andThrow(error);
+		replay(mockPjp);
 
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
-        expect(mockPjp.proceed()).andThrow(error);
-        replay(mockPjp);
+		callCatchThrowable(mockPjp, error);
 
-        callCatchThrowable(mockPjp, error);
+		verify(mockPjp);
+		verify(mockAnnotation);
+		verify(mockSignature);
+	}
 
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-    }
+	@Test
+	public void testCall_WithThrowable() throws Throwable {
+		Throwable throwable = new Throwable();
 
-    @Test
-    public void testCall_WithThrowable() throws Throwable {
-        Throwable throwable = new Throwable();
+		ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
+		expect(mockPjp.proceed()).andThrow(throwable);
+		replay(mockPjp);
 
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature);
-        expect(mockPjp.proceed()).andThrow(throwable);
-        replay(mockPjp);
+		callCatchThrowable(mockPjp, new RuntimeException(throwable));
 
-        callCatchThrowable(mockPjp, new RuntimeException(throwable));
+		verify(mockPjp);
+		verify(mockAnnotation);
+		verify(mockSignature);
+	}
 
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-    }
+	private static ProceedingJoinPoint createPjpMock(Signature mockSignature) {
+		ProceedingJoinPoint mockPjp = createMock(ProceedingJoinPoint.class);
+		// XXX: the following two interactions are for logging, so they may happen
+		// 0 or n times, pending logging configuration
+		expect(mockPjp.getTarget()).andReturn("Target").times(0, 1);
+		expect(mockPjp.getSignature()).andReturn(mockSignature).times(0, 1);
+		return mockPjp;
+	}
 
-    private static ProceedingJoinPoint createPjpMock(Signature mockSignature) {
-        ProceedingJoinPoint mockPjp = createMock(ProceedingJoinPoint.class);
-        // XXX: the following two interactions are for logging, so they may happen
-        //      0 or n times, pending logging configuration
-        expect(mockPjp.getTarget()).andReturn("Target").times(0, 1);
-        expect(mockPjp.getSignature()).andReturn(mockSignature).times(0, 1);
-        return mockPjp;
-    }
-
-    private void callCatchThrowable(ProceedingJoinPoint pjp, Throwable expected) {
-        try {
-            aspect.call(pjp, mockAnnotation);
-        }
-        catch (Throwable thrown) {
-            thrown.printStackTrace();
-            assertEquals(expected.getClass(), thrown.getClass());
-        }
-    }
+	private void callCatchThrowable(ProceedingJoinPoint pjp, Throwable expected) {
+		try {
+			aspect.call(pjp, mockAnnotation);
+		} catch (Throwable thrown) {
+			thrown.printStackTrace();
+			assertEquals(expected.getClass(), thrown.getClass());
+		}
+	}
 }

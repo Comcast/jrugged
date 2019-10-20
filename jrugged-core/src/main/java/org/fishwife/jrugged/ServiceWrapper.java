@@ -18,36 +18,43 @@ package org.fishwife.jrugged;
 
 import java.util.concurrent.Callable;
 
-/** Several of the "rugged" code patterns in this library can be used to
- *  wrap an existing service in a "decorator" design pattern. This is the
- *  common interface provided by these wrapping classes that affect normal
- *  service calls.
- *  <p>
- *  If you are more into aspect-oriented programming (AOP), then you can
- *  also use the {@link ServiceWrapper} classes in your aspects.
+/**
+ * Several of the "rugged" code patterns in this library can be used to wrap an
+ * existing service in a "decorator" design pattern. This is the common
+ * interface provided by these wrapping classes that affect normal service
+ * calls.
+ * <p>
+ * If you are more into aspect-oriented programming (AOP), then you can also use
+ * the {@link ServiceWrapper} classes in your aspects.
  */
 public interface ServiceWrapper {
-    /** Wraps a {@link Callable} in some fashion.
-     *  @param c the service call to wrap
-     *  @param <T> The callable type I am wrapping
-     *  @return whatever <code>c</code> would normally return
-     *  @throws Exception if <code>c</code> throws one
-     */
-    <T> T invoke(Callable<T> c) throws Exception;
+	/**
+	 * Wraps a {@link Callable} in some fashion.
+	 * 
+	 * @param c the service call to wrap
+	 * @param   <T> The callable type I am wrapping
+	 * @return whatever <code>c</code> would normally return
+	 * @throws Exception if <code>c</code> throws one
+	 */
+	<T> T invoke(Callable<T> c) throws Exception;
 
-    /** Wraps a {@link Runnable} in some fashion.
-     *  @param r the service call/task to wrap
-     *  @throws Exception if <code>r</code> throws one
-     */
-    void invoke(Runnable r) throws Exception;
+	/**
+	 * Wraps a {@link Runnable} in some fashion.
+	 * 
+	 * @param r the service call/task to wrap
+	 * @throws Exception if <code>r</code> throws one
+	 */
+	void invoke(Runnable r) throws Exception;
 
-    /** Wraps a {@link Runnable} task in some fashion, and returns a
-     *  predetermined result on success.
-     *  @param r the service call/task to wrap
-     *  @param result what to return on success
-     *  @param <T> The return TYPE that should emit
-     *  @return result
-     *  @throws Exception if <code>r</code> throws one
-     */
-    <T> T invoke(Runnable r, T result) throws Exception;
+	/**
+	 * Wraps a {@link Runnable} task in some fashion, and returns a predetermined
+	 * result on success.
+	 * 
+	 * @param r      the service call/task to wrap
+	 * @param result what to return on success
+	 * @param        <T> The return TYPE that should emit
+	 * @return result
+	 * @throws Exception if <code>r</code> throws one
+	 */
+	<T> T invoke(Runnable r, T result) throws Exception;
 }

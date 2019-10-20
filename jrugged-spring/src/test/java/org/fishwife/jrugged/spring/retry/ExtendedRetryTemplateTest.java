@@ -26,72 +26,71 @@ import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryState;
 
 public class ExtendedRetryTemplateTest {
-    @Test
-    public void test_asCallable_callable() throws Exception {
-        Callable<Long> callable = Mockito.mock(Callable.class);
-        ExtendedRetryTemplate template = new ExtendedRetryTemplate();
+	@Test
+	public void test_asCallable_callable() throws Exception {
+		Callable<Long> callable = Mockito.mock(Callable.class);
+		ExtendedRetryTemplate template = new ExtendedRetryTemplate();
 
-        Mockito.when(callable.call()).thenReturn(10L);
+		Mockito.when(callable.call()).thenReturn(10L);
 
-        Callable<Long> wrapped = template.asCallable(callable);
-        Assert.assertEquals(10L, wrapped.call().longValue());
+		Callable<Long> wrapped = template.asCallable(callable);
+		Assert.assertEquals(10L, wrapped.call().longValue());
 
-        Mockito.verify(callable, Mockito.times(1)).call();
-    }
+		Mockito.verify(callable, Mockito.times(1)).call();
+	}
 
-    @Test
-    public void test_asCallable_callback() throws Exception {
-        RetryCallback<Long, Exception> callback = Mockito.mock(RetryCallback.class);
-        ExtendedRetryTemplate template = new ExtendedRetryTemplate();
+	@Test
+	public void test_asCallable_callback() throws Exception {
+		RetryCallback<Long, Exception> callback = Mockito.mock(RetryCallback.class);
+		ExtendedRetryTemplate template = new ExtendedRetryTemplate();
 
-        Mockito.when(callback.doWithRetry(Mockito.any(RetryContext.class))).thenReturn(10L);
+		Mockito.when(callback.doWithRetry(Mockito.any(RetryContext.class))).thenReturn(10L);
 
-        Callable<Long> wrapped = template.asCallable(callback);
-        Assert.assertEquals(10L, wrapped.call().longValue());
+		Callable<Long> wrapped = template.asCallable(callback);
+		Assert.assertEquals(10L, wrapped.call().longValue());
 
-        Mockito.verify(callback, Mockito.times(1)).doWithRetry(Mockito.any(RetryContext.class));
-    }
+		Mockito.verify(callback, Mockito.times(1)).doWithRetry(Mockito.any(RetryContext.class));
+	}
 
-    @Test
-    public void test_execute_callable() throws Exception {
-        Callable<Long> callable = Mockito.mock(Callable.class);
-        ExtendedRetryTemplate template = new ExtendedRetryTemplate();
+	@Test
+	public void test_execute_callable() throws Exception {
+		Callable<Long> callable = Mockito.mock(Callable.class);
+		ExtendedRetryTemplate template = new ExtendedRetryTemplate();
 
-        Mockito.when(callable.call()).thenReturn(10L);
+		Mockito.when(callable.call()).thenReturn(10L);
 
-        Assert.assertEquals(10L, template.execute(callable).longValue());
+		Assert.assertEquals(10L, template.execute(callable).longValue());
 
-        Mockito.verify(callable, Mockito.times(1)).call();
+		Mockito.verify(callable, Mockito.times(1)).call();
 
-    }
+	}
 
-    @Test
-    public void test_execute_callableWithState() throws Exception {
-        Callable<Long> callable = Mockito.mock(Callable.class);
-        RetryState retryState = Mockito.mock(RetryState.class);
-        ExtendedRetryTemplate template = new ExtendedRetryTemplate();
+	@Test
+	public void test_execute_callableWithState() throws Exception {
+		Callable<Long> callable = Mockito.mock(Callable.class);
+		RetryState retryState = Mockito.mock(RetryState.class);
+		ExtendedRetryTemplate template = new ExtendedRetryTemplate();
 
-        Mockito.when(callable.call()).thenReturn(10L);
+		Mockito.when(callable.call()).thenReturn(10L);
 
-        Assert.assertEquals(10L, template.execute(callable, retryState).longValue());
+		Assert.assertEquals(10L, template.execute(callable, retryState).longValue());
 
-        Mockito.verify(callable, Mockito.times(1)).call();
+		Mockito.verify(callable, Mockito.times(1)).call();
 
-    }
+	}
 
-    @Test
-    public void test_execute_callableWithRecoveryAndState() throws Exception {
-        Callable<Long> callable = Mockito.mock(Callable.class);
-        RetryState retryState = Mockito.mock(RetryState.class);
-        RecoveryCallback<Long> recoveryCallback = Mockito.mock(RecoveryCallback.class);
+	@Test
+	public void test_execute_callableWithRecoveryAndState() throws Exception {
+		Callable<Long> callable = Mockito.mock(Callable.class);
+		RetryState retryState = Mockito.mock(RetryState.class);
+		RecoveryCallback<Long> recoveryCallback = Mockito.mock(RecoveryCallback.class);
 
-        ExtendedRetryTemplate template = new ExtendedRetryTemplate();
+		ExtendedRetryTemplate template = new ExtendedRetryTemplate();
 
-        Mockito.when(callable.call()).thenReturn(10L);
+		Mockito.when(callable.call()).thenReturn(10L);
 
-        Assert.assertEquals(10L, template.execute(callable, recoveryCallback, retryState).longValue());
+		Assert.assertEquals(10L, template.execute(callable, recoveryCallback, retryState).longValue());
 
-        Mockito.verify(callable, Mockito.times(1)).call();
-    }
+		Mockito.verify(callable, Mockito.times(1)).call();
+	}
 }
-

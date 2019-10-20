@@ -36,53 +36,54 @@ import static org.easymock.EasyMock.verify;
 
 public class TestWebMBeanServerAdapter {
 
-    private MBeanServer mockMbeanServer;
-    private WebMBeanServerAdapter webMBeanServerAdapter;
-    private MBeanStringSanitizer mockSanitizer;
+	private MBeanServer mockMbeanServer;
+	private WebMBeanServerAdapter webMBeanServerAdapter;
+	private MBeanStringSanitizer mockSanitizer;
 
-    class MockWebMBeanServerAdapter extends WebMBeanServerAdapter {
-        public MockWebMBeanServerAdapter(MBeanServer mBeanServer) {
-            super(mBeanServer);
-        }
-        @Override
-        MBeanStringSanitizer createMBeanStringSanitizer() {
-            return mockSanitizer;
-        }
-    }
+	class MockWebMBeanServerAdapter extends WebMBeanServerAdapter {
+		public MockWebMBeanServerAdapter(MBeanServer mBeanServer) {
+			super(mBeanServer);
+		}
 
-    @Before
-    public void setUp() {
-        mockMbeanServer = createMock(MBeanServer.class);
-        mockSanitizer = createMock(MBeanStringSanitizer.class);
-        webMBeanServerAdapter = new MockWebMBeanServerAdapter(mockMbeanServer);
-    }
+		@Override
+		MBeanStringSanitizer createMBeanStringSanitizer() {
+			return mockSanitizer;
+		}
+	}
 
-    @Test
-    public void testGetMBeanNames() throws Exception {
-        String name1 = "com.test:type=objectName,value=1";
-        String name2 = "com.test:type=objectName,value=2";
-        ObjectName objectName1 = new ObjectName(name1);
-        ObjectInstance object1 = createMock(ObjectInstance.class);
-        expect(object1.getObjectName()).andReturn(objectName1);
+	@Before
+	public void setUp() {
+		mockMbeanServer = createMock(MBeanServer.class);
+		mockSanitizer = createMock(MBeanStringSanitizer.class);
+		webMBeanServerAdapter = new MockWebMBeanServerAdapter(mockMbeanServer);
+	}
 
-        ObjectName objectName2 = new ObjectName(name2);
-        ObjectInstance object2 = createMock(ObjectInstance.class);
-        expect(object2.getObjectName()).andReturn(objectName2);
+	@Test
+	public void testGetMBeanNames() throws Exception {
+		String name1 = "com.test:type=objectName,value=1";
+		String name2 = "com.test:type=objectName,value=2";
+		ObjectName objectName1 = new ObjectName(name1);
+		ObjectInstance object1 = createMock(ObjectInstance.class);
+		expect(object1.getObjectName()).andReturn(objectName1);
 
-        Set<ObjectInstance> objectInstanceList = new HashSet<ObjectInstance>();
-        objectInstanceList.add(object1);
-        objectInstanceList.add(object2);
-        expect(mockMbeanServer.queryMBeans(null, null)).andReturn(objectInstanceList);
-        expect(mockSanitizer.escapeValue(name1)).andReturn(name1);
-        expect(mockSanitizer.escapeValue(name2)).andReturn(name2);
+		ObjectName objectName2 = new ObjectName(name2);
+		ObjectInstance object2 = createMock(ObjectInstance.class);
+		expect(object2.getObjectName()).andReturn(objectName2);
 
-        replay(mockMbeanServer, mockSanitizer, object1, object2);
+		Set<ObjectInstance> objectInstanceList = new HashSet<ObjectInstance>();
+		objectInstanceList.add(object1);
+		objectInstanceList.add(object2);
+		expect(mockMbeanServer.queryMBeans(null, null)).andReturn(objectInstanceList);
+		expect(mockSanitizer.escapeValue(name1)).andReturn(name1);
+		expect(mockSanitizer.escapeValue(name2)).andReturn(name2);
 
-        Set<String> resultSet = webMBeanServerAdapter.getMBeanNames();
+		replay(mockMbeanServer, mockSanitizer, object1, object2);
 
-        assertEquals(2, resultSet.size());
-        assertTrue(resultSet.contains(name1));
-        assertTrue(resultSet.contains(name2));
-        verify(mockMbeanServer, mockSanitizer, object1, object2);
-    }
+		Set<String> resultSet = webMBeanServerAdapter.getMBeanNames();
+
+		assertEquals(2, resultSet.size());
+		assertTrue(resultSet.contains(name1));
+		assertTrue(resultSet.contains(name2));
+		verify(mockMbeanServer, mockSanitizer, object1, object2);
+	}
 }

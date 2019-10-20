@@ -22,14 +22,14 @@ import org.mockito.Mockito;
 
 public class PredicateBinaryExceptionClassifierTest {
 
-    @Test
-    public void testClassify() {
-        Predicate predicate = Mockito.mock(Predicate.class);
-        PredicateBinaryExceptionClassifier classifier = new PredicateBinaryExceptionClassifier(predicate);
-        classifier.setPredicate(predicate);
-        Mockito.when(predicate.apply(Mockito.any(Throwable.class))).thenReturn(false);
-        Assert.assertSame(predicate, classifier.getPredicate());
-        Assert.assertFalse(classifier.classify(new RuntimeException()));
-        Mockito.verify(predicate, Mockito.times(1)).apply(Mockito.any(Throwable.class));
-    }
+	@Test
+	public void testClassify() {
+		Predicate predicate = Mockito.mock(Predicate.class);
+		PredicateBinaryExceptionClassifier classifier = new PredicateBinaryExceptionClassifier(predicate);
+		classifier.setPredicate(predicate);
+		Mockito.when(predicate.apply(Mockito.any(Throwable.class))).thenReturn(false);
+		Assert.assertSame(predicate, classifier.getPredicate());
+		Assert.assertFalse(classifier.classify(new RuntimeException()));
+		Mockito.verify(predicate, Mockito.times(1)).apply(Mockito.any(Throwable.class));
+	}
 }

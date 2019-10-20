@@ -35,57 +35,53 @@ import org.fishwife.jrugged.CircuitBreakerException;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class TestFailureHandlingHttpClient {
 
-    private FailureHandlingHttpClient impl;
-    private HttpClient mockBackend;
-    private HttpResponse resp;
-    private HttpHost host;
-    private HttpRequest req;
-    private HttpContext ctx;
+	private FailureHandlingHttpClient impl;
+	private HttpClient mockBackend;
+	private HttpResponse resp;
+	private HttpHost host;
+	private HttpRequest req;
+	private HttpContext ctx;
 
-    @Before
-    public void setUp() {
-        mockBackend = createMock(HttpClient.class);
-        resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK");
-        host = new HttpHost("foo.example.com");
-        req = new HttpGet("http://foo.example.com/");
-        ctx = new BasicHttpContext();
-        impl = new FailureHandlingHttpClient(mockBackend);
-    }
+	@Before
+	public void setUp() {
+		mockBackend = createMock(HttpClient.class);
+		resp = new BasicHttpResponse(HttpVersion.HTTP_1_1, HttpStatus.SC_OK, "OK");
+		host = new HttpHost("foo.example.com");
+		req = new HttpGet("http://foo.example.com/");
+		ctx = new BasicHttpContext();
+		impl = new FailureHandlingHttpClient(mockBackend);
+	}
 
-    @Test
-    public void returnsBackendResponseOnSuccess() throws Exception {
-       expect(mockBackend.execute(host, req, ctx))
-           .andReturn(resp);
-       replay(mockBackend);
-       HttpResponse result = impl.execute(host, req, ctx);
-       verify(mockBackend);
-       assertSame(resp, result);
-    }
+	@Test
+	public void returnsBackendResponseOnSuccess() throws Exception {
+		expect(mockBackend.execute(host, req, ctx)).andReturn(resp);
+		replay(mockBackend);
+		HttpResponse result = impl.execute(host, req, ctx);
+		verify(mockBackend);
+		assertSame(resp, result);
+	}
 
-    @Test
-    public void returnsEnclosedResponseOnUnsuccessfulException() throws Exception {
-        Exception e = new UnsuccessfulResponseException(resp);
-        expect(mockBackend.execute(host, req, ctx))
-            .andThrow(e);
-        replay(mockBackend);
-        HttpResponse result = impl.execute(host, req, ctx);
-        verify(mockBackend);
-        assertSame(resp, result);
-    }
+	@Test
+	public void returnsEnclosedResponseOnUnsuccessfulException() throws Exception {
+		Exception e = new UnsuccessfulResponseException(resp);
+		expect(mockBackend.execute(host, req, ctx)).andThrow(e);
+		replay(mockBackend);
+		HttpResponse result = impl.execute(host, req, ctx);
+		verify(mockBackend);
+		assertSame(resp, result);
+	}
 
-    @Test
-    public void throwsIOExceptionForCircuitBreakerException() throws Exception {
-        expect(mockBackend.execute(host, req, ctx))
-            .andThrow(new CircuitBreakerException());
-        replay(mockBackend);
-        try {
-            impl.execute(host, req, ctx);
-            fail("should have thrown exception");
-        } catch (IOException expected) {
-        }
-        verify(mockBackend);
-    }
+	@Test
+	public void throwsIOExceptionForCircuitBreakerException() throws Exception {
+		expect(mockBackend.execute(host, req, ctx)).andThrow(new CircuitBreakerException());
+		replay(mockBackend);
+		try {
+			impl.execute(host, req, ctx);
+			fail("should have thrown exception");
+		} catch (IOException expected) {
+		}
+		verify(mockBackend);
+	}
 }

@@ -22,7 +22,7 @@ import javax.management.JMException;
  * Thrown when a requested Operation is not found on an MBean.
  */
 class OperationNotFoundException extends JMException {
-    public OperationNotFoundException(String reason) {
-        super(reason);
-    }
+	public OperationNotFoundException(String reason) {
+		super(reason);
+	}
 }

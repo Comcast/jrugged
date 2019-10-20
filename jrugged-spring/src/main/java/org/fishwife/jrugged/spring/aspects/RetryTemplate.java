@@ -13,15 +13,17 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface RetryTemplate {
-    /***
-     * The name of the spring bean where the appropriate retryTemplate can be found.
-     * @return String the name of the template
-     */
-    String name() default "retryTemplate";
+	/***
+	 * The name of the spring bean where the appropriate retryTemplate can be found.
+	 * 
+	 * @return String the name of the template
+	 */
+	String name() default "retryTemplate";
 
-    /***
-     * The name of the spring bean where a recovery callback method can be found.
-     * @return String the callback name or ""
-     */
-    String recoveryCallbackName() default "";
+	/***
+	 * The name of the spring bean where a recovery callback method can be found.
+	 * 
+	 * @return String the callback name or ""
+	 */
+	String recoveryCallbackName() default "";
 }

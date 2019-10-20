@@ -30,126 +30,125 @@ import static org.easymock.EasyMock.verify;
 
 public class TestPerformanceMonitorAspect {
 
-    private PerformanceMonitorAspect aspect;
+	private PerformanceMonitorAspect aspect;
 
-    PerformanceMonitor mockAnnotation;
+	PerformanceMonitor mockAnnotation;
 
-    Signature mockSignature;
+	Signature mockSignature;
 
-    private static final String TEST_MONITOR = "TestMonitor";
+	private static final String TEST_MONITOR = "TestMonitor";
 
-    @Before
-    public void setUp() {
-        aspect = new PerformanceMonitorAspect();
+	@Before
+	public void setUp() {
+		aspect = new PerformanceMonitorAspect();
 
-        mockSignature = createMock(Signature.class);
-        mockAnnotation = createMock(PerformanceMonitor.class);
+		mockSignature = createMock(Signature.class);
+		mockAnnotation = createMock(PerformanceMonitor.class);
 
-        expect(mockSignature.getName()).andReturn("Signature").anyTimes();
-        expect(mockAnnotation.value()).andReturn(TEST_MONITOR).anyTimes();
+		expect(mockSignature.getName()).andReturn("Signature").anyTimes();
+		expect(mockAnnotation.value()).andReturn(TEST_MONITOR).anyTimes();
 
-        replay(mockAnnotation);
-        replay(mockSignature);
-    }
+		replay(mockAnnotation);
+		replay(mockSignature);
+	}
 
-    private static ProceedingJoinPoint createPjpMock(Signature mockSignature,
-                                                     int times) {
-        ProceedingJoinPoint mockPjp = createMock(ProceedingJoinPoint.class);
-        // XXX: the following two interactions are for logging, so they may happen
-        //      0 or n times, pending logging configuration
-        expect(mockPjp.getTarget()).andReturn("Target").times(0, times);
-        expect(mockPjp.getSignature()).andReturn(mockSignature).times(0, times);
-        return mockPjp;
-    }
+	private static ProceedingJoinPoint createPjpMock(Signature mockSignature, int times) {
+		ProceedingJoinPoint mockPjp = createMock(ProceedingJoinPoint.class);
+		// XXX: the following two interactions are for logging, so they may happen
+		// 0 or n times, pending logging configuration
+		expect(mockPjp.getTarget()).andReturn("Target").times(0, times);
+		expect(mockPjp.getSignature()).andReturn(mockSignature).times(0, times);
+		return mockPjp;
+	}
 
-    @Test
-    public void testMonitor() throws Throwable {
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 2);
-        expect(mockPjp.proceed()).andReturn(null).times(2);
-        replay(mockPjp);
+	@Test
+	public void testMonitor() throws Throwable {
+		ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 2);
+		expect(mockPjp.proceed()).andReturn(null).times(2);
+		replay(mockPjp);
 
-        // Test monitor without pre-existing perf monitor.
-        aspect.monitor(mockPjp, mockAnnotation);
+		// Test monitor without pre-existing perf monitor.
+		aspect.monitor(mockPjp, mockAnnotation);
 
-        // Test monitor with pre-existing perf monitor.
-        aspect.monitor(mockPjp, mockAnnotation);
+		// Test monitor with pre-existing perf monitor.
+		aspect.monitor(mockPjp, mockAnnotation);
 
-        String otherMonitor = "OtherMonitor";
+		String otherMonitor = "OtherMonitor";
 
-        ProceedingJoinPoint otherMockPjp = createPjpMock(mockSignature, 1);
-        expect(otherMockPjp.proceed()).andReturn(null).times(1);
-        replay(otherMockPjp);
+		ProceedingJoinPoint otherMockPjp = createPjpMock(mockSignature, 1);
+		expect(otherMockPjp.proceed()).andReturn(null).times(1);
+		replay(otherMockPjp);
 
-        PerformanceMonitor otherMockAnnotation = createMock(PerformanceMonitor.class);
-        expect(otherMockAnnotation.value()).andReturn(otherMonitor);
-        replay(otherMockAnnotation);
+		PerformanceMonitor otherMockAnnotation = createMock(PerformanceMonitor.class);
+		expect(otherMockAnnotation.value()).andReturn(otherMonitor);
+		replay(otherMockAnnotation);
 
-        // Test monitor with another perf monitor.
-        aspect.monitor(otherMockPjp, otherMockAnnotation);
+		// Test monitor with another perf monitor.
+		aspect.monitor(otherMockPjp, otherMockAnnotation);
 
-        verifyMonitor(TEST_MONITOR, 2, 0);
-        verifyMonitor(otherMonitor, 1, 0);
+		verifyMonitor(TEST_MONITOR, 2, 0);
+		verifyMonitor(otherMonitor, 1, 0);
 
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-        verify(otherMockPjp);
-        verify(otherMockAnnotation);
-    }
+		verify(mockPjp);
+		verify(mockAnnotation);
+		verify(mockSignature);
+		verify(otherMockPjp);
+		verify(otherMockAnnotation);
+	}
 
-    @Test
-    public void testSetPerformanceMonitorFactory() throws Throwable {
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
-        expect(mockPjp.proceed()).andReturn(null);
-        replay(mockPjp);
+	@Test
+	public void testSetPerformanceMonitorFactory() throws Throwable {
+		ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
+		expect(mockPjp.proceed()).andReturn(null);
+		replay(mockPjp);
 
-        PerformanceMonitorFactory factory = new PerformanceMonitorFactory();
-        aspect.setPerformanceMonitorFactory(factory);
+		PerformanceMonitorFactory factory = new PerformanceMonitorFactory();
+		aspect.setPerformanceMonitorFactory(factory);
 
-        aspect.monitor(mockPjp, mockAnnotation);
+		aspect.monitor(mockPjp, mockAnnotation);
 
-        assertSame(factory, aspect.getPerformanceMonitorFactory());
-        verifyMonitor(TEST_MONITOR, 1, 0);
+		assertSame(factory, aspect.getPerformanceMonitorFactory());
+		verifyMonitor(TEST_MONITOR, 1, 0);
 
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-    }
+		verify(mockPjp);
+		verify(mockAnnotation);
+		verify(mockSignature);
+	}
 
-    @Test(expected = Throwable.class)
-    public void testMonitorWithThrowable() throws Throwable {
+	@Test(expected = Throwable.class)
+	public void testMonitorWithThrowable() throws Throwable {
 
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
-        expect(mockPjp.proceed()).andThrow(new Throwable());
-        replay(mockPjp);
+		ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
+		expect(mockPjp.proceed()).andThrow(new Throwable());
+		replay(mockPjp);
 
-        aspect.monitor(mockPjp, mockAnnotation);
-        verifyMonitor(TEST_MONITOR, 0, 1);
+		aspect.monitor(mockPjp, mockAnnotation);
+		verifyMonitor(TEST_MONITOR, 0, 1);
 
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-    }
+		verify(mockPjp);
+		verify(mockAnnotation);
+		verify(mockSignature);
+	}
 
-    @Test(expected = Exception.class)
-    public void testMonitorWithException() throws Throwable {
-        ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
-        expect(mockPjp.proceed()).andThrow(new Exception());
-        replay(mockPjp);
+	@Test(expected = Exception.class)
+	public void testMonitorWithException() throws Throwable {
+		ProceedingJoinPoint mockPjp = createPjpMock(mockSignature, 1);
+		expect(mockPjp.proceed()).andThrow(new Exception());
+		replay(mockPjp);
 
-        aspect.monitor(mockPjp, mockAnnotation);
-        verifyMonitor(TEST_MONITOR, 0, 1);
+		aspect.monitor(mockPjp, mockAnnotation);
+		verifyMonitor(TEST_MONITOR, 0, 1);
 
-        verify(mockPjp);
-        verify(mockAnnotation);
-        verify(mockSignature);
-    }
+		verify(mockPjp);
+		verify(mockAnnotation);
+		verify(mockSignature);
+	}
 
-    private void verifyMonitor(String name, int successCount, int failureCount) {
-        org.fishwife.jrugged.PerformanceMonitor monitor =
-                aspect.getPerformanceMonitorFactory().findPerformanceMonitor(name);
-        assertNotNull(monitor);
-        assertEquals(successCount, monitor.getSuccessCount());
-        assertEquals(failureCount, monitor.getFailureCount());
-    }
+	private void verifyMonitor(String name, int successCount, int failureCount) {
+		org.fishwife.jrugged.PerformanceMonitor monitor = aspect.getPerformanceMonitorFactory()
+				.findPerformanceMonitor(name);
+		assertNotNull(monitor);
+		assertEquals(successCount, monitor.getSuccessCount());
+		assertEquals(failureCount, monitor.getFailureCount());
+	}
 }

@@ -33,42 +33,42 @@ import org.fishwife.jrugged.ServiceWrapperFactory;
 
 public class PerHostServiceWrappedHttpClient extends AbstractHttpClientDecorator {
 
-    private ServiceWrapperFactory factory;
-    private Map<HttpHost, HttpClient> clients = new HashMap<HttpHost, HttpClient>();
+	private ServiceWrapperFactory factory;
+	private Map<HttpHost, HttpClient> clients = new HashMap<HttpHost, HttpClient>();
 
-    public PerHostServiceWrappedHttpClient(HttpClient backend, ServiceWrapperFactory factory) {
-        super(backend);
-        this.factory = factory;
-    }
+	public PerHostServiceWrappedHttpClient(HttpClient backend, ServiceWrapperFactory factory) {
+		super(backend);
+		this.factory = factory;
+	}
 
-    public HttpResponse execute(HttpHost host, HttpRequest req, HttpContext ctx)
-            throws IOException, ClientProtocolException {
-        host = getCanonicalHost(host);
-        HttpClient client = clients.get(host);
-        if (client == null) {
-            ServiceWrapper wrapper = factory.getWrapperWithName(host.toHostString());
-            client = new ServiceWrappedHttpClient(backend, wrapper);
-            clients.put(host, client);
-        }
-        return client.execute(host, req, ctx);
-    }
+	public HttpResponse execute(HttpHost host, HttpRequest req, HttpContext ctx)
+			throws IOException, ClientProtocolException {
+		host = getCanonicalHost(host);
+		HttpClient client = clients.get(host);
+		if (client == null) {
+			ServiceWrapper wrapper = factory.getWrapperWithName(host.toHostString());
+			client = new ServiceWrappedHttpClient(backend, wrapper);
+			clients.put(host, client);
+		}
+		return client.execute(host, req, ctx);
+	}
 
-    private HttpHost getCanonicalHost(HttpHost host) {
-        URI uri;
-        try {
-            uri = new URI(host.toURI());
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
-        String hostname = uri.getHost();
-        int port = uri.getPort();
-        String scheme = uri.getScheme();
-        boolean isHttps = "HTTPS".equalsIgnoreCase(scheme);
-        String schemePart = isHttps ? (scheme + "://") : "";
-        if (port == -1) {
-            port = isHttps ? 443 : 80;
-        }
-        return new HttpHost(schemePart + hostname + ":" + port);
-    }
+	private HttpHost getCanonicalHost(HttpHost host) {
+		URI uri;
+		try {
+			uri = new URI(host.toURI());
+		} catch (URISyntaxException e) {
+			throw new RuntimeException(e);
+		}
+		String hostname = uri.getHost();
+		int port = uri.getPort();
+		String scheme = uri.getScheme();
+		boolean isHttps = "HTTPS".equalsIgnoreCase(scheme);
+		String schemePart = isHttps ? (scheme + "://") : "";
+		if (port == -1) {
+			port = isHttps ? 443 : 80;
+		}
+		return new HttpHost(schemePart + hostname + ":" + port);
+	}
 
 }

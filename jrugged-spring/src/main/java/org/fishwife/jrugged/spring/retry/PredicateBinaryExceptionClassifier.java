@@ -19,44 +19,44 @@ import com.google.common.base.Predicate;
 import org.springframework.classify.ClassifierSupport;
 
 /***
- * A {@link Predicate} based classifier for {@link Throwable} objects which classifies them
- * as boolean values.
+ * A {@link Predicate} based classifier for {@link Throwable} objects which
+ * classifies them as boolean values.
  */
 public class PredicateBinaryExceptionClassifier extends ClassifierSupport<Throwable, Boolean> {
 
-    private Predicate<Throwable> predicate;
+	private Predicate<Throwable> predicate;
 
-    /***
-     * Constructor.
-     *
-     * @param predicate The predicate to use to check the exception
-     */
-    public PredicateBinaryExceptionClassifier(Predicate<Throwable> predicate) {
-        super(Boolean.TRUE);
-        this.predicate = predicate;
-    }
+	/***
+	 * Constructor.
+	 *
+	 * @param predicate The predicate to use to check the exception
+	 */
+	public PredicateBinaryExceptionClassifier(Predicate<Throwable> predicate) {
+		super(Boolean.TRUE);
+		this.predicate = predicate;
+	}
 
-    /***
-     * Get the predicate that is in use.
-     *
-     * @return the predicate
-     */
-    public Predicate<Throwable> getPredicate() {
-        return predicate;
-    }
+	/***
+	 * Get the predicate that is in use.
+	 *
+	 * @return the predicate
+	 */
+	public Predicate<Throwable> getPredicate() {
+		return predicate;
+	}
 
-    /***
-     * Set the predicate that is in use
-     * @param predicate the predicate
-     */
-    public void setPredicate(Predicate<Throwable> predicate) {
-        this.predicate = predicate;
-    }
+	/***
+	 * Set the predicate that is in use
+	 * 
+	 * @param predicate the predicate
+	 */
+	public void setPredicate(Predicate<Throwable> predicate) {
+		this.predicate = predicate;
+	}
 
-    @Override
-    public Boolean classify(Throwable classifiable) {
-        return predicate.apply(classifiable);
-    }
-
+	@Override
+	public Boolean classify(Throwable classifiable) {
+		return predicate.apply(classifiable);
+	}
 
 }

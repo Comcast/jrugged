@@ -25,72 +25,78 @@ import java.util.List;
  * service, and the {@link List} of reasons for the status.
  */
 public class ServiceStatus {
-    private final String name;
-    private final Status status;
-    private final List<String> reasons;
+	private final String name;
+	private final Status status;
+	private final List<String> reasons;
 
-    /**
-     * Constructor with name and {@link Status}.
-     * @param name the name of the service.
-     * @param status the {@link Status} of the service.
-     */
-    public ServiceStatus(String name, Status status) {
-        this.name = name;
-        this.status = status;
-        this.reasons = new ArrayList<String>();
-    }
+	/**
+	 * Constructor with name and {@link Status}.
+	 * 
+	 * @param name   the name of the service.
+	 * @param status the {@link Status} of the service.
+	 */
+	public ServiceStatus(String name, Status status) {
+		this.name = name;
+		this.status = status;
+		this.reasons = new ArrayList<String>();
+	}
 
-    /**
-     * Constructor with name, {@link Status}, and reason.
-     * @param name the name of the service.
-     * @param status the {@link Status} of the service.
-     * @param reason the reason for the status.
-     */
-    public ServiceStatus(String name, Status status, String reason) {
-        this.name = name;
-        this.status = status;
-        this.reasons = new ArrayList<String>();
-        if (reason != null) {
-            reasons.add(reason);
-        }
-    }
+	/**
+	 * Constructor with name, {@link Status}, and reason.
+	 * 
+	 * @param name   the name of the service.
+	 * @param status the {@link Status} of the service.
+	 * @param reason the reason for the status.
+	 */
+	public ServiceStatus(String name, Status status, String reason) {
+		this.name = name;
+		this.status = status;
+		this.reasons = new ArrayList<String>();
+		if (reason != null) {
+			reasons.add(reason);
+		}
+	}
 
-    /**
-     * Constructor with name, {@link Status}, and a {@link List} of reasons.
-     * @param name the name of the service.
-     * @param status the {@link Status} of the service.
-     * @param reasons the {@link List} of reasons for the status.
-     */
-    public ServiceStatus(String name, Status status, List<String> reasons) {
-        this.name = name;
-        this.status = status;
-        this.reasons = new ArrayList<String>();
-        if (reasons != null) {
-            this.reasons.addAll(reasons);
-        }
-    }
+	/**
+	 * Constructor with name, {@link Status}, and a {@link List} of reasons.
+	 * 
+	 * @param name    the name of the service.
+	 * @param status  the {@link Status} of the service.
+	 * @param reasons the {@link List} of reasons for the status.
+	 */
+	public ServiceStatus(String name, Status status, List<String> reasons) {
+		this.name = name;
+		this.status = status;
+		this.reasons = new ArrayList<String>();
+		if (reasons != null) {
+			this.reasons.addAll(reasons);
+		}
+	}
 
-    /**
-     * Get the name of the service.
-     * @return the name.
-     */
-    public String getName() {
-        return name;
-    }
+	/**
+	 * Get the name of the service.
+	 * 
+	 * @return the name.
+	 */
+	public String getName() {
+		return name;
+	}
 
-    /**
-     * Get the {@link Status} of the service.
-     * @return the {@link Status}.
-     */
-    public Status getStatus () {
-        return status;
-    }
+	/**
+	 * Get the {@link Status} of the service.
+	 * 
+	 * @return the {@link Status}.
+	 */
+	public Status getStatus() {
+		return status;
+	}
 
-    /**
-     * Get the {@link List} of reasons for the status.
-     * @return the {@link List} of reasons.
-     */
-    public List<String> getReasons() {
-        return new ArrayList<String>(reasons);
-    }
+	/**
+	 * Get the {@link List} of reasons for the status.
+	 * 
+	 * @return the {@link List} of reasons.
+	 */
+	public List<String> getReasons() {
+		return new ArrayList<String>(reasons);
+	}
 }

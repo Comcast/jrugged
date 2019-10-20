@@ -22,38 +22,38 @@ import org.springframework.classify.Classifier;
 import org.springframework.retry.RetryContext;
 
 public class ClassifierSimpleRetryPolicyTest {
-    @Test
-    public void test_classify() {
-        RetryContext context = Mockito.mock(RetryContext.class);
-        Classifier<Throwable, Boolean> classifier = Mockito.mock(Classifier.class);
-        ClassifierSimpleRetryPolicy policy = new ClassifierSimpleRetryPolicy(classifier);
-        Mockito.when(context.getLastThrowable()).thenReturn(new RuntimeException());
-        Mockito.when(classifier.classify(Mockito.any(Throwable.class))).thenReturn(true);
-        Assert.assertTrue(policy.canRetry(context));
-        Assert.assertSame(classifier, policy.getClassifier());
-    }
+	@Test
+	public void test_classify() {
+		RetryContext context = Mockito.mock(RetryContext.class);
+		Classifier<Throwable, Boolean> classifier = Mockito.mock(Classifier.class);
+		ClassifierSimpleRetryPolicy policy = new ClassifierSimpleRetryPolicy(classifier);
+		Mockito.when(context.getLastThrowable()).thenReturn(new RuntimeException());
+		Mockito.when(classifier.classify(Mockito.any(Throwable.class))).thenReturn(true);
+		Assert.assertTrue(policy.canRetry(context));
+		Assert.assertSame(classifier, policy.getClassifier());
+	}
 
-    @Test
-    public void test_classify_nullClassifier() {
-        RetryContext context = Mockito.mock(RetryContext.class);
-        ClassifierSimpleRetryPolicy policy = new ClassifierSimpleRetryPolicy(null);
-        Mockito.when(context.getLastThrowable()).thenReturn(new RuntimeException());
-        Assert.assertFalse(policy.canRetry(context));
-    }
+	@Test
+	public void test_classify_nullClassifier() {
+		RetryContext context = Mockito.mock(RetryContext.class);
+		ClassifierSimpleRetryPolicy policy = new ClassifierSimpleRetryPolicy(null);
+		Mockito.when(context.getLastThrowable()).thenReturn(new RuntimeException());
+		Assert.assertFalse(policy.canRetry(context));
+	}
 
-    @Test
-    public void test_classify_nullClassifier2() {
-        RetryContext context = Mockito.mock(RetryContext.class);
-        ClassifierSimpleRetryPolicy policy = new ClassifierSimpleRetryPolicy();
-        Mockito.when(context.getLastThrowable()).thenReturn(new RuntimeException());
-        Assert.assertFalse(policy.canRetry(context));
-    }
+	@Test
+	public void test_classify_nullClassifier2() {
+		RetryContext context = Mockito.mock(RetryContext.class);
+		ClassifierSimpleRetryPolicy policy = new ClassifierSimpleRetryPolicy();
+		Mockito.when(context.getLastThrowable()).thenReturn(new RuntimeException());
+		Assert.assertFalse(policy.canRetry(context));
+	}
 
-    @Test
-    public void test_classify_nullClassifier3() {
-        RetryContext context = Mockito.mock(RetryContext.class);
-        ClassifierSimpleRetryPolicy policy = new ClassifierSimpleRetryPolicy(4);
-        Mockito.when(context.getLastThrowable()).thenReturn(new RuntimeException());
-        Assert.assertFalse(policy.canRetry(context));
-    }
+	@Test
+	public void test_classify_nullClassifier3() {
+		RetryContext context = Mockito.mock(RetryContext.class);
+		ClassifierSimpleRetryPolicy policy = new ClassifierSimpleRetryPolicy(4);
+		Mockito.when(context.getLastThrowable()).thenReturn(new RuntimeException());
+		Assert.assertFalse(policy.canRetry(context));
+	}
 }

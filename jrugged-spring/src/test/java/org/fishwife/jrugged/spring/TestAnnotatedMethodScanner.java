@@ -38,50 +38,49 @@ import org.springframework.context.annotation.ClassPathScanningCandidateComponen
 
 public class TestAnnotatedMethodScanner {
 
-    private ClassLoader mockClassLoader;
-    private ClassPathScanningCandidateComponentProvider mockProvider;
+	private ClassLoader mockClassLoader;
+	private ClassPathScanningCandidateComponentProvider mockProvider;
 
-    private AnnotatedMethodScanner impl;
+	private AnnotatedMethodScanner impl;
 
-    @Before
-    public void setUp() {
-        mockClassLoader = createMock(ClassLoader.class);
-        mockProvider = createMock(ClassPathScanningCandidateComponentProvider.class);
-        impl = new AnnotatedMethodScanner(mockClassLoader, mockProvider);
-    }
+	@Before
+	public void setUp() {
+		mockClassLoader = createMock(ClassLoader.class);
+		mockProvider = createMock(ClassPathScanningCandidateComponentProvider.class);
+		impl = new AnnotatedMethodScanner(mockClassLoader, mockProvider);
+	}
 
-    @Test
-    public void testFindCandidateBeansAppliesAnnotatedMethodFilter() {
-        String basePackage = "faux.package";
-        Set<BeanDefinition> filteredComponents = new HashSet<BeanDefinition>();
+	@Test
+	public void testFindCandidateBeansAppliesAnnotatedMethodFilter() {
+		String basePackage = "faux.package";
+		Set<BeanDefinition> filteredComponents = new HashSet<BeanDefinition>();
 
-        mockProvider.resetFilters(false);
-        expectLastCall();
-        mockProvider.addIncludeFilter(EasyMock.isA(AnnotatedMethodFilter.class));
-        expectLastCall();
+		mockProvider.resetFilters(false);
+		expectLastCall();
+		mockProvider.addIncludeFilter(EasyMock.isA(AnnotatedMethodFilter.class));
+		expectLastCall();
 
-        expect(mockProvider.findCandidateComponents(eq(basePackage.replace('.', '/')))).
-                   andReturn(filteredComponents);
+		expect(mockProvider.findCandidateComponents(eq(basePackage.replace('.', '/')))).andReturn(filteredComponents);
 
-        replayMocks();
-        impl.findCandidateBeans(basePackage, SomeAnno.class);
-        verifyMocks();
-    }
+		replayMocks();
+		impl.findCandidateBeans(basePackage, SomeAnno.class);
+		verifyMocks();
+	}
 
-    void replayMocks() {
-        replay(mockClassLoader);
-        replay(mockProvider);
-    }
+	void replayMocks() {
+		replay(mockClassLoader);
+		replay(mockProvider);
+	}
 
-    void verifyMocks() {
-        verify(mockClassLoader);
-        verify(mockProvider);
-    }
+	void verifyMocks() {
+		verify(mockClassLoader);
+		verify(mockProvider);
+	}
 
-    // Dummy anno for test
-    @Target({ElementType.METHOD, ElementType.TYPE})
-    @Retention(RetentionPolicy.RUNTIME)
-    private @interface SomeAnno {
+	// Dummy anno for test
+	@Target({ ElementType.METHOD, ElementType.TYPE })
+	@Retention(RetentionPolicy.RUNTIME)
+	private @interface SomeAnno {
 
-    }
+	}
 }

@@ -19,5 +19,5 @@ package org.fishwife.jrugged;
  * {@link ServiceStatus}.
  */
 public interface MonitoredService {
-    ServiceStatus getServiceStatus();
+	ServiceStatus getServiceStatus();
 }

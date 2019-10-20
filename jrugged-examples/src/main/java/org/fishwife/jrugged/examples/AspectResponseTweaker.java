@@ -20,20 +20,21 @@ import org.fishwife.jrugged.aspects.PerformanceMonitor;
 
 public class AspectResponseTweaker {
 
-    @PerformanceMonitor("AspectResponseTweaker")
-    public int delay() throws Exception {
-        Random r = new Random();
-        int count = r.nextInt(2001);
+	@PerformanceMonitor("AspectResponseTweaker")
+	public int delay() throws Exception {
+		Random r = new Random();
+		int count = r.nextInt(2001);
 
-        if (count > 1650) {
-            throw new Exception("Count was over the limit.");
-        }
+		if (count > 1650) {
+			throw new Exception("Count was over the limit.");
+		}
 
-        try {
-            Thread.sleep(count);
-        } catch (InterruptedException e) { }
+		try {
+			Thread.sleep(count);
+		} catch (InterruptedException e) {
+		}
 
-        return count;
-    }
+		return count;
+	}
 
 }

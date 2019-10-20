@@ -24,84 +24,86 @@ import org.springframework.retry.policy.SimpleRetryPolicy;
 import java.util.Collections;
 
 /***
- * An extension to the existing {@link SimpleRetryPolicy} to allow for using an arbitrary
- * {@link Classifier} instance to determine if a given {@link Throwable} should trigger a
- * retry.
+ * An extension to the existing {@link SimpleRetryPolicy} to allow for using an
+ * arbitrary {@link Classifier} instance to determine if a given
+ * {@link Throwable} should trigger a retry.
  */
-public class ClassifierSimpleRetryPolicy
-    extends SimpleRetryPolicy {
+public class ClassifierSimpleRetryPolicy extends SimpleRetryPolicy {
 
-    private static final Predicate<Throwable> DEFAULT_PREDICATE = Predicates.alwaysFalse();
-    private static final Classifier<Throwable, Boolean> DEFAULT_CLASSIFIER = new PredicateBinaryExceptionClassifier(DEFAULT_PREDICATE);
+	private static final Predicate<Throwable> DEFAULT_PREDICATE = Predicates.alwaysFalse();
+	private static final Classifier<Throwable, Boolean> DEFAULT_CLASSIFIER = new PredicateBinaryExceptionClassifier(
+			DEFAULT_PREDICATE);
 
-    private volatile Classifier<Throwable, Boolean> classifier;
+	private volatile Classifier<Throwable, Boolean> classifier;
 
-    /***
-     * Constructor.
-     *
-     * Uses the default values for the {@link #maxAttempts}
-     * Uses the default classifier, which returns false for all exceptions.
-     */
-    public ClassifierSimpleRetryPolicy() {
-        this(SimpleRetryPolicy.DEFAULT_MAX_ATTEMPTS, DEFAULT_CLASSIFIER);
-    }
+	/***
+	 * Constructor.
+	 *
+	 * Uses the default values for the {@link #maxAttempts} Uses the default
+	 * classifier, which returns false for all exceptions.
+	 */
+	public ClassifierSimpleRetryPolicy() {
+		this(SimpleRetryPolicy.DEFAULT_MAX_ATTEMPTS, DEFAULT_CLASSIFIER);
+	}
 
-    /***
-     * Constructor.
+	/***
+	 * Constructor.
+	 * 
+	 * Uses the default classifier, which returns false for all exceptions.
+	 *
+	 * @param maxAttempts The maximum number of attempts allowed
+	 */
+	public ClassifierSimpleRetryPolicy(int maxAttempts) {
+		this(maxAttempts, DEFAULT_CLASSIFIER);
+	}
 
-     * Uses the default classifier, which returns false for all exceptions.
-     *
-     * @param maxAttempts The maximum number of attempts allowed
-     */
-    public ClassifierSimpleRetryPolicy(int maxAttempts) {
-        this(maxAttempts, DEFAULT_CLASSIFIER);
-    }
+	/***
+	 * Constructor.
+	 *
+	 * Uses the default values for the {@link #maxAttempts}
+	 *
+	 * @param classifier The classifier used to determine if an exception should
+	 *                   trigger a retry
+	 */
+	public ClassifierSimpleRetryPolicy(Classifier<Throwable, Boolean> classifier) {
+		this(SimpleRetryPolicy.DEFAULT_MAX_ATTEMPTS, classifier);
+	}
 
-    /***
-     * Constructor.
-     *
-     * Uses the default values for the {@link #maxAttempts}
-     *
-     * @param classifier The classifier used to determine if an exception should trigger a retry
-     */
-    public ClassifierSimpleRetryPolicy(Classifier<Throwable, Boolean> classifier) {
-        this(SimpleRetryPolicy.DEFAULT_MAX_ATTEMPTS, classifier);
-    }
+	/***
+	 * Constructor.
+	 *
+	 * @param maxAttempts The maximum number of attempts allowed
+	 * @param classifier  The classifier used to determine if an exception should
+	 *                    trigger a retry
+	 */
+	public ClassifierSimpleRetryPolicy(int maxAttempts, Classifier<Throwable, Boolean> classifier) {
+		super(maxAttempts, Collections.EMPTY_MAP);
+		this.classifier = classifier;
+	}
 
-    /***
-     * Constructor.
-     *
-     * @param maxAttempts The maximum number of attempts allowed
-     * @param classifier The classifier used to determine if an exception should trigger a retry
-     */
-    public ClassifierSimpleRetryPolicy(int maxAttempts, Classifier<Throwable, Boolean> classifier) {
-        super(maxAttempts, Collections.EMPTY_MAP);
-        this.classifier = classifier;
-    }
+	/***
+	 * Get the classifier instance.
+	 *
+	 * @return The classifier
+	 */
+	public Classifier<Throwable, Boolean> getClassifier() {
+		return classifier;
+	}
 
-    /***
-     * Get the classifier instance.
-     *
-     * @return The classifier
-     */
-    public Classifier<Throwable, Boolean> getClassifier() {
-        return classifier;
-    }
+	/***
+	 * Classify the exception as triggering a retry or not.
+	 *
+	 * @param throwable The exception which was thrown by the attempt.
+	 *
+	 * @return whether or not a retry should be attempted
+	 */
+	private boolean classify(Throwable throwable) {
+		return (classifier == null ? DEFAULT_CLASSIFIER : classifier).classify(throwable);
+	}
 
-    /***
-     * Classify the exception as triggering a retry or not.
-     *
-     * @param throwable The exception which was thrown by the attempt.
-     *
-     * @return whether or not a retry should be attempted
-     */
-    private boolean classify(Throwable throwable) {
-        return (classifier == null ? DEFAULT_CLASSIFIER : classifier).classify(throwable);
-    }
-
-    @Override
-    public boolean canRetry(RetryContext context) {
-        Throwable t = context.getLastThrowable();
-        return (t == null || classify(t)) && context.getRetryCount() < getMaxAttempts();
-    }
+	@Override
+	public boolean canRetry(RetryContext context) {
+		Throwable t = context.getLastThrowable();
+		return (t == null || classify(t)) && context.getRetryCount() < getMaxAttempts();
+	}
 }

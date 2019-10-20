@@ -22,15 +22,15 @@ import org.fishwife.jrugged.Status;
 
 public class MonitoredServiceStub implements MonitoredService {
 
-    private static final String NAME = "ServiceStub";
-  private ServiceStatus status = new ServiceStatus(NAME, Status.UP);
+	private static final String NAME = "ServiceStub";
+	private ServiceStatus status = new ServiceStatus(NAME, Status.UP);
 
-  public void setStatus(Status status) {
-        this.status = new ServiceStatus(NAME, status);
-  }
+	public void setStatus(Status status) {
+		this.status = new ServiceStatus(NAME, status);
+	}
 
-  public ServiceStatus getServiceStatus() {
-    return status;
-  }
+	public ServiceStatus getServiceStatus() {
+		return status;
+	}
 
 }
